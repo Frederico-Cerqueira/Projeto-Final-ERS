@@ -50,7 +50,7 @@ def calculate_int_data_bytes(value):
 
     # Inteiro negativo
     if value < 0:
-        value = abs(value)  # Inteiros megativos são transmitidos como o seu valor absoluto
+        value = abs(value)  # Inteiros negativos são transmitidos como o seu valor absoluto
         argument_type = b'\x1b'
 
     return argument_type + value.to_bytes(2, byteorder='little', signed=True)
@@ -159,10 +159,9 @@ if __name__ == '__main__':
     # serial_communication = serial.Serial("COM3", 9600, timeout=5)
     # serial_communication.set_buffer_size(rx_size=12800, tx_size=12800)
 
-    Vmax = 5
-    Vacc = 5
-    DistCMD = 10
-
+    Vmax = 0
+    Vacc = 0
+    DistCMD = 0
 
     serial_communication = serial.Serial('COM6', 9600, timeout=10)
     time.sleep(0.1)
@@ -190,32 +189,32 @@ if __name__ == '__main__':
     serial_communication.write(enable_1_command)
     time.sleep(0.1)
 
-    # Envair comandos para configurar velocidades e acelerações
+    # Enviar comandos para configurar velocidades e acelerações
     # robot_set_motion_settings(serial_communication, Vmax, Vacc)
 
     # Mandar andar robot (enviar MOVE com o valor dos mm)
-    data_bytes = calculate_int_data_bytes(DistCMD)
-    translate_command = b'\xfa\xfb\x06\x08' + data_bytes + b'\x00\x00'
-    translate_command_checksum = test_calculate_checksum(translate_command[2:])
-    rotate_command = translate_command[:-2] + translate_command_checksum
-    serial_communication.write(rotate_command)
-    time.sleep(0.1)
+    # data_bytes = calculate_int_data_bytes(DistCMD)
+    # translate_command = b'\xfa\xfb\x06\x08' + data_bytes + b'\x00\x00'
+    # translate_command_checksum = test_calculate_checksum(translate_command[2:])
+    # rotate_command = translate_command[:-2] + translate_command_checksum
+    # serial_communication.write(rotate_command)
+    # time.sleep(0.1)
 
     # Rodar robot (enviar ROTATE com o valor dos graus)
-    #data_bytes = calculate_int_data_bytes(300)
-    #rotate_command = b'\xfa\xfb\x06\x08' + data_bytes + b'\x00\x00'
-    #rotate_command_checksum = test_calculate_checksum(rotate_command[2:])
-    #rotate_command = rotate_command[:-2] + rotate_command_checksum
-    #serial_communication.write(rotate_command)
-    #time.sleep(0.1)
+    # data_bytes = calculate_int_data_bytes(300)
+    # rotate_command = b'\xfa\xfb\x06\x08' + data_bytes + b'\x00\x00'
+    # rotate_command_checksum = test_calculate_checksum(rotate_command[2:])
+    # rotate_command = rotate_command[:-2] + rotate_command_checksum
+    # serial_communication.write(rotate_command)
+    # time.sleep(0.1)
 
     # Rodar robot (enviar ROTATE com o valor dos graus)
-    data_bytes = calculate_int_data_bytes(10)
-    rotate_command = b'\xfa\xfb\x06\x09' + data_bytes + b'\x00\x00'
-    rotate_command_checksum = test_calculate_checksum(rotate_command[2:])
-    rotate_command = rotate_command[:-2] + rotate_command_checksum
-    serial_communication.write(rotate_command)
-    time.sleep(0.1)
+    # data_bytes = calculate_int_data_bytes(10)
+    # rotate_command = b'\xfa\xfb\x06\x09' + data_bytes + b'\x00\x00'
+    # rotate_command_checksum = test_calculate_checksum(rotate_command[2:])
+    # rotate_command = rotate_command[:-2] + rotate_command_checksum
+    # serial_communication.write(rotate_command)
+    # time.sleep(0.1)
 
     # Rodar robot (enviar RVEL com o valor dos graus/s)
     # data_bytes = calculate_int_data_bytes(5)
@@ -268,8 +267,7 @@ if __name__ == '__main__':
         tempo_while = datetime.now().timestamp() - tempo_inicial
 
     tempo_total = (datetime.now().timestamp() - tempo_inicial) * 1000.0
-    
-    
+
     # Desligar motores do robot (enviar ENABLE = 0)
     enable_0_command = b'\xfa\xfb\x06\x04\x3b\x00\x00\x00\x00'
     enable_0_command_checksum = test_calculate_checksum(enable_0_command[2:])

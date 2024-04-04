@@ -18,8 +18,8 @@ from tests.timer import *
 
 
 class Pioneer2RS232InterfaceControl:
+    """Interface que permite comunicar com o robot Pioneer2 através de uma ligação série."""
 
-    
     def __init__(self, port, baudrate):
         # Inicializar a interface
         self.__initialize_interface()
@@ -42,6 +42,8 @@ class Pioneer2RS232InterfaceControl:
         """ Configurar nova thread para receber input da consola """
         # Criar queue que vai conter os comandos recebidos pela consola
         self.__console_input_queue = queue.Queue()
+        # Criar queue que vai conter os comandos a serem executados
+        self.__console_commands_queue = queue.Queue()
         # Criar thread:
         #   target: define a função invocada pelo método run da thread
         #   daemon: uma thread daemon corre sem bloquear a thread principal de terminar a sua execução e
@@ -85,27 +87,47 @@ class Pioneer2RS232InterfaceControl:
         """Função que executa numa thread paralela e guarda os comandos recebidos pela consola."""
 
         print('Pioneer2 RS-232 Interface - Ready for Console Input')
-        #hardcoded_commands = ["MOVE 5000","MOVE 500","MOVE 500"]
 
-        # Coloca os comandos na fila
-        #for command in hardcoded_commands:
-        #    self.__console_input_queue.put(command.upper())
-        
         # Aguardar receber comando pela consola e guarda-lo
         while self.__interface_running:
             input_command = input()
             self.__console_input_queue.put(input_command.upper())
 
+    #############################################################################
+    def __fetch_script_from_console(self):
+        """Função que executa numa thread paralela e guarda os comandos recebidos no script colocado na consola."""
+                 
+        print('Pioneer2 RS-232 Interface - Ready for Console Input (script)')
+        input_script_path = input()
+        try:
+            # Open the script file
+            with open(input_script_path, 'r') as script_file:
+                # Read commands line by line
+                for line in script_file:
+                    # Remove leading/trailing whitespaces
+                    command = line.strip()
+                    # Skip empty lines
+                    if not command:
+                        continue
+                    # Execute the command using subprocess
+                    self.__console_input_queue.put(command)
+
+        except FileNotFoundError:
+            print(f"Error: Script file not found: {input_script_path}")
+        except Exception as e:
+            print(f"Error processing script: {e}")
+    #############################################################################
+            
     def __process_command(self):
-        
-        input_command = self.__console_input_queue.get()
+        input_command = self.__console_commands_queue.get()
+        print('comando recebido') 
+        print(input_command)
         print("Command Received: {}".format(input_command))
         # TODO: indicar à queue que o comando foi processado
-        self.__console_input_queue.task_done()
-        #print ("AAA")
+        self.__console_commands_queue.task_done()
 
         input_command = input_command.split()
-        #print("List:",self.__console_input_queue)
+
         if input_command[0] == 'T':
             commands = test_movement_translation(input_command[1], input_command[2], input_command[3])
 
@@ -169,7 +191,15 @@ class Pioneer2RS232InterfaceControl:
 
     def __send_command(self, command, arg=None):
         self.__serial_communication.send_command(command, arg)
+    #####################################################################
+    def __get_new_command(self):
+        new_command = self.__console_input_queue.get()
+        print('este é o novo comando')
+        print(new_command)
+        self.__console_commands_queue.put(new_command)
+    #####################################################################
 
+    
     def __run(self):
         print("Pioneer2 RS-232 Interface - Running")
 
@@ -198,6 +228,11 @@ class Pioneer2RS232InterfaceControl:
 
             # Caso exista informação de um SIP
             if self.__sip_info is not None:
+                print(self.__sip_info['motor_status'])
+                if(self.__sip_info['motor_status'] == False):
+                    print("DEU FALSE")
+                    self.__get_new_command()
+                
                 # Caso esteja a começar um teste, guardar posição inicial do robô e iniciar contador
                 if self.__start_time.get_is_waiting() and self.__start_time.get_is_counting() == False and self.__sip_info['motor_status']:
                     x_pos_robot_inicial = self.__sip_info['x_pos']
@@ -229,13 +264,13 @@ class Pioneer2RS232InterfaceControl:
                     print("Velocidade Calculada ", distancia_percorrida/stop_time)
 
             # Verificar se existem comandos da consola
-            if self.__console_input_queue.qsize() > 0:
+            if self.__console_commands_queue.qsize() > 0:
                 self.__process_command()
 
                 # Sair do while loop se o EXIT for recebido
                 if not self.__interface_running:
                     break
-
+       
             # Manter robot acordado
             if self.__serial_communication.is_connected() and ( tempo_pulse_final - tempo_pulse_inicial > 1.500 ):
                 tempo_pulse_inicial = datetime.now().timestamp()
@@ -254,4 +289,4 @@ class Pioneer2RS232InterfaceControl:
 if __name__ == '__main__':
     # pioneer2_rs232_interface = Pioneer2RS232InterfaceControl("COM3", 9600)
     pioneer2_rs232_interface = Pioneer2RS232InterfaceControl('COM6', 9600)
-    
+
