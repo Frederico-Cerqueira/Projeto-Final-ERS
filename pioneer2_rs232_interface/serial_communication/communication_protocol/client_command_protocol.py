@@ -60,7 +60,11 @@ def __close(arg=None):
 
 # TODO
 def __polling(arg):
-    pass
+    data_bytes = calculate_int_data_bytes(arg)
+    packet = b'\xfa\xfb\x06\x03' + data_bytes + b'\x00\x00'
+    # Calcular checksum do pacote
+    packet_checksum = calculate_packet_checksum(packet)
+    packet = packet[:-2] + packet_checksum
 
 
 def __set_a(arg):
@@ -242,7 +246,12 @@ def __set_ra(arg):
 
 # TODO
 def __sonar(arg):
-    pass
+    data_bytes = calculate_int_data_bytes(arg)
+    packet = b'\xfa\xfb\x06\x1C' + data_bytes + b'\x00\x00'
+    packet_checksum = calculate_packet_checksum(packet)
+    packet = packet[:-2] + packet_checksum
+
+    return packet
 
 
 # TODO: testar
@@ -418,5 +427,7 @@ __commands = {
     'RVEL': __r_vel,
     'SETRA': __set_ra,
     'STOP': __stop,
-    'E_STOP': __e_stop
+    'E_STOP': __e_stop,
+    'SONAR': __sonar,
+    'POLLING': __polling
 }
