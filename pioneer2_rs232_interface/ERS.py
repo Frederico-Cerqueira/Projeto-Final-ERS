@@ -6,17 +6,11 @@ import sys
 sys.path.append("./serial_communication")
 sys.path.append("./serial_communication/communication_protocol")
 
-import threading
 import queue
 import time
-import numpy as np
-
-from datetime import datetime
 
 from serial_communication.serial_communication import SerialCommunication
-from tests.tests import *
 from tests.timer import *
-from dataclasses import dataclass
 
 
 class ERS:
@@ -24,13 +18,19 @@ class ERS:
 
     def __init__(self, port, baudrate):
 
-        # Iniciar comunicação série
+        self.__interface_running = None
         self.sip_info = None
+        self.__process_command_flag = False
+
+        # Iniciar comunicação série
         self.__start_serial_connection(port, baudrate)
 
-        # Estabelecer ligação com o robot caso a ligação série seja iniciada
+        # Criar queue que vai conter os comandos a serem executados
+        self.__console_commands_queue = queue.Queue()
+
+        # Estabelecer ligação com o robô caso a ligação série seja iniciada
         if self.__serial_communication.is_connected():
-            # Estabelecer comunicação com o robot
+            # Estabelecer comunicação com o robô
             self.__establish_communication()
 
     def __start_serial_connection(self, port, baudrate):
@@ -41,7 +41,6 @@ class ERS:
         print("Pioneer2 RS-232 Interface - Establishing Connection")
 
         # Enviar os pacotes de sincronização e obter as respostas a cada um
-        # TODO: Obter as respostas à sincronização - a resposta ao SYNC2 contém as configurações do robot (nome, etc)
         self.__send_command('SYNC0')
         self.__send_command('SYNC1')
         self.__send_command('SYNC2')
@@ -57,6 +56,10 @@ class ERS:
 
         # Reset da origem do robot
         self.__send_command('SETO')
+
+    def add_console_command(self, command):
+        """Adiciona um comando à fila de comandos da consola."""
+        self.__console_commands_queue.put(command)
 
     def __process_sip(self):
         sip_info_aux = self.__serial_communication.get_sip()
@@ -76,7 +79,7 @@ class ERS:
             self.turn_off()
             self.__interface_running = False
 
-        # Caso contrário, e se a comunicação série estiver ativa, tentar enviar o comando ao robot
+        # Caso contrário, e se a comunicação série estiver ativa, tentar enviar o comando ao robô
         elif self.__serial_communication.is_connected():
             self.__send_command(command.comando, command.args)
 
@@ -85,16 +88,16 @@ class ERS:
 
     def turn_off(self):
         if self.__serial_communication.is_connected():
-            # Desligar os motores do robot
+            # Desligar os motores do robô
             self.__send_command('ENABLE', 0)
 
-            # Terminar ligação com o robot
+            # Terminar ligação com o robô
             self.__send_command('CLOSE')
 
             # Terminar ligação série
             self.__serial_communication.disconnect()
 
-    def run(self, command_list):
+    def run(self):
         print("Pioneer2 RS-232 Interface - Running")
         self.__interface_running = True
 
@@ -105,9 +108,6 @@ class ERS:
         tempo_pulse_inicial = datetime.now().timestamp()
         tempo_pulse_final = datetime.now().timestamp()
 
-        # Inicialização da variável que vai conter o dicionario com a informação do SIP
-        #self.__sip_info = None
-
         while self.__interface_running:
             # Verificar se existe um pacote SIP no canal
             if self.__serial_communication.check_sip_availibility() and (tempo_fin - tempo_init > 0.100):
@@ -117,16 +117,22 @@ class ERS:
 
             # Caso exista informação de um SIP
             if self.sip_info is not None:
-                print(self.sip_info['motor_status'])
+                print("SIP:", self.sip_info['motor_status'])
                 print("Posição em X ", self.sip_info['x_pos'])
                 print("Posição em Y ", self.sip_info['y_pos'])
                 print("Posição Heading ", self.sip_info['th_pos'])
                 if not self.sip_info['motor_status']:
                     print("SIP false")
+                    self.__process_command_flag = False
+                    #break
 
-            for command in command_list:
+            # Verificar se existem comandos na fila e se algum esta a ser processado
+            if self.__console_commands_queue.qsize() > 0 and self.__process_command_flag == False:
+                command = self.__console_commands_queue.get()
+                self.__process_command_flag = True
                 self.__process_command(command)
-
+                self.__console_commands_queue.task_done()
+                print("Tamanho da fila:", self.__console_commands_queue.qsize())
                 # Sair do while loop se o EXIT for recebido
                 if not self.__interface_running:
                     break
@@ -155,11 +161,15 @@ class Command:
 if __name__ == '__main__':
     pioneer2 = ERS('COM6', 9600)
     try:
-        my_command_list = [Command('MOVE', 1000), Command('S', None), Command('EXIT', None)]
-        pioneer2.run(my_command_list)
-        print("Posição em X ", pioneer2.sip_info['x_pos'])
-        print("Posição em Y ", pioneer2.sip_info['y_pos'])
-        print("Posição Heading ", pioneer2.sip_info['th_pos'])
+        pioneer2.add_console_command(Command('MOVE', 1000))
+        pioneer2.add_console_command(Command('MOVE', 2000))
+
+        #pioneer2.add_console_command(Command('EXIT', None))
+        pioneer2.run()
+        pioneer2.turn_off()
+        #print("Posição em X ", pioneer2.sip_info['x_pos'])
+        #print("Posição em Y ", pioneer2.sip_info['y_pos'])
+        #print("Posição Heading ", pioneer2.sip_info['th_pos'])
     except:
         print("Erro na execução")
         pioneer2.turn_off()
