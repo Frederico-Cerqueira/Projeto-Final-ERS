@@ -315,7 +315,12 @@ def __get_aux(arg):
 
 # TODO
 def __bump_stall(arg):
-    pass
+    data_bytes = calculate_int_data_bytes(arg)
+    packet = b'\xfa\xfb\x06\x2C' + data_bytes + b'\x00\x00'
+    packet_checksum = calculate_packet_checksum(packet)
+    packet = packet[:-2] + packet_checksum
+
+    return packet
 
 
 # TODO
@@ -429,5 +434,6 @@ __commands = {
     'STOP': __stop,
     'E_STOP': __e_stop,
     'SONAR': __sonar,
-    'POLLING': __polling
+    'POLLING': __polling,
+    'BUMP_STALL': __bump_stall
 }
