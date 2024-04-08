@@ -118,21 +118,23 @@ class ERS:
             # Caso exista informação de um SIP
             if self.sip_info is not None:
                 print("SIP:", self.sip_info['motor_status'])
-                print("Posição em X ", self.sip_info['x_pos'])
-                print("Posição em Y ", self.sip_info['y_pos'])
-                print("Posição Heading ", self.sip_info['th_pos'])
+                #print("Posição em X ", self.sip_info['x_pos'])
+                #print("Posição em Y ", self.sip_info['y_pos'])
+                #print("Posição Heading ", self.sip_info['th_pos'])
                 if not self.sip_info['motor_status']:
-                    print("SIP false")
+                    #print("SIP false")
                     self.__process_command_flag = False
                     #break
 
             # Verificar se existem comandos na fila e se algum esta a ser processado
-            if self.__console_commands_queue.qsize() > 0 and self.__process_command_flag == False:
+            if (self.__console_commands_queue.qsize() > 0 and (not self.__process_command_flag or self.sip_info is None)
+                    and not self.__process_command_flag):
                 command = self.__console_commands_queue.get()
                 self.__process_command_flag = True
                 self.__process_command(command)
                 self.__console_commands_queue.task_done()
                 print("Tamanho da fila:", self.__console_commands_queue.qsize())
+                #self.__process_command_flag = False
                 # Sair do while loop se o EXIT for recebido
                 if not self.__interface_running:
                     break
@@ -161,8 +163,12 @@ class Command:
 if __name__ == '__main__':
     pioneer2 = ERS('COM6', 9600)
     try:
+
+        #pioneer2.add_console_command(Command('HEAD', 90))
+        #pioneer2.add_console_command(Command('SETO', None))
         pioneer2.add_console_command(Command('MOVE', 1000))
-        pioneer2.add_console_command(Command('MOVE', 2000))
+        pioneer2.add_console_command(Command('MOVE', 1000))
+        pioneer2.add_console_command(Command('HEAD', 90))
 
         #pioneer2.add_console_command(Command('EXIT', None))
         pioneer2.run()
