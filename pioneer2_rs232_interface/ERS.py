@@ -28,6 +28,8 @@ class ERS:
         # Criar queue que vai conter os comandos a serem executados
         self.__console_commands_queue = queue.Queue()
 
+        self.__execute_commands_queue = queue.Queue()
+
         # Estabelecer ligação com o robô caso a ligação série seja iniciada
         if self.__serial_communication.is_connected():
             # Estabelecer comunicação com o robô
@@ -121,23 +123,30 @@ class ERS:
                 #print("Posição em X ", self.sip_info['x_pos'])
                 #print("Posição em Y ", self.sip_info['y_pos'])
                 #print("Posição Heading ", self.sip_info['th_pos'])
+                #print("Sonar ", self.sip_info['sonars'])
+                #print("Battery ", self.sip_info['battery'])
                 if not self.sip_info['motor_status']:
                     #print("SIP false")
                     self.__process_command_flag = False
                     #break
 
             # Verificar se existem comandos na fila e se algum esta a ser processado
-            if (self.__console_commands_queue.qsize() > 0 and (not self.__process_command_flag or self.sip_info is None)
-                    and not self.__process_command_flag):
+            if self.__console_commands_queue.qsize() > 0:
                 command = self.__console_commands_queue.get()
-                self.__process_command_flag = True
-                self.__process_command(command)
-                self.__console_commands_queue.task_done()
-                print("Tamanho da fila:", self.__console_commands_queue.qsize())
-                #self.__process_command_flag = False
-                # Sair do while loop se o EXIT for recebido
-                if not self.__interface_running:
-                    break
+                print("BB:", command.comando,"Tamanho", self.__console_commands_queue.qsize())
+                if self.__execute_commands_queue.empty() & (not self.sip_info):
+                    print("AAA:", command.comando,"Tamanho", self.__console_commands_queue.qsize())
+                    self.__console_commands_queue.task_done()
+                    self.__execute_commands_queue.put(command)
+                    self.__process_command(command)
+                if self.sip_info:
+                    self.__execute_commands_queue.task_done()
+
+            print("Tamanho da fila:", self.__console_commands_queue.qsize())
+            #self.__process_command_flag = False
+            # Sair do while loop se o EXIT for recebido
+            if not self.__interface_running:
+                break
 
             # Manter robot acordado
             if self.__serial_communication.is_connected() and (tempo_pulse_final - tempo_pulse_inicial > 1.500):
@@ -166,9 +175,12 @@ if __name__ == '__main__':
 
         #pioneer2.add_console_command(Command('HEAD', 90))
         #pioneer2.add_console_command(Command('SETO', None))
-        pioneer2.add_console_command(Command('MOVE', 1000))
-        pioneer2.add_console_command(Command('MOVE', 1000))
-        pioneer2.add_console_command(Command('HEAD', 90))
+        #pioneer2.add_console_command(Command('SONAR', 1))
+        #pioneer2.add_console_command(Command('EXIT', None))
+
+        pioneer2.add_console_command(Command('MOVE', 600))
+        pioneer2.add_console_command(Command('MOVE', 700))
+        #pioneer2.add_console_command(Command('HEAD', 90))
 
         #pioneer2.add_console_command(Command('EXIT', None))
         pioneer2.run()
