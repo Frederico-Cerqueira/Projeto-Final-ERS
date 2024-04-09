@@ -154,10 +154,15 @@ class ERS:
         print("Pioneer2 RS-232 Interface - Shutdown")
 
 
+def current_position(pioneer):
+    print("Posição em X:", pioneer.sip_info['x_pos'])
+    print("Posição em Y:", pioneer.sip_info['y_pos'])
+    print("Posição Heading:", pioneer.sip_info['th_pos'])
+
+
 if __name__ == '__main__':
     pioneer2 = ERS('COM6', 9600)
     try:
-
         pioneer2.add_console_command(Command('MOVE', 1000))
         pioneer2.add_console_command(Command('MOVE', 1000))
         pioneer2.add_console_command(Command('MOVE', 1000))
@@ -168,9 +173,7 @@ if __name__ == '__main__':
         # pioneer2.add_console_command(Command('EXIT', None))
         pioneer2.run()
         pioneer2.turn_off()
-        # print("Posição em X:", pioneer2.sip_info['x_pos'])
-        # print("Posição em Y:", pioneer2.sip_info['y_pos'])
-        # print("Posição Heading:", pioneer2.sip_info['th_pos'])
+        current_position(pioneer2)
     except:
         print("Erro na execução")
         pioneer2.turn_off()

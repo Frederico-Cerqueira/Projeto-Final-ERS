@@ -1,3 +1,6 @@
+import datetime
+import time
+
 from command import Command
 from ers import ERS
 
@@ -18,16 +21,16 @@ def area(height, width, side_distance):
 
     for value in range(1, ql):
         if value % 2 == 0:
-            command_list.append(Command('MOVE', height))#"move height")
-            command_list.append(Command('HEAD', 90))#"turn left")
-            command_list.append(Command('MOVE', side_distance))#"move side")
-            command_list.append(Command('HEAD', 90))#"turn left")
+            command_list.append(Command('MOVE', height))  #"move height")
+            command_list.append(Command('HEAD', 90))  #"turn left")
+            command_list.append(Command('MOVE', side_distance))  #"move side")
+            command_list.append(Command('HEAD', 90))  #"turn left")
         else:
-            command_list.append(Command('MOVE', height))#"move height")
-            command_list.append(Command('HEAD', -90))#"turn right")
-            command_list.append(Command('MOVE', side_distance))#"move side")
-            command_list.append(Command('HEAD', -90))#"turn right")
-    command_list.append(Command('MOVE', height))#"move height")
+            command_list.append(Command('MOVE', height))  #"move height")
+            command_list.append(Command('HEAD', -90))  #"turn right")
+            command_list.append(Command('MOVE', side_distance))  #"move side")
+            command_list.append(Command('HEAD', -90))  #"turn right")
+    command_list.append(Command('MOVE', height))  #"move height")
     return command_list
 
 
@@ -45,6 +48,26 @@ def test_impar():
     side_distance = 3
     commands = area(height, width, side_distance)
     print(commands)
+
+
+def schedule(start_time, end_time, mission):
+    """Esta função tem um problema, realiza uma espera ativa, ou seja, fica em 'loop' até
+    que o tempo atual seja igual ao tempo de início da missão"""
+
+    # Converte as horas de início e fim para objetos datetime
+    start_datetime = datetime.datetime.strptime(start_time, '%H:%M')
+    end_datetime = datetime.datetime.strptime(end_time, '%H:%M')
+
+    current_datetime = datetime.datetime.now()
+    while current_datetime < start_datetime:
+        time.sleep(1)
+        print("Waiting for the mission to start")
+        current_datetime = datetime.datetime.now()
+
+    while current_datetime <= end_datetime:
+        mission()
+        time.sleep(1)
+        current_datetime = datetime.datetime.now()
 
 
 if __name__ == '__main__':
