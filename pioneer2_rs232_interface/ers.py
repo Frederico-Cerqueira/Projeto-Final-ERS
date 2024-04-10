@@ -93,12 +93,14 @@ class ERS:
             print("Executar 1º Comando")
             self.__process_command(self.__command)
         else:
-            if self.sip_info['motor_status']:  # 1ª fase de acabar
-                self.__command = None
-            if not self.sip_info['motor_status'] and self.__command is not None:  # 2ª fase de acabar
-                self.__command = self.__commands_queue.get()
-                print("Executar 2º Comando")
-                self.__process_command(self.__command)
+            if self.sip_info is not None:
+                if self.sip_info['motor_status']:  # 1ª fase de acabar
+                    self.__command = None
+                if not self.sip_info['motor_status'] and self.__command is None: # 2ª fase de acabar
+                    self.__command = self.__commands_queue.get()
+                #if self.__command is not None:
+                    print("Executar 2º Comando")
+                    self.__process_command(self.__command)
 
     def __send_command(self, command, arg=None):
         self.__serial_communication.send_command(command, arg)
@@ -163,13 +165,17 @@ def current_position(pioneer):
 if __name__ == '__main__':
     pioneer2 = ERS('COM6', 9600)
     try:
+        pioneer2.turn_off()
+        pioneer2.add_console_command(Command('MOVE', 1000))
+        pioneer2.add_console_command(Command('MOVE', 1000))
+        pioneer2.add_console_command(Command('MOVE', 1000))
         pioneer2.add_console_command(Command('MOVE', 1000))
         pioneer2.add_console_command(Command('MOVE', 1000))
         pioneer2.add_console_command(Command('MOVE', 1000))
         # pioneer2.add_console_command(Command('HEAD', 90))
         # pioneer2.add_console_command(Command('SETO', None))
-        # pioneer2.add_console_command(Command('SONAR', 0))
-        # pioneer2.add_console_command(Command('BUMP_STALL', 1))
+        #pioneer2.add_console_command(Command('SONAR', 0))
+        #pioneer2.add_console_command(Command('BUMP_STALL', 0))
         # pioneer2.add_console_command(Command('EXIT', None))
         pioneer2.run()
         pioneer2.turn_off()
