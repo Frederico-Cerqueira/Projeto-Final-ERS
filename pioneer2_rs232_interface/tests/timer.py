@@ -1,11 +1,12 @@
 from datetime import datetime
 
+
 class Timer:
-    
+
     def __init__(self, tempo_espera=None):
         self._tempo_inicial = 0
-        self._tempo_final   = 0
-        self._tempo_espera  = tempo_espera
+        self._tempo_final = 0
+        self._tempo_espera = tempo_espera
         self._is_waiting = True
         self._is_counting = False
 
@@ -25,7 +26,7 @@ class Timer:
 
     def reset(self):
         self._tempo_inicial = 0
-        self._tempo_final   = 0
+        self._tempo_final = 0
         self.set_waiting(True)
         self.set_counting(False)
 
@@ -43,4 +44,3 @@ class Timer:
 
     def get_is_counting(self):
         return self._is_counting
-    

@@ -2,19 +2,20 @@
 
 # Define import path
 import sys
-#sys.path.append("../serial_communication")
+# sys.path.append("../serial_communication")
 
 import serial
-#import serial.tools.list_ports
+# import serial.tools.list_ports
 from datetime import datetime
 import time
 
-#from serial_communication.serial_communication import SerialCommunication
+
+# from serial_communication.serial_communication import SerialCommunication
 
 
 def init():
     pass
-    #serial_communication = SerialCommunication('/dev/ttyUSB0', 9600)
+    # serial_communication = SerialCommunication('/dev/ttyUSB0', 9600)
 
     # serial_communication = serial.Serial('/dev/ttyUSB0', 9600, timeout=10)
     #
@@ -68,31 +69,34 @@ def calculate_int_data_bytes(value):
 
 
 def calculate_checksum(packet):
-    n_bites = packet[0]-2  # vai buscar o primeiro byte que irá dar o tamanho do packet e é retirado os bytes de checksum
+    n_bites = packet[
+                  0] - 2  # vai buscar o primeiro byte que irá dar o tamanho do packet e é retirado os bytes de checksum
     index = 0  # é necessário para percorrer o array de bytes
     packet_no_checksum = packet[1:-2]  # retira o checksum inicial que ira ser igual a zero
     checksum = 0  # inicializa o checksum a zero
 
-    while (index < n_bites-1):
-        checksum += packet_no_checksum[index]<<8 | packet_no_checksum[index+1]  # vai buscar ao array uma word
+    while (index < n_bites - 1):
+        checksum += packet_no_checksum[index] << 8 | packet_no_checksum[index + 1]  # vai buscar ao array uma word
         checksum = checksum & int.from_bytes(b'\xff\xff', "little")  # faz a operação & com o checksum anterior
         index += 2  # aumenta o indice do array para ir buscar a próxima word
 
     if (n_bites > index):  # caso seja impar é feita a operação XOR com o último byte do array
-         checksum = checksum ^ packet_no_checksum[n_bites-1]
+        checksum = checksum ^ packet_no_checksum[n_bites - 1]
 
     return checksum
 
 
 def test_calculate_checksum(packet):
-    n_bites = packet[0] - 2  # Vai buscar o primeiro byte que irá dar o tamanho do packet e é retirado os bytes de checksum
+    n_bites = packet[
+                  0] - 2  # Vai buscar o primeiro byte que irá dar o tamanho do packet e é retirado os bytes de checksum
     index = 0  # É necessário para percorrer o array de bytes
     packet_no_checksum = packet[1:-2]  # retira o checksum inicial que ira ser igual a zero
     checksum = 0  # inicializa o checksum a zero
 
     while (index < n_bites - 1):
         checksum += packet_no_checksum[index] << 8 | packet_no_checksum[index + 1]  # vai buscar ao array uma word
-        checksum = checksum & int.from_bytes(b'\xff\xff', byteorder="little")  # faz a operação & com o checksum anterior
+        checksum = checksum & int.from_bytes(b'\xff\xff',
+                                             byteorder="little")  # faz a operação & com o checksum anterior
         index += 2  # aumenta o indice do array para ir buscar a próxima word
 
     if (n_bites > index):  # caso seja impar é feita a operação XOR com o último byte do array
@@ -101,6 +105,7 @@ def test_calculate_checksum(packet):
     checksum = checksum.to_bytes(2, byteorder='big')
 
     return checksum
+
 
 def validate_checksum(packet):
     packet = b'\xfa\xfb\x90\x01\x02\x03\x04\xfe\xff'
@@ -151,7 +156,7 @@ if __name__ == '__main__':
     # print(int.from_bytes(packet_data[3:5], byteorder='big'))
 
     # Obter lista de portas série
-    #print( list(serial.tools.list_ports.comports()) )
+    # print( list(serial.tools.list_ports.comports()) )
 
     # Esperar selecção de porta
     # port_name = input("Seleccione uma porta: ")

@@ -155,7 +155,6 @@ class ERS:
             # Tempo final 'loop'
             tempo_fin = datetime.now().timestamp()
             tempo_pulse_final = datetime.now().timestamp()
-            time.sleep(0.005)
 
         print("Pioneer2 RS-232 Interface - Shutdown")
 

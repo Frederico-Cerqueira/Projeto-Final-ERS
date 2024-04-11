@@ -2,6 +2,7 @@
 
 # Define import path
 import sys
+
 sys.path.append("./serial_communication")
 sys.path.append("./serial_communication/communication_protocol")
 
@@ -96,7 +97,7 @@ class Pioneer2RS232InterfaceControl:
     #############################################################################
     def __fetch_script_from_console(self):
         """Função que executa numa thread paralela e guarda os comandos recebidos no script colocado na consola."""
-                 
+
         print('Pioneer2 RS-232 Interface - Ready for Console Input (script)')
         input_script_path = input()
         try:
@@ -116,11 +117,12 @@ class Pioneer2RS232InterfaceControl:
             print(f"Error: Script file not found: {input_script_path}")
         except Exception as e:
             print(f"Error processing script: {e}")
+
     #############################################################################
-            
+
     def __process_command(self):
         input_command = self.__console_commands_queue.get()
-        print('comando recebido') 
+        print('comando recebido')
         print(input_command)
         print("Command Received: {}".format(input_command))
         # TODO: indicar à queue que o comando foi processado
@@ -191,15 +193,16 @@ class Pioneer2RS232InterfaceControl:
 
     def __send_command(self, command, arg=None):
         self.__serial_communication.send_command(command, arg)
+
     #####################################################################
     def __get_new_command(self):
         new_command = self.__console_input_queue.get()
         print('este é o novo comando')
         print(new_command)
         self.__console_commands_queue.put(new_command)
+
     #####################################################################
 
-    
     def __run(self):
         print("Pioneer2 RS-232 Interface - Running")
 
@@ -229,12 +232,13 @@ class Pioneer2RS232InterfaceControl:
             # Caso exista informação de um SIP
             if self.__sip_info is not None:
                 print(self.__sip_info['motor_status'])
-                if(self.__sip_info['motor_status'] == False):
+                if (self.__sip_info['motor_status'] == False):
                     print("DEU FALSE")
                     self.__get_new_command()
-                
+
                 # Caso esteja a começar um teste, guardar posição inicial do robô e iniciar contador
-                if self.__start_time.get_is_waiting() and self.__start_time.get_is_counting() == False and self.__sip_info['motor_status']:
+                if self.__start_time.get_is_waiting() and self.__start_time.get_is_counting() == False and \
+                        self.__sip_info['motor_status']:
                     x_pos_robot_inicial = self.__sip_info['x_pos']
                     y_pos_robot_inicial = self.__sip_info['y_pos']
                     posicao_inicial = np.array([x_pos_robot_inicial, y_pos_robot_inicial])
@@ -242,15 +246,16 @@ class Pioneer2RS232InterfaceControl:
                     self.__start_time.start()
 
                 # Caso esteja a terminar um teste, guardar posição final do robô e printar info
-                if self.__start_time.get_is_waiting() == False and self.__start_time.get_is_counting() and self.__sip_info['motor_status'] == False:
+                if self.__start_time.get_is_waiting() == False and self.__start_time.get_is_counting() and \
+                        self.__sip_info['motor_status'] == False:
                     x_pos_robot_final = self.__sip_info['x_pos']
                     y_pos_robot_final = self.__sip_info['y_pos']
                     posicao_final = np.array([x_pos_robot_final, y_pos_robot_final])
-                    
+
                     x_pos_total = x_pos_robot_final - x_pos_robot_inicial
                     y_pos_total = y_pos_robot_final - y_pos_robot_inicial
 
-                    distancia_percorrida = np.linalg.norm(posicao_final-posicao_inicial)
+                    distancia_percorrida = np.linalg.norm(posicao_final - posicao_inicial)
 
                     stop_time = self.__start_time.stop()
 
@@ -261,7 +266,7 @@ class Pioneer2RS232InterfaceControl:
                     print("Posição em Y ", self.__sip_info['y_pos'])
                     print("Posição Heading ", self.__sip_info['th_pos'])
                     print("distancia_percorrida ", distancia_percorrida)
-                    print("Velocidade Calculada ", distancia_percorrida/stop_time)
+                    print("Velocidade Calculada ", distancia_percorrida / stop_time)
 
             # Verificar se existem comandos da consola
             if self.__console_commands_queue.qsize() > 0:
@@ -270,9 +275,9 @@ class Pioneer2RS232InterfaceControl:
                 # Sair do while loop se o EXIT for recebido
                 if not self.__interface_running:
                     break
-       
+
             # Manter robot acordado
-            if self.__serial_communication.is_connected() and ( tempo_pulse_final - tempo_pulse_inicial > 1.500 ):
+            if self.__serial_communication.is_connected() and (tempo_pulse_final - tempo_pulse_inicial > 1.500):
                 tempo_pulse_inicial = datetime.now().timestamp()
                 self.__serial_communication.send_command('PULSE')
 
@@ -289,4 +294,3 @@ class Pioneer2RS232InterfaceControl:
 if __name__ == '__main__':
     # pioneer2_rs232_interface = Pioneer2RS232InterfaceControl("COM3", 9600)
     pioneer2_rs232_interface = Pioneer2RS232InterfaceControl('COM6', 9600)
-
