@@ -52,6 +52,7 @@ class ERS:
         # Iniciar os servidores do robô
         self.__send_command('OPEN')
 
+
         # Pedir o SIP de configuração
         self.__send_command('CONFIG')
 
@@ -70,7 +71,9 @@ class ERS:
 
         if sip_info_aux is not None:
             self.sip_info = sip_info_aux
-
+        else:
+            print("SIP não disponível")
+            #self.sip_info = None
     def __process_command(self, command):
         print('Command received:' + command.comando + ' ' + str(command.args))
 
@@ -127,31 +130,32 @@ class ERS:
         tempo_pulse_inicial = datetime.now().timestamp()
         tempo_pulse_final = datetime.now().timestamp()
 
-        while True:  # (self.__commands_queue.qsize() > 0 and not self.sip_info['motor_status'])or self.__running_flag:
+        while self.__commands_queue.qsize() > 0 or self.__command is not None:
             print("Tamanho:", self.__commands_queue.qsize())
 
             if self.__serial_communication.check_sip_availibility() and (tempo_fin - tempo_init > 0.100):
                 tempo_init = datetime.now().timestamp()
                 self.__process_sip()
-
+            """
             if self.sip_info is not None:
                 if not self.sip_info['motor_status']:
-                    print("SIP Motor Status: False")
+                     print("SIP Motor Status: False")
                 else:
-                    print("SIP Motor Status: True")
-
+                     print("SIP Motor Status: True")
+            """
             self.__process_sucessive_commands()
 
             # Manter robô acordado
             if self.__serial_communication.is_connected() and (tempo_pulse_final - tempo_pulse_inicial > 1.500):
                 tempo_pulse_inicial = datetime.now().timestamp()
+                print("Pulse")
                 self.__serial_communication.send_command('PULSE')
 
             # Calcular tempos para criar um setinterval
             # Tempo final 'loop'
             tempo_fin = datetime.now().timestamp()
             tempo_pulse_final = datetime.now().timestamp()
-            time.sleep(0.001)
+            time.sleep(0.005)
 
         print("Pioneer2 RS-232 Interface - Shutdown")
 
@@ -165,13 +169,25 @@ def current_position(pioneer):
 if __name__ == '__main__':
     pioneer2 = ERS('COM6', 9600)
     try:
-        pioneer2.turn_off()
-        pioneer2.add_console_command(Command('MOVE', 1000))
-        pioneer2.add_console_command(Command('MOVE', 1000))
-        pioneer2.add_console_command(Command('MOVE', 1000))
-        pioneer2.add_console_command(Command('MOVE', 1000))
-        pioneer2.add_console_command(Command('MOVE', 1000))
-        pioneer2.add_console_command(Command('MOVE', 1000))
+        #pioneer2.turn_off()
+        #pioneer2.add_console_command(Command('MOVE', 6000))
+
+        pioneer2.add_console_command(Command('MOVE', 500))
+        pioneer2.add_console_command(Command('MOVE', 500))
+        pioneer2.add_console_command(Command('MOVE', 500))
+        pioneer2.add_console_command(Command('MOVE', 500))
+        pioneer2.add_console_command(Command('MOVE', 500))
+        pioneer2.add_console_command(Command('MOVE', 500))
+        pioneer2.add_console_command(Command('MOVE', 500))
+        pioneer2.add_console_command(Command('MOVE', 500))
+        pioneer2.add_console_command(Command('MOVE', 500))
+        pioneer2.add_console_command(Command('MOVE', 500))
+        pioneer2.add_console_command(Command('MOVE', 500))
+        pioneer2.add_console_command(Command('MOVE', 500))
+        pioneer2.add_console_command(Command('MOVE', 500))
+
+
+
         # pioneer2.add_console_command(Command('HEAD', 90))
         # pioneer2.add_console_command(Command('SETO', None))
         #pioneer2.add_console_command(Command('SONAR', 0))
