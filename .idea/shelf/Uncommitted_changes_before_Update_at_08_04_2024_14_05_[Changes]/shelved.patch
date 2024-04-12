@@ -1,0 +1,285 @@
+Index: pioneer2_rs232_interface/ERS.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+># -*- coding: utf-8 -*-\r\n\r\n# Define import path\r\nimport sys\r\n\r\nsys.path.append(\"./serial_communication\")\r\nsys.path.append(\"./serial_communication/communication_protocol\")\r\n\r\nimport threading\r\nimport queue\r\nimport time\r\nimport numpy as np\r\n\r\nfrom datetime import datetime\r\n\r\nfrom serial_communication.serial_communication import SerialCommunication\r\nfrom tests.tests import *\r\nfrom tests.timer import *\r\nfrom dataclasses import dataclass\r\n\r\n\r\nclass ERS:\r\n    \"\"\" Interface que permite comunicar com o robô Pioneer2 através de uma ligação série.\"\"\"\r\n\r\n    def __init__(self, port, baudrate):\r\n\r\n        # Iniciar comunicação série\r\n        self.sip_info = None\r\n        self.__start_serial_connection(port, baudrate)\r\n\r\n        # Estabelecer ligação com o robot caso a ligação série seja iniciada\r\n        if self.__serial_communication.is_connected():\r\n            # Estabelecer comunicação com o robot\r\n            self.__establish_communication()\r\n\r\n    def __start_serial_connection(self, port, baudrate):\r\n        self.__serial_communication = SerialCommunication(port, baudrate)\r\n\r\n    def __establish_communication(self):\r\n        \"\"\"Sincronizar comunicação com o robot e iniciar os servidores e motores do robot.\"\"\"\r\n        print(\"Pioneer2 RS-232 Interface - Establishing Connection\")\r\n\r\n        # Enviar os pacotes de sincronização e obter as respostas a cada um\r\n        # TODO: Obter as respostas à sincronização - a resposta ao SYNC2 contém as configurações do robot (nome, etc)\r\n        self.__send_command('SYNC0')\r\n        self.__send_command('SYNC1')\r\n        self.__send_command('SYNC2')\r\n\r\n        # Iniciar os servidores do robot\r\n        self.__send_command('OPEN')\r\n\r\n        # Pedir o SIP de configuração\r\n        self.__send_command('CONFIG')\r\n\r\n        # Ligar os motores do robot\r\n        self.__send_command('ENABLE', 1)\r\n\r\n        # Reset da origem do robot\r\n        self.__send_command('SETO')\r\n\r\n    def __process_sip(self):\r\n        sip_info_aux = self.__serial_communication.get_sip()\r\n\r\n        if sip_info_aux is not None:\r\n            self.sip_info = sip_info_aux\r\n\r\n    def __process_command(self, command):\r\n        print('Command received:' + command.comando + ' ' + str(command.args))\r\n\r\n        # Printar último SIP\r\n        if command.comando == 'S':\r\n            print(self.sip_info)\r\n\r\n        # Se o comando for para desligar a interface\r\n        elif command.comando == 'EXIT':\r\n            self.turn_off()\r\n            self.__interface_running = False\r\n\r\n        # Caso contrário, e se a comunicação série estiver ativa, tentar enviar o comando ao robot\r\n        elif self.__serial_communication.is_connected():\r\n            self.__send_command(command.comando, command.args)\r\n\r\n    def __send_command(self, command, arg=None):\r\n        self.__serial_communication.send_command(command, arg)\r\n\r\n    def turn_off(self):\r\n        if self.__serial_communication.is_connected():\r\n            # Desligar os motores do robot\r\n            self.__send_command('ENABLE', 0)\r\n\r\n            # Terminar ligação com o robot\r\n            self.__send_command('CLOSE')\r\n\r\n            # Terminar ligação série\r\n            self.__serial_communication.disconnect()\r\n\r\n    def run(self, command_list):\r\n        print(\"Pioneer2 RS-232 Interface - Running\")\r\n        self.__interface_running = True\r\n\r\n        # Tempo inicial\r\n        tempo_init = tempo_fin = datetime.now().timestamp()\r\n\r\n        # Tempo Pulse inicial\r\n        tempo_pulse_inicial = datetime.now().timestamp()\r\n        tempo_pulse_final = datetime.now().timestamp()\r\n\r\n        # Inicialização da variável que vai conter o dicionario com a informação do SIP\r\n        #self.__sip_info = None\r\n\r\n        while self.__interface_running:\r\n            # Verificar se existe um pacote SIP no canal\r\n            if self.__serial_communication.check_sip_availibility() and (tempo_fin - tempo_init > 0.100):\r\n                tempo_init = datetime.now().timestamp()\r\n                # Processar SIP\r\n                self.__process_sip()\r\n\r\n            # Caso exista informação de um SIP\r\n            if self.sip_info is not None:\r\n                print(self.sip_info['motor_status'])\r\n                print(\"Posição em X \", self.sip_info['x_pos'])\r\n                print(\"Posição em Y \", self.sip_info['y_pos'])\r\n                print(\"Posição Heading \", self.sip_info['th_pos'])\r\n                if not self.sip_info['motor_status']:\r\n                    print(\"SIP false\")\r\n\r\n            for command in command_list:\r\n                self.__process_command(command)\r\n\r\n                # Sair do while loop se o EXIT for recebido\r\n                if not self.__interface_running:\r\n                    break\r\n\r\n            # Manter robot acordado\r\n            if self.__serial_communication.is_connected() and (tempo_pulse_final - tempo_pulse_inicial > 1.500):\r\n                tempo_pulse_inicial = datetime.now().timestamp()\r\n                self.__serial_communication.send_command('PULSE')\r\n\r\n            # Calcular tempos para criar um setinterval\r\n            # Tempo final 'loop'\r\n            tempo_fin = datetime.now().timestamp()\r\n            tempo_pulse_final = datetime.now().timestamp()\r\n            time.sleep(0.001)\r\n\r\n        print(\"Pioneer2 RS-232 Interface - Shutdown\")\r\n\r\n\r\nclass Command:\r\n    def __init__(self, comando, args):\r\n        self.comando = comando\r\n        self.args = args\r\n\r\n\r\n# Correr interface\r\nif __name__ == '__main__':\r\n    pioneer2 = ERS('COM6', 9600)\r\n    try:\r\n        my_command_list = [Command('MOVE', 1000), Command('S', None), Command('EXIT', None)]\r\n        pioneer2.run(my_command_list)\r\n        print(\"Posição em X \", pioneer2.sip_info['x_pos'])\r\n        print(\"Posição em Y \", pioneer2.sip_info['y_pos'])\r\n        print(\"Posição Heading \", pioneer2.sip_info['th_pos'])\r\n    except:\r\n        print(\"Erro na execução\")\r\n        pioneer2.turn_off()\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pioneer2_rs232_interface/ERS.py b/pioneer2_rs232_interface/ERS.py
+--- a/pioneer2_rs232_interface/ERS.py	(revision dae3f91e10475a260e4ecc706d373f4f0dc1d560)
++++ b/pioneer2_rs232_interface/ERS.py	(date 1712327282084)
+@@ -6,17 +6,10 @@
+ sys.path.append("./serial_communication")
+ sys.path.append("./serial_communication/communication_protocol")
+ 
+-import threading
+-import queue
+ import time
+-import numpy as np
+-
+-from datetime import datetime
+ 
+ from serial_communication.serial_communication import SerialCommunication
+-from tests.tests import *
+ from tests.timer import *
+-from dataclasses import dataclass
+ 
+ 
+ class ERS:
+Index: pioneer2_rs232_interface/main_backup.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+># -*- coding: utf-8 -*-\r\n\r\n# Define import path\r\nimport sys\r\n#sys.path.append(\"../serial_communication\")\r\n\r\nimport serial\r\n#import serial.tools.list_ports\r\nfrom datetime import datetime\r\nimport time\r\n\r\n#from serial_communication.serial_communication import SerialCommunication\r\n\r\n\r\ndef init():\r\n    pass\r\n    #serial_communication = SerialCommunication('/dev/ttyUSB0', 9600)\r\n\r\n    # serial_communication = serial.Serial('/dev/ttyUSB0', 9600, timeout=10)\r\n    #\r\n    # serial_communication.write(b'\\xfa\\xfb\\x03\\x00\\x00\\x00')\r\n    # serial_communication.write(b'\\xfa\\xfb\\x03\\x01\\x00\\x01')\r\n    # serial_communication.write(b'\\xfa\\xfb\\x03\\x02\\x00\\x02')\r\n    #\r\n    # info = serial_communication.read(100)\r\n    #\r\n    # print(info)\r\n\r\n\r\ndef process_command(command):\r\n    pass\r\n\r\n\r\ndef get_packet(serial_communication):\r\n    packet_header_and_size = serial_communication.read(3)\r\n    packet_size = packet_header_and_size[2]\r\n\r\n    packet_data = serial_communication.read(packet_size)\r\n    time.sleep(0.005)\r\n\r\n    packet = packet_header_and_size + packet_data\r\n\r\n    # print(packet)\r\n\r\n    return packet\r\n\r\n\r\ndef calculate_int_data_bytes(value):\r\n    argument_type = b'\\x3b'  # Inteiro positivo\r\n\r\n    # Inteiro negativo\r\n    if value < 0:\r\n        value = abs(value)  # Inteiros negativos são transmitidos como o seu valor absoluto\r\n        argument_type = b'\\x1b'\r\n\r\n    return argument_type + value.to_bytes(2, byteorder='little', signed=True)\r\n\r\n\r\n# def get_packet():\r\n#     # Ler serial\r\n#     packet = b'\\xfa\\xfb\\x90\\x01\\x02\\x03\\x04\\xfe\\xff'\r\n#\r\n#     # Calcular checksum\r\n#     calculated_checksum = calculate_checksum(packet)\r\n#\r\n#     if packet[-2:] == calculated_checksum:\r\n#         pass\r\n\r\n\r\ndef calculate_checksum(packet):\r\n    n_bites = packet[0]-2  # vai buscar o primeiro byte que irá dar o tamanho do packet e é retirado os bytes de checksum\r\n    index = 0  # é necessário para percorrer o array de bytes\r\n    packet_no_checksum = packet[1:-2]  # retira o checksum inicial que ira ser igual a zero\r\n    checksum = 0  # inicializa o checksum a zero\r\n\r\n    while (index < n_bites-1):\r\n        checksum += packet_no_checksum[index]<<8 | packet_no_checksum[index+1]  # vai buscar ao array uma word\r\n        checksum = checksum & int.from_bytes(b'\\xff\\xff', \"little\")  # faz a operação & com o checksum anterior\r\n        index += 2  # aumenta o indice do array para ir buscar a próxima word\r\n\r\n    if (n_bites > index):  # caso seja impar é feita a operação XOR com o último byte do array\r\n         checksum = checksum ^ packet_no_checksum[n_bites-1]\r\n\r\n    return checksum\r\n\r\n\r\ndef test_calculate_checksum(packet):\r\n    n_bites = packet[0] - 2  # Vai buscar o primeiro byte que irá dar o tamanho do packet e é retirado os bytes de checksum\r\n    index = 0  # É necessário para percorrer o array de bytes\r\n    packet_no_checksum = packet[1:-2]  # retira o checksum inicial que ira ser igual a zero\r\n    checksum = 0  # inicializa o checksum a zero\r\n\r\n    while (index < n_bites - 1):\r\n        checksum += packet_no_checksum[index] << 8 | packet_no_checksum[index + 1]  # vai buscar ao array uma word\r\n        checksum = checksum & int.from_bytes(b'\\xff\\xff', byteorder=\"little\")  # faz a operação & com o checksum anterior\r\n        index += 2  # aumenta o indice do array para ir buscar a próxima word\r\n\r\n    if (n_bites > index):  # caso seja impar é feita a operação XOR com o último byte do array\r\n        checksum = checksum ^ packet_no_checksum[n_bites - 1]\r\n\r\n    checksum = checksum.to_bytes(2, byteorder='big')\r\n\r\n    return checksum\r\n\r\ndef validate_checksum(packet):\r\n    packet = b'\\xfa\\xfb\\x90\\x01\\x02\\x03\\x04\\xfe\\xff'\r\n\r\n    packet_data = packet[2:-2]\r\n    packet_checksum = packet[-2:]\r\n\r\n    validation = packet_data ^ packet_checksum\r\n\r\n    if validation == b'\\0x00':\r\n        return True\r\n    else:\r\n        return False\r\n\r\n\r\ndef robot_set_motion_settings(serial_communication, vmax, vacc):\r\n    # SETV\r\n    data_bytes = calculate_int_data_bytes(vmax)\r\n    command = b'\\xfa\\xfb\\x06\\x06' + data_bytes + b'\\x00\\x00'\r\n    command_checksum = test_calculate_checksum(command[2:])\r\n    command = command[:-2] + command_checksum\r\n    serial_communication.write(command)\r\n    time.sleep(0.1)\r\n    # SETAcc\r\n    data_bytes = calculate_int_data_bytes(vacc)\r\n    command = b'\\xfa\\xfb\\x06\\x05' + data_bytes + b'\\x00\\x00'\r\n    command_checksum = test_calculate_checksum(command[2:])\r\n    command = command[:-2] + command_checksum\r\n    serial_communication.write(command)\r\n    time.sleep(0.1)\r\n    # SETDec\r\n    data_bytes = calculate_int_data_bytes(-vacc)\r\n    command = b'\\xfa\\xfb\\x06\\x05' + data_bytes + b'\\x00\\x00'\r\n    command_checksum = test_calculate_checksum(command[2:])\r\n    command = command[:-2] + command_checksum\r\n    serial_communication.write(command)\r\n    time.sleep(0.1)\r\n\r\n\r\n# Correr script\r\nif __name__ == '__main__':\r\n    # packet_data = b'\\xfa\\xfb\\x90\\x01\\x02\\x03\\x04\\xfe\\xff'\r\n    # packet_data = b'\\x32\\x33'\r\n\r\n    # print( int.from_bytes(packet_data[3:5], byteorder='big') )\r\n    # print(packet_data[-2:])\r\n    # print(packet_data[1])\r\n    # print(int.from_bytes(packet_data[3:5], byteorder='big'))\r\n\r\n    # Obter lista de portas série\r\n    #print( list(serial.tools.list_ports.comports()) )\r\n\r\n    # Esperar selecção de porta\r\n    # port_name = input(\"Seleccione uma porta: \")\r\n\r\n    # serial_communication = serial.Serial(\"COM3\", 9600, timeout=5)\r\n    # serial_communication.set_buffer_size(rx_size=12800, tx_size=12800)\r\n\r\n    Vmax = 0\r\n    Vacc = 0\r\n    DistCMD = 0\r\n\r\n    serial_communication = serial.Serial('COM6', 9600, timeout=10)\r\n    time.sleep(0.1)\r\n    serial_communication.flushInput()\r\n    serial_communication.flushOutput()\r\n\r\n    serial_communication.write(b'\\xfa\\xfb\\x03\\x00\\x00\\x00')  # SYNC0\r\n    time.sleep(0.1)\r\n    serial_communication.write(b'\\xfa\\xfb\\x03\\x01\\x00\\x01')  # SYNC1\r\n    time.sleep(0.1)\r\n    serial_communication.write(b'\\xfa\\xfb\\x03\\x02\\x00\\x02')  # SYNC2\r\n    time.sleep(0.1)\r\n    serial_communication.write(b'\\xfa\\xfb\\x03\\x01\\x00\\x01')  # OPEN - iniciar servidores do robot\r\n    time.sleep(0.1)\r\n    open_command_sent = True\r\n    serial_communication.write(b'\\xfa\\xfb\\x03\\x00\\x00\\x00')  # PULSE\r\n    time.sleep(0.1)\r\n\r\n    \"\"\" Testar comandos \"\"\"\r\n    # Ligar motores do robot (enviar ENABLE = 1)\r\n    data_bytes = calculate_int_data_bytes(1)\r\n    enable_1_command = b'\\xfa\\xfb\\x06\\x04' + data_bytes + b'\\x00\\x00'\r\n    enable_1_command_checksum = test_calculate_checksum(enable_1_command[2:])\r\n    enable_1_command = enable_1_command[:-2] + enable_1_command_checksum\r\n    serial_communication.write(enable_1_command)\r\n    time.sleep(0.1)\r\n\r\n    # Enviar comandos para configurar velocidades e acelerações\r\n    # robot_set_motion_settings(serial_communication, Vmax, Vacc)\r\n\r\n    # Mandar andar robot (enviar MOVE com o valor dos mm)\r\n    # data_bytes = calculate_int_data_bytes(DistCMD)\r\n    # translate_command = b'\\xfa\\xfb\\x06\\x08' + data_bytes + b'\\x00\\x00'\r\n    # translate_command_checksum = test_calculate_checksum(translate_command[2:])\r\n    # rotate_command = translate_command[:-2] + translate_command_checksum\r\n    # serial_communication.write(rotate_command)\r\n    # time.sleep(0.1)\r\n\r\n    # Rodar robot (enviar ROTATE com o valor dos graus)\r\n    # data_bytes = calculate_int_data_bytes(300)\r\n    # rotate_command = b'\\xfa\\xfb\\x06\\x08' + data_bytes + b'\\x00\\x00'\r\n    # rotate_command_checksum = test_calculate_checksum(rotate_command[2:])\r\n    # rotate_command = rotate_command[:-2] + rotate_command_checksum\r\n    # serial_communication.write(rotate_command)\r\n    # time.sleep(0.1)\r\n\r\n    # Rodar robot (enviar ROTATE com o valor dos graus)\r\n    # data_bytes = calculate_int_data_bytes(10)\r\n    # rotate_command = b'\\xfa\\xfb\\x06\\x09' + data_bytes + b'\\x00\\x00'\r\n    # rotate_command_checksum = test_calculate_checksum(rotate_command[2:])\r\n    # rotate_command = rotate_command[:-2] + rotate_command_checksum\r\n    # serial_communication.write(rotate_command)\r\n    # time.sleep(0.1)\r\n\r\n    # Rodar robot (enviar RVEL com o valor dos graus/s)\r\n    # data_bytes = calculate_int_data_bytes(5)\r\n    # rotate_command = b'\\xfa\\xfb\\x06\\x21' + data_bytes + b'\\x00\\x00'\r\n    # rotate_command_checksum = test_calculate_checksum(rotate_command[2:])\r\n    # rotate_command = rotate_command[:-2] + rotate_command_checksum\r\n    # serial_communication.write(rotate_command)\r\n    # time.sleep(0.1)\r\n\r\n    times = []\r\n    sips = []\r\n    tempo_inicial = datetime.now().timestamp()\r\n    tempo = datetime.now().timestamp()\r\n\r\n    tempo_while = 0\r\n    tempo_pulse = 0\r\n    while len(times) <= 100 and tempo_while <= 10 and serial_communication.is_open:\r\n        serial_communication.write(b'\\xfa\\xfb\\x03\\x00\\x00\\x00')  # PULSE\r\n        time.sleep(0.1)\r\n\r\n        # Enviar comando OPEN\r\n        # if len(sips) == 3 and not open_command_sent:\r\n        #     print(\"Open command sent\")\r\n        #     serial_communication.write(b'\\xfa\\xfb\\x03\\x01\\x00\\x01')\r\n        #     time.sleep(0.1)\r\n        #     open_command_sent = True\r\n        #\r\n        #     tempo = datetime.now().timestamp()\r\n\r\n        # Enviar comando PULSE\r\n        # if open_command_sent and tempo_pulse > 1:\r\n        #     serial_communication.write(b'\\xfa\\xfb\\x03\\x01\\x00\\x01')\r\n\r\n        # Verificar se existe algo a receber\r\n        if serial_communication.in_waiting > 0:\r\n            info = get_packet(serial_communication)\r\n\r\n            # Guardar SIPS (após comando OPEN)\r\n            if open_command_sent:\r\n                tempo_espera = (datetime.now().timestamp() - tempo) * 1000.0\r\n                times.append(tempo_espera)\r\n\r\n                sips.append({\r\n                    \"sip\": info,\r\n                    \"tempo\": tempo_espera\r\n                })\r\n\r\n                tempo = datetime.now().timestamp()\r\n\r\n        tempo_while = datetime.now().timestamp() - tempo_inicial\r\n\r\n    tempo_total = (datetime.now().timestamp() - tempo_inicial) * 1000.0\r\n\r\n    # Desligar motores do robot (enviar ENABLE = 0)\r\n    enable_0_command = b'\\xfa\\xfb\\x06\\x04\\x3b\\x00\\x00\\x00\\x00'\r\n    enable_0_command_checksum = test_calculate_checksum(enable_0_command[2:])\r\n    enable_0_command = enable_0_command[:-2] + enable_0_command_checksum\r\n    serial_communication.write(enable_0_command)\r\n    time.sleep(0.1)\r\n\r\n    # Terminar ligação com o robot (enviar CLOSE)\r\n    serial_communication.write(b'\\xfa\\xfb\\x03\\x02\\x00\\x02')\r\n    time.sleep(0.1)\r\n    serial_communication.close()\r\n\r\n    print(\"Tempos em milisegundos: \", times)\r\n    print(\"Valor mínimo: \", str(round(min(times), 2)), \" milisegundos\")\r\n    print(\"Valor máximo: \", str(round(max(times), 2)), \" milisegundos\")\r\n    print(\"Valor médio: \", str(round((sum(times)) / (len(times) * 1.0), 2)), \" milisegundos\")\r\n    print(\"Tempo total: \", str(round(tempo_total / 1000.0, 2)), \" segundos\")\r\n\r\n    print(\"SIPS: \", sips)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pioneer2_rs232_interface/main_backup.py b/pioneer2_rs232_interface/main_backup.py
+--- a/pioneer2_rs232_interface/main_backup.py	(revision dae3f91e10475a260e4ecc706d373f4f0dc1d560)
++++ b/pioneer2_rs232_interface/main_backup.py	(date 1712327282076)
+@@ -2,19 +2,20 @@
+ 
+ # Define import path
+ import sys
+-#sys.path.append("../serial_communication")
++# sys.path.append("../serial_communication")
+ 
+ import serial
+-#import serial.tools.list_ports
++# import serial.tools.list_ports
+ from datetime import datetime
+ import time
+ 
+-#from serial_communication.serial_communication import SerialCommunication
++
++# from serial_communication.serial_communication import SerialCommunication
+ 
+ 
+ def init():
+     pass
+-    #serial_communication = SerialCommunication('/dev/ttyUSB0', 9600)
++    # serial_communication = SerialCommunication('/dev/ttyUSB0', 9600)
+ 
+     # serial_communication = serial.Serial('/dev/ttyUSB0', 9600, timeout=10)
+     #
+@@ -68,31 +69,34 @@
+ 
+ 
+ def calculate_checksum(packet):
+-    n_bites = packet[0]-2  # vai buscar o primeiro byte que irá dar o tamanho do packet e é retirado os bytes de checksum
++    n_bites = packet[
++                  0] - 2  # vai buscar o primeiro byte que irá dar o tamanho do packet e é retirado os bytes de checksum
+     index = 0  # é necessário para percorrer o array de bytes
+     packet_no_checksum = packet[1:-2]  # retira o checksum inicial que ira ser igual a zero
+     checksum = 0  # inicializa o checksum a zero
+ 
+-    while (index < n_bites-1):
+-        checksum += packet_no_checksum[index]<<8 | packet_no_checksum[index+1]  # vai buscar ao array uma word
++    while (index < n_bites - 1):
++        checksum += packet_no_checksum[index] << 8 | packet_no_checksum[index + 1]  # vai buscar ao array uma word
+         checksum = checksum & int.from_bytes(b'\xff\xff', "little")  # faz a operação & com o checksum anterior
+         index += 2  # aumenta o indice do array para ir buscar a próxima word
+ 
+     if (n_bites > index):  # caso seja impar é feita a operação XOR com o último byte do array
+-         checksum = checksum ^ packet_no_checksum[n_bites-1]
++        checksum = checksum ^ packet_no_checksum[n_bites - 1]
+ 
+     return checksum
+ 
+ 
+ def test_calculate_checksum(packet):
+-    n_bites = packet[0] - 2  # Vai buscar o primeiro byte que irá dar o tamanho do packet e é retirado os bytes de checksum
++    n_bites = packet[
++                  0] - 2  # Vai buscar o primeiro byte que irá dar o tamanho do packet e é retirado os bytes de checksum
+     index = 0  # É necessário para percorrer o array de bytes
+     packet_no_checksum = packet[1:-2]  # retira o checksum inicial que ira ser igual a zero
+     checksum = 0  # inicializa o checksum a zero
+ 
+     while (index < n_bites - 1):
+         checksum += packet_no_checksum[index] << 8 | packet_no_checksum[index + 1]  # vai buscar ao array uma word
+-        checksum = checksum & int.from_bytes(b'\xff\xff', byteorder="little")  # faz a operação & com o checksum anterior
++        checksum = checksum & int.from_bytes(b'\xff\xff',
++                                             byteorder="little")  # faz a operação & com o checksum anterior
+         index += 2  # aumenta o indice do array para ir buscar a próxima word
+ 
+     if (n_bites > index):  # caso seja impar é feita a operação XOR com o último byte do array
+@@ -102,6 +106,7 @@
+ 
+     return checksum
+ 
++
+ def validate_checksum(packet):
+     packet = b'\xfa\xfb\x90\x01\x02\x03\x04\xfe\xff'
+ 
+@@ -151,7 +156,7 @@
+     # print(int.from_bytes(packet_data[3:5], byteorder='big'))
+ 
+     # Obter lista de portas série
+-    #print( list(serial.tools.list_ports.comports()) )
++    # print( list(serial.tools.list_ports.comports()) )
+ 
+     # Esperar selecção de porta
+     # port_name = input("Seleccione uma porta: ")
+Index: pioneer2_rs232_interface/pioneer2_rs232_interface.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+># -*- coding: utf-8 -*-\r\n\r\n# Define import path\r\nimport sys\r\nsys.path.append(\"./serial_communication\")\r\nsys.path.append(\"./serial_communication/communication_protocol\")\r\n\r\nimport threading\r\nimport queue\r\nimport time\r\nimport numpy as np\r\n\r\nfrom datetime import datetime\r\n\r\nfrom serial_communication.serial_communication import SerialCommunication\r\nfrom tests.tests import *\r\nfrom tests.timer import *\r\n\r\n\r\nclass Pioneer2RS232InterfaceControl:\r\n    \"\"\"Interface que permite comunicar com o robot Pioneer2 através de uma ligação série.\"\"\"\r\n\r\n    def __init__(self, port, baudrate):\r\n        # Inicializar a interface\r\n        self.__initialize_interface()\r\n\r\n        # Iniciar comunicação série\r\n        self.__start_serial_connection(port, baudrate)\r\n\r\n        # Estabelecer ligação com o robot caso a ligação série seja iniciada\r\n        if self.__serial_communication.is_connected():\r\n            # Estabelecer comunicação com o robot\r\n            self.__establish_communication()\r\n\r\n        # Correr interface\r\n        self.__run()\r\n\r\n    def __initialize_interface(self):\r\n        print(\"Pioneer2 RS-232 Interface - Init\")\r\n        self.__interface_running = True\r\n\r\n        \"\"\" Configurar nova thread para receber input da consola \"\"\"\r\n        # Criar queue que vai conter os comandos recebidos pela consola\r\n        self.__console_input_queue = queue.Queue()\r\n        # Criar queue que vai conter os comandos a serem executados\r\n        self.__console_commands_queue = queue.Queue()\r\n        # Criar thread:\r\n        #   target: define a função invocada pelo método run da thread\r\n        #   daemon: uma thread daemon corre sem bloquear a thread principal de terminar a sua execução e\r\n        #   se a thread principal terminar de executar, as daemon threads associadas são terminadas\r\n        self.__input_thread = threading.Thread(target=self.__fetch_commands_from_console, daemon=True)\r\n        # Iniciar thread\r\n        self.__input_thread.start()\r\n\r\n    def __start_serial_connection(self, port, baudrate):\r\n        self.__serial_communication = SerialCommunication(port, baudrate)\r\n\r\n    def __establish_communication(self):\r\n        \"\"\"Sincronizar comunicação com o robot e iniciar os servidores e motores do robot.\"\"\"\r\n        print(\"Pioneer2 RS-232 Interface - Establishing Connection\")\r\n\r\n        # Enviar os pacotes de sincronização e obter as respostas a cada um\r\n        # TODO: Obter as respostas à sincronização - a resposta ao SYNC2 contém as configurações do robot (nome, etc)\r\n        self.__send_command('SYNC0')\r\n        self.__send_command('SYNC1')\r\n        self.__send_command('SYNC2')\r\n\r\n        # Iniciar os servidores do robot\r\n        self.__send_command('OPEN')\r\n\r\n        # Pedir o SIP de configuração\r\n        self.__send_command('CONFIG')\r\n\r\n        # Ligar os motores do robot\r\n        self.__send_command('ENABLE', 1)\r\n\r\n        # Reset da origem do robot\r\n        self.__send_command('SETO')\r\n\r\n    def __process_sip(self):\r\n        sip_info_aux = self.__serial_communication.get_sip()\r\n\r\n        if sip_info_aux is not None:\r\n            self.__sip_info = sip_info_aux\r\n\r\n    def __fetch_commands_from_console(self):\r\n        \"\"\"Função que executa numa thread paralela e guarda os comandos recebidos pela consola.\"\"\"\r\n\r\n        print('Pioneer2 RS-232 Interface - Ready for Console Input')\r\n\r\n        # Aguardar receber comando pela consola e guarda-lo\r\n        while self.__interface_running:\r\n            input_command = input()\r\n            self.__console_input_queue.put(input_command.upper())\r\n\r\n    #############################################################################\r\n    def __fetch_script_from_console(self):\r\n        \"\"\"Função que executa numa thread paralela e guarda os comandos recebidos no script colocado na consola.\"\"\"\r\n                 \r\n        print('Pioneer2 RS-232 Interface - Ready for Console Input (script)')\r\n        input_script_path = input()\r\n        try:\r\n            # Open the script file\r\n            with open(input_script_path, 'r') as script_file:\r\n                # Read commands line by line\r\n                for line in script_file:\r\n                    # Remove leading/trailing whitespaces\r\n                    command = line.strip()\r\n                    # Skip empty lines\r\n                    if not command:\r\n                        continue\r\n                    # Execute the command using subprocess\r\n                    self.__console_input_queue.put(command)\r\n\r\n        except FileNotFoundError:\r\n            print(f\"Error: Script file not found: {input_script_path}\")\r\n        except Exception as e:\r\n            print(f\"Error processing script: {e}\")\r\n    #############################################################################\r\n            \r\n    def __process_command(self):\r\n        input_command = self.__console_commands_queue.get()\r\n        print('comando recebido') \r\n        print(input_command)\r\n        print(\"Command Received: {}\".format(input_command))\r\n        # TODO: indicar à queue que o comando foi processado\r\n        self.__console_commands_queue.task_done()\r\n\r\n        input_command = input_command.split()\r\n\r\n        if input_command[0] == 'T':\r\n            commands = test_movement_translation(input_command[1], input_command[2], input_command[3])\r\n\r\n            for command in commands:\r\n                print(command)\r\n\r\n                command = command.split()\r\n                command_str = command[0]\r\n                arg = None\r\n                if len(command) > 1:\r\n                    arg = int(command[1])\r\n\r\n                self.__send_command('PULSE')\r\n                self.__send_command(command_str, arg)\r\n\r\n            self.__start_time.set_waiting(True)\r\n\r\n        elif input_command[0] == 'R':\r\n            commands = test_movement_rotation(input_command[1], input_command[2], input_command[3])\r\n\r\n            for command in commands:\r\n                print(command)\r\n\r\n                command = command.split()\r\n                command_str = command[0]\r\n                arg = None\r\n                if len(command) > 1:\r\n                    arg = int(command[1])\r\n\r\n                self.__send_command('PULSE')\r\n                self.__send_command(command_str, arg)\r\n\r\n            self.__start_time.reset()\r\n\r\n        # Printar último SIP\r\n        elif input_command[0] == 'S':\r\n            print(self.__sip_info)\r\n\r\n        # Se o comando for para desligar a interface\r\n        elif input_command[0] == 'EXIT':\r\n            # Enviar comandos ao robot para desligar\r\n            if self.__serial_communication.is_connected():\r\n                # Desligar os motores do robot\r\n                self.__send_command('ENABLE', 0)\r\n\r\n                # Terminar ligação com o robot\r\n                self.__send_command('CLOSE')\r\n\r\n                # Terminar ligação série\r\n                self.__serial_communication.disconnect()\r\n\r\n            self.__interface_running = False\r\n\r\n        # Caso contrário, e se a comunicação série estiver ativa, tentar enviar o comando ao robot\r\n        elif self.__serial_communication.is_connected():\r\n            arg = None\r\n            if len(input_command) > 1:\r\n                arg = int(input_command[1])\r\n\r\n            self.__send_command(input_command[0], arg)\r\n\r\n    def __send_command(self, command, arg=None):\r\n        self.__serial_communication.send_command(command, arg)\r\n    #####################################################################\r\n    def __get_new_command(self):\r\n        new_command = self.__console_input_queue.get()\r\n        print('este é o novo comando')\r\n        print(new_command)\r\n        self.__console_commands_queue.put(new_command)\r\n    #####################################################################\r\n\r\n    \r\n    def __run(self):\r\n        print(\"Pioneer2 RS-232 Interface - Running\")\r\n\r\n        # Tempo inicial\r\n        tempo_init = tempo_fin = datetime.now().timestamp()\r\n\r\n        # Tempo Pulse inicial\r\n        tempo_pulse_inicial = datetime.now().timestamp()\r\n        tempo_pulse_final = datetime.now().timestamp()\r\n\r\n        # Contar tempo no inicio do movimento até ao final do movimento\r\n        self.__start_time = Timer()\r\n\r\n        # Inicialização da variável que vai conter o dicionario com a informação do SIP\r\n        self.__sip_info = None\r\n        posicao_inicial = 0\r\n        x_pos_robot_inicial = 0\r\n        y_pos_robot_inicial = 0\r\n\r\n        while self.__interface_running:\r\n            # Verificar se existe um pacote SIP no canal\r\n            if self.__serial_communication.check_sip_availibility() and (tempo_fin - tempo_init > 0.100):\r\n                tempo_init = datetime.now().timestamp()\r\n                # Processar SIP\r\n                self.__process_sip()\r\n\r\n            # Caso exista informação de um SIP\r\n            if self.__sip_info is not None:\r\n                print(self.__sip_info['motor_status'])\r\n                if(self.__sip_info['motor_status'] == False):\r\n                    print(\"DEU FALSE\")\r\n                    self.__get_new_command()\r\n                \r\n                # Caso esteja a começar um teste, guardar posição inicial do robô e iniciar contador\r\n                if self.__start_time.get_is_waiting() and self.__start_time.get_is_counting() == False and self.__sip_info['motor_status']:\r\n                    x_pos_robot_inicial = self.__sip_info['x_pos']\r\n                    y_pos_robot_inicial = self.__sip_info['y_pos']\r\n                    posicao_inicial = np.array([x_pos_robot_inicial, y_pos_robot_inicial])\r\n\r\n                    self.__start_time.start()\r\n\r\n                # Caso esteja a terminar um teste, guardar posição final do robô e printar info\r\n                if self.__start_time.get_is_waiting() == False and self.__start_time.get_is_counting() and self.__sip_info['motor_status'] == False:\r\n                    x_pos_robot_final = self.__sip_info['x_pos']\r\n                    y_pos_robot_final = self.__sip_info['y_pos']\r\n                    posicao_final = np.array([x_pos_robot_final, y_pos_robot_final])\r\n                    \r\n                    x_pos_total = x_pos_robot_final - x_pos_robot_inicial\r\n                    y_pos_total = y_pos_robot_final - y_pos_robot_inicial\r\n\r\n                    distancia_percorrida = np.linalg.norm(posicao_final-posicao_inicial)\r\n\r\n                    stop_time = self.__start_time.stop()\r\n\r\n                    print(\"Tempo total \", stop_time)\r\n                    print(\"Movimento em X \", x_pos_total)\r\n                    print(\"Movimento em Y \", y_pos_total)\r\n                    print(\"Posição em X \", self.__sip_info['x_pos'])\r\n                    print(\"Posição em Y \", self.__sip_info['y_pos'])\r\n                    print(\"Posição Heading \", self.__sip_info['th_pos'])\r\n                    print(\"distancia_percorrida \", distancia_percorrida)\r\n                    print(\"Velocidade Calculada \", distancia_percorrida/stop_time)\r\n\r\n            # Verificar se existem comandos da consola\r\n            if self.__console_commands_queue.qsize() > 0:\r\n                self.__process_command()\r\n\r\n                # Sair do while loop se o EXIT for recebido\r\n                if not self.__interface_running:\r\n                    break\r\n       \r\n            # Manter robot acordado\r\n            if self.__serial_communication.is_connected() and ( tempo_pulse_final - tempo_pulse_inicial > 1.500 ):\r\n                tempo_pulse_inicial = datetime.now().timestamp()\r\n                self.__serial_communication.send_command('PULSE')\r\n\r\n            # Calcular tempos para criar um setinterval\r\n            # Tempo final loop\r\n            tempo_fin = datetime.now().timestamp()\r\n            tempo_pulse_final = datetime.now().timestamp()\r\n            time.sleep(0.001)\r\n\r\n        print(\"Pioneer2 RS-232 Interface - Shutdown\")\r\n\r\n\r\n# Correr interface\r\nif __name__ == '__main__':\r\n    # pioneer2_rs232_interface = Pioneer2RS232InterfaceControl(\"COM3\", 9600)\r\n    pioneer2_rs232_interface = Pioneer2RS232InterfaceControl('COM6', 9600)\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pioneer2_rs232_interface/pioneer2_rs232_interface.py b/pioneer2_rs232_interface/pioneer2_rs232_interface.py
+--- a/pioneer2_rs232_interface/pioneer2_rs232_interface.py	(revision dae3f91e10475a260e4ecc706d373f4f0dc1d560)
++++ b/pioneer2_rs232_interface/pioneer2_rs232_interface.py	(date 1712327282091)
+@@ -2,6 +2,7 @@
+ 
+ # Define import path
+ import sys
++
+ sys.path.append("./serial_communication")
+ sys.path.append("./serial_communication/communication_protocol")
+ 
+@@ -96,7 +97,7 @@
+     #############################################################################
+     def __fetch_script_from_console(self):
+         """Função que executa numa thread paralela e guarda os comandos recebidos no script colocado na consola."""
+-                 
++
+         print('Pioneer2 RS-232 Interface - Ready for Console Input (script)')
+         input_script_path = input()
+         try:
+@@ -116,11 +117,12 @@
+             print(f"Error: Script file not found: {input_script_path}")
+         except Exception as e:
+             print(f"Error processing script: {e}")
++
+     #############################################################################
+-            
++
+     def __process_command(self):
+         input_command = self.__console_commands_queue.get()
+-        print('comando recebido') 
++        print('comando recebido')
+         print(input_command)
+         print("Command Received: {}".format(input_command))
+         # TODO: indicar à queue que o comando foi processado
+@@ -191,15 +193,16 @@
+ 
+     def __send_command(self, command, arg=None):
+         self.__serial_communication.send_command(command, arg)
++
+     #####################################################################
+     def __get_new_command(self):
+         new_command = self.__console_input_queue.get()
+         print('este é o novo comando')
+         print(new_command)
+         self.__console_commands_queue.put(new_command)
++
+     #####################################################################
+ 
+-    
+     def __run(self):
+         print("Pioneer2 RS-232 Interface - Running")
+ 
+@@ -229,12 +232,13 @@
+             # Caso exista informação de um SIP
+             if self.__sip_info is not None:
+                 print(self.__sip_info['motor_status'])
+-                if(self.__sip_info['motor_status'] == False):
++                if (self.__sip_info['motor_status'] == False):
+                     print("DEU FALSE")
+                     self.__get_new_command()
+-                
++
+                 # Caso esteja a começar um teste, guardar posição inicial do robô e iniciar contador
+-                if self.__start_time.get_is_waiting() and self.__start_time.get_is_counting() == False and self.__sip_info['motor_status']:
++                if self.__start_time.get_is_waiting() and self.__start_time.get_is_counting() == False and \
++                        self.__sip_info['motor_status']:
+                     x_pos_robot_inicial = self.__sip_info['x_pos']
+                     y_pos_robot_inicial = self.__sip_info['y_pos']
+                     posicao_inicial = np.array([x_pos_robot_inicial, y_pos_robot_inicial])
+@@ -242,15 +246,16 @@
+                     self.__start_time.start()
+ 
+                 # Caso esteja a terminar um teste, guardar posição final do robô e printar info
+-                if self.__start_time.get_is_waiting() == False and self.__start_time.get_is_counting() and self.__sip_info['motor_status'] == False:
++                if self.__start_time.get_is_waiting() == False and self.__start_time.get_is_counting() and \
++                        self.__sip_info['motor_status'] == False:
+                     x_pos_robot_final = self.__sip_info['x_pos']
+                     y_pos_robot_final = self.__sip_info['y_pos']
+                     posicao_final = np.array([x_pos_robot_final, y_pos_robot_final])
+-                    
++
+                     x_pos_total = x_pos_robot_final - x_pos_robot_inicial
+                     y_pos_total = y_pos_robot_final - y_pos_robot_inicial
+ 
+-                    distancia_percorrida = np.linalg.norm(posicao_final-posicao_inicial)
++                    distancia_percorrida = np.linalg.norm(posicao_final - posicao_inicial)
+ 
+                     stop_time = self.__start_time.stop()
+ 
+@@ -261,7 +266,7 @@
+                     print("Posição em Y ", self.__sip_info['y_pos'])
+                     print("Posição Heading ", self.__sip_info['th_pos'])
+                     print("distancia_percorrida ", distancia_percorrida)
+-                    print("Velocidade Calculada ", distancia_percorrida/stop_time)
++                    print("Velocidade Calculada ", distancia_percorrida / stop_time)
+ 
+             # Verificar se existem comandos da consola
+             if self.__console_commands_queue.qsize() > 0:
+@@ -270,9 +275,9 @@
+                 # Sair do while loop se o EXIT for recebido
+                 if not self.__interface_running:
+                     break
+-       
++
+             # Manter robot acordado
+-            if self.__serial_communication.is_connected() and ( tempo_pulse_final - tempo_pulse_inicial > 1.500 ):
++            if self.__serial_communication.is_connected() and (tempo_pulse_final - tempo_pulse_inicial > 1.500):
+                 tempo_pulse_inicial = datetime.now().timestamp()
+                 self.__serial_communication.send_command('PULSE')
+ 
+@@ -289,4 +294,3 @@
+ if __name__ == '__main__':
+     # pioneer2_rs232_interface = Pioneer2RS232InterfaceControl("COM3", 9600)
+     pioneer2_rs232_interface = Pioneer2RS232InterfaceControl('COM6', 9600)
+-
+Index: pioneer2_rs232_interface/tests/timer.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from datetime import datetime\r\n\r\nclass Timer:\r\n    \r\n    def __init__(self, tempo_espera=None):\r\n        self._tempo_inicial = 0\r\n        self._tempo_final   = 0\r\n        self._tempo_espera  = tempo_espera\r\n        self._is_waiting = True\r\n        self._is_counting = False\r\n\r\n    def start(self):\r\n        self.reset()\r\n        self.set_waiting(False)\r\n        self.set_counting(True)\r\n\r\n        self._tempo_inicial = datetime.now().timestamp()\r\n\r\n    def stop(self):\r\n        self.set_counting(False)\r\n\r\n        self._tempo_final = datetime.now().timestamp()\r\n\r\n        return self.get_final_time()\r\n\r\n    def reset(self):\r\n        self._tempo_inicial = 0\r\n        self._tempo_final   = 0\r\n        self.set_waiting(True)\r\n        self.set_counting(False)\r\n\r\n    def set_waiting(self, state):\r\n        self._is_waiting = state\r\n\r\n    def set_counting(self, state):\r\n        self._is_counting = state\r\n\r\n    def get_final_time(self):\r\n        return self._tempo_final - self._tempo_inicial\r\n\r\n    def get_is_waiting(self):\r\n        return self._is_waiting\r\n\r\n    def get_is_counting(self):\r\n        return self._is_counting\r\n    
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pioneer2_rs232_interface/tests/timer.py b/pioneer2_rs232_interface/tests/timer.py
+--- a/pioneer2_rs232_interface/tests/timer.py	(revision dae3f91e10475a260e4ecc706d373f4f0dc1d560)
++++ b/pioneer2_rs232_interface/tests/timer.py	(date 1712327282065)
+@@ -1,11 +1,12 @@
+ from datetime import datetime
+ 
++
+ class Timer:
+-    
++
+     def __init__(self, tempo_espera=None):
+         self._tempo_inicial = 0
+-        self._tempo_final   = 0
+-        self._tempo_espera  = tempo_espera
++        self._tempo_final = 0
++        self._tempo_espera = tempo_espera
+         self._is_waiting = True
+         self._is_counting = False
+ 
+@@ -25,7 +26,7 @@
+ 
+     def reset(self):
+         self._tempo_inicial = 0
+-        self._tempo_final   = 0
++        self._tempo_final = 0
+         self.set_waiting(True)
+         self.set_counting(False)
+ 
+@@ -43,4 +44,3 @@
+ 
+     def get_is_counting(self):
+         return self._is_counting
+-    
+\ No newline at end of file

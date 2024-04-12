@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="7280efd5-d652-48a1-ac95-0b917dc122da" name="Changes" comment="pasta docs, CreateTables.sql atualizado" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;filipa3110&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="135cbbbd-b434-4e83-a521-67144e8e8b70" />
+        <option name="url" value="https://github.com/Frederico-Cerqueira/Projeto-Final-ERS.git" />
+      </UrlAndAccount>
+    </option>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="2eQTqf3gjyM2o8pQ9uaMNdtQd6k" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/missf/Documents/ISEL/3ANO/PS/Projeto/ERS/app/db/DropTables.sql&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
+    ]
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\missf\Documents\ISEL\3ANO\PS\Projeto\ERS\docs" />
+      <recent name="C:\Users\missf\Documents\ISEL\3ANO\PS\Projeto\ERS\app" />
+      <recent name="C:\Users\missf\Documents\ISEL\3ANO\PS\Projeto\ERS\yoloOpenCV" />
+      <recent name="C:\Users\missf\Documents\ISEL\3ANO\PS\Projeto\ERS" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-09665e90c3a7-b11f5e8da5ad-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-233.15026.15" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="7280efd5-d652-48a1-ac95-0b917dc122da" name="Changes" comment="" />
+      <created>1711835994818</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1711835994818</updated>
+      <workItem from="1711835997808" duration="466000" />
+      <workItem from="1712326995653" duration="3676000" />
+      <workItem from="1712581057309" duration="5234000" />
+      <workItem from="1712759330399" duration="773000" />
+      <workItem from="1712826751870" duration="386000" />
+      <workItem from="1712827155376" duration="5340000" />
+      <workItem from="1712848484732" duration="492000" />
+      <workItem from="1712861878831" duration="706000" />
+      <workItem from="1712867128457" duration="76000" />
+    </task>
+    <task id="LOCAL-00001" summary="testes da visão por computador">
+      <option name="closed" value="true" />
+      <created>1711836532382</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1711836532382</updated>
+    </task>
+    <task id="LOCAL-00002" summary="SONAR">
+      <option name="closed" value="true" />
+      <created>1712587567911</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1712587567911</updated>
+    </task>
+    <task id="LOCAL-00003" summary="BUMP?">
+      <option name="closed" value="true" />
+      <created>1712591722793</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1712591722793</updated>
+    </task>
+    <task id="LOCAL-00004" summary="pasta docs, CreateTables.sql atualizado">
+      <option name="closed" value="true" />
+      <created>1712862313610</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1712862313610</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="testes da visão por computador" />
+    <MESSAGE value="SONAR" />
+    <MESSAGE value="BUMP?" />
+    <MESSAGE value="pasta docs, CreateTables.sql atualizado" />
+    <option name="LAST_COMMIT_MESSAGE" value="pasta docs, CreateTables.sql atualizado" />
+  </component>
+</project>
