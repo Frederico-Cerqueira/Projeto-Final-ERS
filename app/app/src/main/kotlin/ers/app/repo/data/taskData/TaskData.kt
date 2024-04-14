@@ -1,17 +1,91 @@
 package ers.app.repo.data.taskData
 
+import ers.app.repo.dtos.TaskDto
+import ers.app.repo.mappers.TaskDtoMapper
 import org.jdbi.v3.core.Handle
 
-class TaskData (private val handle: Handle) : TaskDataI {
-    override fun createTask() {
-        throw UnsupportedOperationException("Not yet implemented")
+/**
+ * Class that implements the TaskDataI interface and is responsible for the operations related to the task table in the database.
+ */
+class TaskData(private val handle: Handle) : TaskDataI {
+
+    //PROVAVELMENTE NÃO IRÁ RETORNAR UM DTO MAS UMA TASK NO FUTURO
+
+    /**
+     * Function that creates a task in the database.
+     * @param name the name of the task.
+     * @param status the status of the task.
+     * @param userId the id of the user that created the task.
+     * @param robotId the id of the robot that will execute the task.
+     * @return the task created.
+     */
+    override fun createTask(name: String, status: String, userId: Int, robotId: Int): TaskDto? {
+        val newTask =
+            handle.createUpdate("INSERT INTO task (name, status, userId, robotId) VALUES (:name, :status, :userId, :robotId)")
+                .bind("name", name)
+                .bind("status", "status")
+                .bind("userId", userId)
+                .bind("robotId", robotId)
+                .executeAndReturnGeneratedKeys()
+                .map(TaskDtoMapper())
+                .singleOrNull()
+        return newTask
     }
 
-    override fun getTask() {
-        throw UnsupportedOperationException("Not yet implemented")
+    /**
+     * Function that gets a task by its id.
+     * @param id the id of the task.
+     * @return the task with the id passed as parameter.
+     */
+    override fun getTaskById(id: Int): TaskDto? {
+        val task = handle.createQuery("SELECT * FROM task WHERE id = :id")
+            .bind("id", id)
+            .map(TaskDtoMapper())
+            .singleOrNull()
+        return task
     }
 
-    override fun getTaskById() {
-        throw UnsupportedOperationException("Not yet implemented")
+    /**
+     * Function that updates the status of a task.
+     * @param id the id of the task.
+     * @param status the new status of the task.
+     * @return the task with the updated status.
+     */
+    override fun updateTask(id: Int, status: String): TaskDto? {
+        val task = handle.createUpdate("UPDATE task SET status = :status WHERE id = :id")
+            .bind("status", status)
+            .bind("id", id)
+            .executeAndReturnGeneratedKeys()
+            .map(TaskDtoMapper())
+            .singleOrNull()
+        return task
     }
+
+    /**
+     * Function that deletes a task by its id.
+     * @param id the id of the task.
+     */
+    override fun deleteTask(id: Int) {
+        handle.createUpdate("DELETE FROM task WHERE id = :id")
+            .bind("id", id)
+            .execute()
+    }
+
+    /**
+     * Function that gets the tasks of a user with pagination.
+     * @param offset the offset of the pagination.
+     * @param limit the limit of the pagination.
+     * @param userId the id of the user.
+     * @return the list of tasks of the user with the id passed as parameter.
+     */
+    override fun getTasksByUserId(offset: Int, limit: Int, userId: Int): List<TaskDto> {
+        val tasks = handle.createQuery("SELECT * FROM task WHERE userId = :userId LIMIT :limit OFFSET :offset")
+            .bind("userId", userId)
+            .bind("limit", limit)
+            .bind("offset", offset)
+            .map(TaskDtoMapper())
+            .list()
+        return tasks
+    }
+
 }

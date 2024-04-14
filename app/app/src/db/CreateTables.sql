@@ -33,7 +33,7 @@ create table if not exists AREA (
 create table TIME (
        id serial primary key,
        taskId integer not null,
-       weekDay varchar(9) not null check ( weekDay in ('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday')),
+       weekDay varchar(9) not null,
        start_time time not null,
        end_time time not null,
        foreign key (taskId) references TASK(id) on delete cascade on update cascade
