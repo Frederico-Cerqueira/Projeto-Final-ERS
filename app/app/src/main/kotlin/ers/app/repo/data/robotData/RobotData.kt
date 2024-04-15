@@ -34,7 +34,7 @@ class RobotData(private val handle: Handle) : RobotDataI {
      */
     override fun createRobot(name: String, characteristics: String): RobotDto? {
         val newRobot =
-            handle.createUpdate("INSERT INTO robot (name, characteristics, status) VALUES (:name, :characteristics, 'inactive')")
+            handle.createUpdate("INSERT INTO robot (name, characteristics, status) VALUES (:name, :characteristics, 'available')")
                 .bind("name", name)
                 .bind("characteristics", characteristics)
                 .executeAndReturnGeneratedKeys()

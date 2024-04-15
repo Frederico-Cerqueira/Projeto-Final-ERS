@@ -30,14 +30,18 @@ class AreaData (private val handle: Handle) : AreaDataI {
      * @param height the height of the area.
      * @param width the width of the area.
      * @param taskId the id of the task that the area is related to.
+     * @param name the name of the area.
+     * @param description the description of the area.
      * @return the area created.
      */
-    override fun createArea(height : Int, width: Int, taskId : Int): AreaDto? {
+    override fun createArea(height : Int, width: Int, taskId : Int, name: String, description: String): AreaDto? {
         val newArea =
-            handle.createUpdate("INSERT INTO area (height, width, taskId) VALUES (:height, :width, :taskId)")
+            handle.createUpdate("INSERT INTO area (height, width, taskId, name, description) VALUES (:height, :width, :taskId, :name, :description)")
                 .bind("height", height)
                 .bind("width", width)
                 .bind("taskId", taskId)
+                .bind("name", name)
+                .bind("description", description)
                 .executeAndReturnGeneratedKeys()
                 .map(AreaDtoMapper())
                 .singleOrNull()
@@ -63,17 +67,37 @@ class AreaData (private val handle: Handle) : AreaDataI {
     }
 
     /**
-     * Function that gets an area by the id of the task that it is related to.
-     * @param taskId the id of the task.
-     * @return the area related to the task with the id passed as parameter.
+     * Function that updates the description of an area.
+     * @param id the id of the area.
+     * @param description the new description of the area.
+     * @return the area with the updated description.
      */
-    override fun getAreaByTaskId(taskId: Int): AreaDto? {
-        val area = handle.createQuery("SELECT * FROM area WHERE taskId = :taskId")
-            .bind("taskId", taskId)
+    override fun updateAreaDescription(id: Int, description: String): AreaDto? {
+        val area = handle.createUpdate("UPDATE area SET description = :description WHERE id = :id")
+            .bind("description", description)
+            .bind("id", id)
+            .executeAndReturnGeneratedKeys()
             .map(AreaDtoMapper())
             .singleOrNull()
         return area
     }
+
+    /**
+     * Function that gets a list of areas by the id of the task that they are related to with pagination.
+     * @param offset the number of areas to skip.
+     * @param limit the maximum number of areas to get.
+     * @param taskId the id of the task that the areas are related to.
+     * @return a list of areas related to the task.
+     */
+    override fun getAreasByTaskId(offset: Int, limit: Int, taskId: Int): List<AreaDto> {
+        val areas = handle.createQuery("SELECT * FROM area WHERE taskId = :taskId LIMIT :limit OFFSET :offset")
+            .bind("taskId", taskId)
+            .bind("limit", limit)
+            .bind("offset", offset)
+            .map(AreaDtoMapper())
+            .list()
+       return areas
+   }
 
     /**
      * Function that deletes an area by its id.

@@ -14,16 +14,14 @@ class TaskData(private val handle: Handle) : TaskDataI {
     /**
      * Function that creates a task in the database.
      * @param name the name of the task.
-     * @param status the status of the task.
      * @param userId the id of the user that created the task.
      * @param robotId the id of the robot that will execute the task.
      * @return the task created.
      */
-    override fun createTask(name: String, status: String, userId: Int, robotId: Int): TaskDto? {
+    override fun createTask(name: String, userId: Int, robotId: Int): TaskDto? {
         val newTask =
-            handle.createUpdate("INSERT INTO task (name, status, userId, robotId) VALUES (:name, :status, :userId, :robotId)")
+            handle.createUpdate("INSERT INTO task (name, status, userId, robotId) VALUES (:name, 'pending', :userId, :robotId)")
                 .bind("name", name)
-                .bind("status", "status")
                 .bind("userId", userId)
                 .bind("robotId", robotId)
                 .executeAndReturnGeneratedKeys()
@@ -81,6 +79,23 @@ class TaskData(private val handle: Handle) : TaskDataI {
     override fun getTasksByUserId(offset: Int, limit: Int, userId: Int): List<TaskDto> {
         val tasks = handle.createQuery("SELECT * FROM task WHERE userId = :userId LIMIT :limit OFFSET :offset")
             .bind("userId", userId)
+            .bind("limit", limit)
+            .bind("offset", offset)
+            .map(TaskDtoMapper())
+            .list()
+        return tasks
+    }
+
+    /**
+     * Function that gets the tasks of a robot with pagination.
+     * @param offset the offset of the pagination.
+     * @param limit the limit of the pagination.
+     * @param robotId the id of the robot.
+     * @return the list of tasks of the robot with the id passed as parameter.
+     */
+    override fun getTasksByRobotId(offset: Int, limit: Int, robotId: Int): List<TaskDto> {
+        val tasks = handle.createQuery("SELECT * FROM task WHERE robotId = :robotId LIMIT :limit OFFSET :offset")
+            .bind("robotId", robotId)
             .bind("limit", limit)
             .bind("offset", offset)
             .map(TaskDtoMapper())

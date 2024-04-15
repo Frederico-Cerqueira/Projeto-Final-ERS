@@ -5,4 +5,6 @@ data class AreaDto (
     val taskId: Int,
     val height: Int,
     val width: Int,
+    val name: String,
+    val description: String
 )

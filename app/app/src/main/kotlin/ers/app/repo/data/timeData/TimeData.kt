@@ -19,14 +19,22 @@ class TimeData (private val handle: Handle) : TimeDataI {
      * @param startTime Start time of the task
      * @param endTime End time of the task
      * @param weekDay Week day of the task
+     * @param description Description of the task
      * @return TimeDto? Returns the time created
      */
-    override fun createTime(taskId: Int, startTime: Time, endTime: Time, weekDay: String): TimeDto? {
-        val newTime = handle.createUpdate("INSERT INTO time (taskId, start_time, end_time, weekDay) VALUES (:taskId, :startTime, :endTime, :weekDay)")
+    override fun createTime(
+        taskId: Int,
+        startTime: Time,
+        endTime: Time,
+        weekDay: String,
+        description: String
+    ): TimeDto? {
+        val newTime = handle.createUpdate("INSERT INTO time (taskId, start_time, end_time, weekDay, description) VALUES (:taskId, :startTime, :endTime, :weekDay, :description)")
             .bind("taskId", taskId)
             .bind("startTime", startTime)
             .bind("endTime", endTime)
             .bind("weekDay", weekDay)
+            .bind("description", description)
             .executeAndReturnGeneratedKeys()
             .map(TimeDtoMapper())
             .singleOrNull()
@@ -47,6 +55,22 @@ class TimeData (private val handle: Handle) : TimeDataI {
             .bind("startTime", startTime)
             .bind("endTime", endTime)
             .bind("weekDay", weekDay)
+            .executeAndReturnGeneratedKeys()
+            .map(TimeDtoMapper())
+            .singleOrNull()
+        return time
+    }
+
+    /**
+     * Method to update the description of a time
+     * @param id Id of the time
+     * @param description Description of the task
+     * @return TimeDto? Returns the time updated
+     */
+    override fun updateTimeDescription(id: Int, description: String): TimeDto? {
+        val time = handle.createUpdate("UPDATE time SET description = :description WHERE id = :id")
+            .bind("taskId", id)
+            .bind("description", description)
             .executeAndReturnGeneratedKeys()
             .map(TimeDtoMapper())
             .singleOrNull()
@@ -78,16 +102,19 @@ class TimeData (private val handle: Handle) : TimeDataI {
     }
 
     /**
-     * Method to get a time by its task id
+     * Method to get the times of a task with pagination
      * @param taskId Id of the task
-     * @return TimeDto? Returns the time found
+     * @param limit Limit of the pagination
+     * @param offset Offset of the pagination
      */
-    override fun getTimeByTaskId(taskId: Int): TimeDto? {
-        val time = handle.createUpdate("SELECT * FROM time WHERE taskId = :taskId")
+    override fun getTimesByTaskId(offset: Int, limit: Int, taskId: Int): List<TimeDto> {
+        val time = handle.createUpdate("SELECT * FROM time WHERE taskId = :taskId LIMIT :limit OFFSET :offset")
             .bind("taskId", taskId)
+            .bind("limit", limit)
+            .bind("offset", offset)
             .executeAndReturnGeneratedKeys()
             .map(TimeDtoMapper())
-            .singleOrNull()
+            .list()
         return time
     }
 

@@ -6,4 +6,5 @@ data class TimeDto (
     val weekDay : String,
     val startHour : String,
     val endHour : String,
+    val description : String
 )
