@@ -27,5 +27,4 @@ def update_sonar_info(sonars, arr_sonar):
 
 def print_sonar_info(sonars):
     for sonarInfo in sonars:
-        if(sonarInfo.id == 4):
             sonarInfo.display_info()
