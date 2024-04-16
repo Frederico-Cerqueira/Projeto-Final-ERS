@@ -1,32 +1,55 @@
-from tests.timer import *
+import time
+from datetime import datetime
 
 
 class SonarInfo:
     def __init__(self, id_sonar, distance, timestamp):
-        self.distance = distance
         self.id = id_sonar
+        self.distance = distance
         self.timestamp = timestamp
 
     def display_info(self):
-        print("Id: " + self.id + "\nDistance: " + str(self.distance) + " ,last update: " + str(self.timestamp))
+        print(f"Id: {self.id}\nDistance: {self.distance} cm, Last update: {self.timestamp}")
+
+
+def create_sonar(new_arr_sonar):
+    for i in range(8):
+        new_arr_sonar.append(SonarInfo(i, 0, datetime.now()))
 
 
 def update_sonar_info(sonars, arr_sonar):
-    if len(arr_sonar) == 0:
-        for sonarInfo in sonars:
-            for i in range(7):
-                if i == sonarInfo['sonar_number']:
-                    arr_sonar.append(SonarInfo(1, sonarInfo['sonar_range'] / 10, datetime.now().timestamp()))
-        return arr_sonar
-    else:
-        for sonarInfo in sonars:
-            for sonar in arr_sonar:
-                if sonar.id == sonarInfo['sonar_number']:
-                    sonar.distance = (sonarInfo['sonar_range'] / 10)
-                    sonar.timestamp = datetime.now().timestamp()
-        return arr_sonar
+    for sonarInfo in sonars:
+        for sonar in arr_sonar:
+            if sonar.id == sonarInfo['sonar_number']:
+                sonar.distance = (sonarInfo['sonar_range'] / 10)
+                sonar.timestamp = datetime.now()
 
 
 def print_sonar_info(sonars):
     for sonarInfo in sonars:
         sonarInfo.display_info()
+
+
+# Exemplo de uso:
+if __name__ == "__main__":
+    sonars_data = [
+        {'sonar_number': 0, 'sonar_range': 1000},
+        {'sonar_number': 1, 'sonar_range': 2000},
+        {'sonar_number': 2, 'sonar_range': 3000},
+        {'sonar_number': 3, 'sonar_range': 4000},
+        {'sonar_number': 4, 'sonar_range': 5000},
+
+    ]
+
+    arr_sonar = []
+    create_sonar(arr_sonar)
+    update_sonar_info(sonars_data, arr_sonar)
+    print_sonar_info(arr_sonar)
+    sonars_data.append({'sonar_number': 5, 'sonar_range': 6000})
+    sonars_data.append({'sonar_number': 6, 'sonar_range': 7000})
+    time.sleep(60)
+    update_sonar_info(sonars_data, arr_sonar)
+    print("")
+
+    print("")
+    print_sonar_info(arr_sonar)

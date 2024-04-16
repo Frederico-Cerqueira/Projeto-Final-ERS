@@ -135,15 +135,15 @@ class ERS:
 
             if self.sip_info is not None:
                 sonar_info = self.sip_info['sonars']
-                updated_sonars = update_sonar_info(sonar_info, sonars)
-                print_sonar_info(updated_sonars)
+                update_sonar_info(sonar_info,sonars)
+                print_sonar_info(sonars)
 
             self.__process_successive_commands()
 
             # Keep the robot awake
             if self.__serial_communication.is_connected() and (final_pulse_time - initial_pulse_time > 1.500):
                 initial_pulse_time = datetime.now().timestamp()
-                print("Pulse")
+                #print("Pulse")
                 self.__serial_communication.send_command('PULSE')
 
             # Calculate times to create a set_interval
