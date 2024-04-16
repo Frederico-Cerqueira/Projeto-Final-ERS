@@ -4,6 +4,7 @@
 import sys
 
 from command import Command
+from pioneer2_rs232_interface.sonars import update_sonar_info, print_sonar_info
 
 sys.path.append("./serial_communication")
 sys.path.append("./serial_communication/communication_protocol")
@@ -129,20 +130,19 @@ class ERS:
         # Tempo Pulse inicial
         tempo_pulse_inicial = datetime.now().timestamp()
         tempo_pulse_final = datetime.now().timestamp()
-
+        sonars = []
         while self.__commands_queue.qsize() > 0 or self.__command is not None:
-            print("Tamanho:", self.__commands_queue.qsize())
+            #print("Tamanho:", self.__commands_queue.qsize())
 
             if self.__serial_communication.check_sip_availibility() and (tempo_fin - tempo_init > 0.100):
                 tempo_init = datetime.now().timestamp()
                 self.__process_sip()
-            """
+
             if self.sip_info is not None:
-                if not self.sip_info['motor_status']:
-                     print("SIP Motor Status: False")
-                else:
-                     print("SIP Motor Status: True")
-            """
+                sonar_info = self.sip_info['sonars']
+                updated_sonars = update_sonar_info(sonar_info,sonars)
+                print_sonar_info(updated_sonars)
+
             self.__process_sucessive_commands()
 
             # Manter robô acordado
@@ -166,24 +166,15 @@ def current_position(pioneer):
 
 
 if __name__ == '__main__':
-    pioneer2 = ERS('COM6', 9600)
+    pioneer2 = ERS('COM5', 9600)
     try:
         #pioneer2.turn_off()
         #pioneer2.add_console_command(Command('MOVE', 6000))
+        pioneer2.add_console_command(Command('MOVE', 100))
+        pioneer2.add_console_command(Command('POLLING', "\001\002\003\004\005\006\007\010"))
+        pioneer2.add_console_command(Command('MOVE', 20000))
+        pioneer2.add_console_command(Command('MOVE', 100))
 
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
 
 
 

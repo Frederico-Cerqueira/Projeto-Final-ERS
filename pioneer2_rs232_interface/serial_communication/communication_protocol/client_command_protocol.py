@@ -66,6 +66,8 @@ def __polling(arg):
     packet_checksum = calculate_packet_checksum(packet)
     packet = packet[:-2] + packet_checksum
 
+    return packet
+
 
 def __set_a(arg):
     """
