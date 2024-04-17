@@ -8,37 +8,35 @@ sys.path.append("./serial_communication")
 sys.path.append("./serial_communication/communication_protocol")
 
 from command import Command
-from sonars import create_sonar, update_sonar_info, detect_obj
+from sonars import create_sonar, update_sonar_info, detect_obj, detects_an_object_ahead, Direction
 from serial_communication.serial_communication import SerialCommunication
 from tests.timer import *
-
 
 class ERS:
     """ Class that allows communication with the Pioneer2 robot through a serial connection. """
 
     def __init__(self, port, baudrate):
-
-        self.__running_flag = None
         self.sip_info = None
         self.__command = None
-        self.true = False
-        self.stopped = False
-
-        # test flag
-        self.pause = False
-
-        # Start serial communication
-        self.__start_serial_connection(port, baudrate)
-
         # Create commands queue
         self.__commands_queue = queue.Queue()
+        # Start serial communication
+        self.__serial_communication = SerialCommunication(port, baudrate)
+
+        # Flags
+        self.stopped_flag = False
+        self.__running_flag = None
+        self.__object_detected = False
+        # test flag - TO BE DELETED
+        self.pause = False
+        self.first = True
 
         # Establish communication with the robot if the serial connection is started.
         if self.__serial_communication.is_connected():
             self.__establish_communication()
 
-    def __start_serial_connection(self, port, baudrate):
-        self.__serial_communication = SerialCommunication(port, baudrate)
+    def __send_command(self, command, arg=None):
+        self.__serial_communication.send_command(command, arg)
 
     def __establish_communication(self):
         """ Synchronize communication with the robot and start the robot's servers and motors. """
@@ -48,16 +46,12 @@ class ERS:
         self.__send_command('SYNC0')
         self.__send_command('SYNC1')
         self.__send_command('SYNC2')
-
         # Starts the controller
         self.__send_command('OPEN')
-
         # Request configuration SIP
         self.__send_command('CONFIG')
-
         # Enables the motors
         self.__send_command('ENABLE', 1)
-
         # Resets server to 0,0,0 origin
         self.__send_command('SETO')
 
@@ -67,31 +61,42 @@ class ERS:
 
     def __process_sip(self):
         sip_info_aux = self.__serial_communication.get_sip()
-
         if sip_info_aux is not None:
             self.sip_info = sip_info_aux
 
-    def __process_command(self, command):
-        print('Command received:' + command.comando + ' ' + str(command.args))
+    def turn_off(self):
+        if self.__serial_communication.is_connected():
+            # Disables the motors
+            self.__send_command('STOP', None)
+
+            # Close server and client connection
+            self.__send_command('CLOSE')
+
+            # Terminate serial connection
+            self.__serial_communication.disconnect()
+
+    def __process_command(self):
+        print("OLA")
+        print('Command received:' + self.__command.command + ' ' + str(self.__command.args))
 
         # Print last SIP
-        if command.comando == 'S':
+        if self.__command.command == 'S':
             print(self.sip_info)
 
         # If the command is to turn off the interface
-        elif command.comando == 'EXIT':
+        elif self.__command.command == 'EXIT':
             self.turn_off()
             self.__running_flag = False
 
         # Otherwise, if the serial communication is active, attempt to send the command to the robot
         elif self.__serial_communication.is_connected():
-            self.__send_command(command.comando, command.args)
+            self.__send_command(self.__command.command, self.__command.args)
 
-    def __process_successive_commands(self):
+    def __process_next_available_command(self):
         if self.sip_info is None and self.__command is None:  # 1st command
             self.__command = self.__commands_queue.get()
             print("execute the 1st command")
-            self.__process_command(self.__command)
+            self.__process_command()
         else:
             if self.sip_info is not None:
                 if self.sip_info['motor_status']:  # 1st phase of completion
@@ -100,21 +105,7 @@ class ERS:
                     self.__command = self.__commands_queue.get()
                     # if self.__command is not None:
                     print("execute the 2nd  command")
-                    self.__process_command(self.__command)
-
-    def __send_command(self, command, arg=None):
-        self.__serial_communication.send_command(command, arg)
-
-    def turn_off(self):
-        if self.__serial_communication.is_connected():
-            # Disables the motors
-            self.__send_command('ENABLE', 0)
-
-            # Close server and client connection
-            self.__send_command('CLOSE')
-
-            # Terminate serial connection
-            self.__serial_communication.disconnect()
+                    self.__process_command()
 
     def run(self):
         print("Pioneer2 RS-232 Interface - Running")
@@ -141,15 +132,33 @@ class ERS:
                 sonar_info = self.sip_info['sonars']
                 update_sonar_info(sonar_info, sonars)
                 if detect_obj(sonars) == 'STOP':
-                    self.stopped = True
+                    self.stopped_flag = True
+                    self.__object_detected = True
                 # print_sonar_info(sonars)
+
             if not self.pause:
-                if not self.stopped:
-                    self.__process_successive_commands()
+                if not self.stopped_flag:
+                    self.__process_next_available_command()
                 else:
-                    self.__command.comando = 'STOP'
-                    self.__process_command(self.__command)
-                    self.pause = True
+                    print(self.__command)
+                    if self.first:
+                        self.__command = Command('STOP', 0)
+                        self.__process_command()
+                        self.first = False
+                    direction = detects_an_object_ahead(sonars)
+                    if direction == Direction.LEFT:
+                        print("esquerda")
+                        self.__command = Command('HEAD', 90)
+                        self.__process_command()
+                    elif direction == Direction.RIGHT:
+                        print("direita")
+                        self.__command = Command('HEAD', -90)
+                        self.__process_command()
+                    else:
+                        print("neither esquerda nor direita")
+                        self.pause = True
+
+
 
             # Keep the robot awake
             if self.__serial_communication.is_connected() and (final_pulse_time - initial_pulse_time > 1.500):
@@ -179,7 +188,6 @@ if __name__ == '__main__':
         pioneer2.add_console_command(Command('MOVE', 500))
         pioneer2.add_console_command(Command('MOVE', 500))
         pioneer2.add_console_command(Command('MOVE', 500))
-
         pioneer2.add_console_command(Command('MOVE', 500))
         pioneer2.add_console_command(Command('MOVE', 500))
         pioneer2.add_console_command(Command('MOVE', 500))
@@ -199,6 +207,8 @@ if __name__ == '__main__':
         pioneer2.run()
         pioneer2.turn_off()
         current_position(pioneer2)
-    except:
-        print("Error during execution")
+
+    except BaseException as e:
+        print("Error during execution:", e)
+    finally:
         pioneer2.turn_off()

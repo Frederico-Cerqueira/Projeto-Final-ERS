@@ -262,7 +262,7 @@ def __stop(arg):
     Retorna o pacote do comando STOP, usado para parar o robot.
     O robot tem em conta o valor de desaceleração definido para parar.
     """
-    return b'\xfa\xfb\x03\x29\x00\x29'
+    return b'\xfa\xfb\x03\x1D\x00\x1D'
 
 
 # TODO

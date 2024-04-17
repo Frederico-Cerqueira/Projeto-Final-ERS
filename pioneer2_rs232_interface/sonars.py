@@ -46,10 +46,25 @@ def print_sonar_info(sonars):
 
 def detect_obj(arr_sonar):
     for sonar in arr_sonar:
-        if sonar.distance < 50 and sonar.id in (2, 3, 4, 5):
+        if 0 < sonar.distance < 50 and sonar.id in (3, 4):
+            print("STOP GIGANTE")
             return "STOP"
 
 
+def detects_an_object_ahead(sonars):
+    sublist = sonars[:]
+    for sonar in sublist:
+        if sonar.distance == -1:
+            sublist.remove(sonar)
+
+    for sonar in sublist:
+        if sonar.id in (2, 3, 4, 5) and sonar.distance < 50:
+            for s in sublist:
+                if s.distance > 50 and s.id in (0, 1):
+                    return Direction.LEFT
+                elif s.distance > 50 and s.id in (6, 7):
+                    return Direction.RIGHT
+    return Direction.STAY
 
 
 if __name__ == "__main__":
