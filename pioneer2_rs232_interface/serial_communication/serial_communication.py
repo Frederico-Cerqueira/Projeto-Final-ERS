@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import serial
+import time
 from communication_protocol.client_command_protocol import get_client_command_packet
 from communication_protocol.server_information_protocol import get_server_information_packet
-import time
 
 """
 
@@ -28,7 +28,6 @@ class SerialCommunication:
 
     def connect(self):
         self.__serial_connection.open()
-
         self.__serial_connection.flushInput()
         self.__serial_connection.flushOutput()
 
@@ -38,32 +37,33 @@ class SerialCommunication:
     def is_connected(self):
         return self.__serial_connection.is_open
 
-    def check_sip_availibility(self):
+    def check_sip_availability(self):
         return self.__serial_connection.in_waiting > 0
 
     def get_sip(self):
-        # Receber informação do header e tamanho dos dados
+        # Receive information from the header and data size.
         packet_header_and_size = self.__serial_connection.read(3)
         packet_size = packet_header_and_size[2]
-       
-        # Receber dados
+
+        # Receive data
         packet_data = self.__serial_connection.read(packet_size)
-        # Juntar header aos dados
+
+        # Concatenate the header with the data.
         packet = packet_header_and_size + packet_data
 
-        # Obter e retornar informação do SIP
+        # Retrieve and return information from the SIP
         return get_server_information_packet(packet)
-    
+
     def send_command(self, command, arg=None):
-        if arg != None:
+        if arg is not None:
             arg = int(arg)
-        # Obter pacote do comando
+        # Retrieve command packet.
         command_packet = self.__get_packet(command, arg)
         if command != 'PULSE':
             print(command_packet)
-        # Enviar pacote
+        # Send packet
         self.__serial_connection.write(command_packet)
-        # Esperar 5ms entre comandos
+        # Wait 5ms between commands.
         time.sleep(0.005)
 
     @staticmethod
