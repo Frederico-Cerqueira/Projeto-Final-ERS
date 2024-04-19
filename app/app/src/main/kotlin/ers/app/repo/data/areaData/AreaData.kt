@@ -18,11 +18,10 @@ class AreaData (private val handle: Handle) : AreaDataI {
      * @return the area with the id passed as parameter.
      */
     override fun getAreaById(id: Int): AreaDto? {
-        val area = handle.createQuery("SELECT * FROM area WHERE id = :id")
+        return handle.createQuery("SELECT * FROM area WHERE id = :id")
             .bind("id", id)
             .map(AreaDtoMapper())
             .singleOrNull()
-        return area
     }
 
     /**
@@ -34,18 +33,16 @@ class AreaData (private val handle: Handle) : AreaDataI {
      * @param description the description of the area.
      * @return the area created.
      */
-    override fun createArea(height : Int, width: Int, taskId : Int, name: String, description: String): AreaDto? {
-        val newArea =
-            handle.createUpdate("INSERT INTO area (height, width, taskId, name, description) VALUES (:height, :width, :taskId, :name, :description)")
-                .bind("height", height)
-                .bind("width", width)
-                .bind("taskId", taskId)
-                .bind("name", name)
-                .bind("description", description)
-                .executeAndReturnGeneratedKeys()
-                .map(AreaDtoMapper())
-                .singleOrNull()
-        return newArea
+    override fun createArea(height: Int, width: Int, taskId: Int, name: String, description: String): AreaDto {
+        return handle.createUpdate("INSERT INTO area (height, width, taskId, name, description) VALUES (:height, :width, :taskId, :name, :description)")
+            .bind("height", height)
+            .bind("width", width)
+            .bind("taskId", taskId)
+            .bind("name", name)
+            .bind("description", description)
+            .executeAndReturnGeneratedKeys()
+            .map(AreaDtoMapper())
+            .first()
     }
 
     /**
@@ -55,15 +52,14 @@ class AreaData (private val handle: Handle) : AreaDataI {
      * @param width the new width of the area.
      * @return the area with the updated height and width.
      */
-    override fun updateArea(id: Int, height: Int, width: Int): AreaDto? {
-        val area = handle.createUpdate("UPDATE area SET height = :height, width = :width WHERE id = :id")
+    override fun updateArea(id: Int, height: Int, width: Int): AreaDto {
+        return handle.createUpdate("UPDATE area SET height = :height, width = :width WHERE id = :id")
             .bind("height", height)
             .bind("width", width)
             .bind("id", id)
             .executeAndReturnGeneratedKeys()
             .map(AreaDtoMapper())
-            .singleOrNull()
-        return area
+            .first()
     }
 
     /**
@@ -72,14 +68,13 @@ class AreaData (private val handle: Handle) : AreaDataI {
      * @param description the new description of the area.
      * @return the area with the updated description.
      */
-    override fun updateAreaDescription(id: Int, description: String): AreaDto? {
-        val area = handle.createUpdate("UPDATE area SET description = :description WHERE id = :id")
+    override fun updateAreaDescription(id: Int, description: String): AreaDto {
+        return handle.createUpdate("UPDATE area SET description = :description WHERE id = :id")
             .bind("description", description)
             .bind("id", id)
             .executeAndReturnGeneratedKeys()
             .map(AreaDtoMapper())
-            .singleOrNull()
-        return area
+            .first()
     }
 
     /**
@@ -90,14 +85,13 @@ class AreaData (private val handle: Handle) : AreaDataI {
      * @return a list of areas related to the task.
      */
     override fun getAreasByTaskId(offset: Int, limit: Int, taskId: Int): List<AreaDto> {
-        val areas = handle.createQuery("SELECT * FROM area WHERE taskId = :taskId LIMIT :limit OFFSET :offset")
+        return handle.createQuery("SELECT * FROM area WHERE taskId = :taskId LIMIT :limit OFFSET :offset")
             .bind("taskId", taskId)
             .bind("limit", limit)
             .bind("offset", offset)
             .map(AreaDtoMapper())
             .list()
-       return areas
-   }
+    }
 
     /**
      * Function that deletes an area by its id.

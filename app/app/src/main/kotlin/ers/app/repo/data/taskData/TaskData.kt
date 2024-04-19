@@ -18,7 +18,7 @@ class TaskData(private val handle: Handle) : TaskDataI {
      * @param robotId the id of the robot that will execute the task.
      * @return the task created.
      */
-    override fun createTask(name: String, userId: Int, robotId: Int): TaskDto? {
+    override fun createTask(name: String, userId: Int, robotId: Int): TaskDto {
         val newTask =
             handle.createUpdate("INSERT INTO task (name, status, userId, robotId) VALUES (:name, 'pending', :userId, :robotId)")
                 .bind("name", name)
@@ -26,7 +26,7 @@ class TaskData(private val handle: Handle) : TaskDataI {
                 .bind("robotId", robotId)
                 .executeAndReturnGeneratedKeys()
                 .map(TaskDtoMapper())
-                .singleOrNull()
+                .first()
         return newTask
     }
 
@@ -49,13 +49,13 @@ class TaskData(private val handle: Handle) : TaskDataI {
      * @param status the new status of the task.
      * @return the task with the updated status.
      */
-    override fun updateTask(id: Int, status: String): TaskDto? {
+    override fun updateTask(id: Int, status: String): TaskDto {
         val task = handle.createUpdate("UPDATE task SET status = :status WHERE id = :id")
             .bind("status", status)
             .bind("id", id)
             .executeAndReturnGeneratedKeys()
             .map(TaskDtoMapper())
-            .singleOrNull()
+            .first()
         return task
     }
 

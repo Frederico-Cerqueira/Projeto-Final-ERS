@@ -11,6 +11,7 @@ class TimeDtoMapper: RowMapper<TimeDto> {
             rs.getInt("id"),
             rs.getInt("tasId"),
             rs.getString("weekDay"),
+            rs.getString("description"),
             rs.getString("start_time"),
             rs.getString("end_time"),
         )

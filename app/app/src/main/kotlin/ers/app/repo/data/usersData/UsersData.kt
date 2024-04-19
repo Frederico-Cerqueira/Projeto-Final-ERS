@@ -20,9 +20,7 @@ class UsersData(private val handle: Handle) : UsersDataI {
      * @param password Password of the user
      * @return UserDto? Returns the user created
      */
-    override fun createUser(name: String, email: String, password: String): UserDto? {
-        val hashPass = password.hashCode()
-        val token = UUID.randomUUID().toString()
+    override fun createUser(name: String, email: String, hashPass: Int, token:String): UserDto {
         val newUser =
             handle.createUpdate("INSERT INTO users (name, email, password, token) VALUES (:name, :email, :password, :token)")
                 .bind("name", name)
@@ -31,7 +29,7 @@ class UsersData(private val handle: Handle) : UsersDataI {
                 .bind("token", token)
                 .executeAndReturnGeneratedKeys()
                 .map(UserDtoMapper())
-                .singleOrNull()
+                .first()
         return newUser
     }
 

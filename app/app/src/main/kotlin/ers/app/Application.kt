@@ -1,5 +1,6 @@
 package ers.app
 
+import ers.app.repo.mappers.*
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.Jdbi
 import org.postgresql.ds.PGSimpleDataSource
@@ -16,6 +17,11 @@ class Application {
 		val dataSource = PGSimpleDataSource()
 		dataSource.setURL(jdbcDatabaseUrl)
 		return Jdbi.create(dataSource)
+			.registerRowMapper(RobotDtoMapper())
+			.registerRowMapper(TaskDtoMapper())
+			.registerRowMapper(AreaDtoMapper())
+			.registerRowMapper(TimeDtoMapper())
+			.registerRowMapper(UserDtoMapper())
 	}
 
 	@Bean

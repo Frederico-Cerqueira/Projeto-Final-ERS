@@ -32,14 +32,14 @@ class RobotData(private val handle: Handle) : RobotDataI {
      * @param characteristics Characteristics of the robot
      * @return RobotDto? Returns the robot created
      */
-    override fun createRobot(name: String, characteristics: String): RobotDto? {
+    override fun createRobot(name: String, characteristics: String): RobotDto {
         val newRobot =
             handle.createUpdate("INSERT INTO robot (name, characteristics, status) VALUES (:name, :characteristics, 'available')")
                 .bind("name", name)
                 .bind("characteristics", characteristics)
                 .executeAndReturnGeneratedKeys()
                 .map(RobotDtoMapper())
-                .singleOrNull()
+                .first()
         return newRobot
     }
 
