@@ -1,8 +1,7 @@
 package ers.app.domainEntities
 
-import ers.app.service.*
+import ers.app.domainEntities.outputModels.*
 import ers.app.utils.Error
-
 
 typealias UserResult = Either<Error, UserOutputModel>
 
@@ -17,3 +16,7 @@ typealias RobotIDResult = Either<Error, RobotIDOutputModel>
 typealias AreaResult = Either<Error, AreaOutputModel>
 typealias AreasResult = Either<Error, AreasOutputModel>
 typealias AreaIDResult = Either<Error, AreaIDOutputModel>
+
+typealias TimeResult = Either<Error, TimeOutputModel>
+typealias TimesResult = Either<Error, TimesOutputModel>
+typealias TimeIDResult = Either<Error, TimeIDOutputModel>

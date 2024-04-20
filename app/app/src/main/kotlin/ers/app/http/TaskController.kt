@@ -1,13 +1,12 @@
 package ers.app.http
 
 import ers.app.domainEntities.Either
+import ers.app.domainEntities.inputModels.TaskInputModel
+import ers.app.domainEntities.inputModels.TaskUpdateInputModel
 import ers.app.service.TaskService
+import ers.app.utils.Error
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-
-data class TaskInputModel(val name: String, val userId: Int, val robotId: Int)
-data class TaskUpdateInputModel(val status: String)
-
 
 @RestController
 @RequestMapping("/task")
@@ -16,9 +15,13 @@ class TaskController(private val taskService: TaskService) {
     //Não deviamos passar o status da task?
     @PostMapping
     fun createTask(@RequestBody task: TaskInputModel): ResponseEntity<*> {
-        return when (val res = taskService.createTask(task.name, task.userId, task.robotId)) {
+        return when (val res = taskService.createTask(task.name, task.userID, task.robotID)) {
             is Either.Right -> ResponseEntity.status(201).body(res.value)
-            is Either.Left -> ResponseEntity.status(409).body(res.value)
+            is Either.Left -> when (res.value) {
+                Error.InvalidInput -> ResponseEntity.badRequest().body(res.value)
+                Error.InputTooLong -> ResponseEntity.status(413).body(res.value)
+                else -> ResponseEntity.internalServerError().body(res.value)
+            }
         }
     }
 
@@ -26,7 +29,10 @@ class TaskController(private val taskService: TaskService) {
     fun getTaskByID(@PathVariable id: Int): ResponseEntity<*> {
         return when (val res = taskService.getTaskByID(id)) {
             is Either.Right -> ResponseEntity.ok(res.value)
-            is Either.Left -> ResponseEntity.badRequest().body(res.value)
+            is Either.Left -> when (res.value) {
+                Error.TaskNotFound -> ResponseEntity.badRequest().body(res.value)
+                else -> ResponseEntity.internalServerError().body(res.value)
+            }
         }
     }
 
@@ -34,7 +40,11 @@ class TaskController(private val taskService: TaskService) {
     fun updateTask(@PathVariable id: Int, @RequestBody status: TaskUpdateInputModel): ResponseEntity<*> {
         return when (val res = taskService.updateTask(id, status.status)) {
             is Either.Right -> ResponseEntity.ok(res.value)
-            is Either.Left -> ResponseEntity.badRequest().body(res.value)
+            is Either.Left -> when (res.value) {
+                Error.InvalidInput -> ResponseEntity.badRequest().body(res.value)
+                Error.TaskNotFound -> ResponseEntity.badRequest().body(res.value)
+                else -> ResponseEntity.internalServerError().body(res.value)
+            }
         }
 
     }
@@ -43,26 +53,42 @@ class TaskController(private val taskService: TaskService) {
     fun deleteTask(@PathVariable id: Int): ResponseEntity<*> {
         return when (val res = taskService.deleteTask(id)) {
             is Either.Right -> ResponseEntity.ok(res.value)
-            is Either.Left -> ResponseEntity.badRequest().body(res.value)
+            is Either.Left -> when (res.value) {
+                Error.TaskNotFound -> ResponseEntity.badRequest().body(res.value)
+                else -> ResponseEntity.internalServerError().body(res.value)
+            }
         }
     }
 
-    //Fica em que file?
     @GetMapping(PathTemplate.USER_ID)
-    fun getTasksByUserId(@PathVariable id: Int, @RequestParam offset: Int, @RequestParam limit: Int): ResponseEntity<*> {
-        return when (val res = taskService.getTasksByUserId(offset, limit, id)) {
+    fun getTasksByUserID(
+        @PathVariable id: Int,
+        @RequestParam offset: Int,
+        @RequestParam limit: Int
+    ): ResponseEntity<*> {
+        return when (val res = taskService.getTasksByUserID(offset, limit, id)) {
             is Either.Right -> ResponseEntity.ok(res.value)
-            is Either.Left -> ResponseEntity.badRequest().body(res.value)
+            is Either.Left -> when (res.value) {
+                Error.UserNotFound -> ResponseEntity.badRequest().body(res.value)
+                Error.InvalidInput -> ResponseEntity.badRequest().body(res.value)
+                else -> ResponseEntity.internalServerError().body(res.value)
+            }
         }
     }
 
-    //Fica em que file?
     @GetMapping(PathTemplate.ROBOT_TASKS)
-    fun getTasksByRobotId(@PathVariable id: Int, @RequestParam offset: Int, @RequestParam limit: Int): ResponseEntity<*> {
-        return when (val res = taskService.getTasksByRobotId(offset, limit, id)) {
+    fun getTasksByRobotID(
+        @PathVariable id: Int,
+        @RequestParam offset: Int,
+        @RequestParam limit: Int
+    ): ResponseEntity<*> {
+        return when (val res = taskService.getTasksByRobotID(offset, limit, id)) {
             is Either.Right -> ResponseEntity.ok(res.value)
-            is Either.Left -> ResponseEntity.badRequest().body(res.value)
+            is Either.Left -> when (res.value) {
+                Error.RobotNotFound -> ResponseEntity.badRequest().body(res.value)
+                Error.InvalidInput -> ResponseEntity.badRequest().body(res.value)
+                else -> ResponseEntity.internalServerError().body(res.value)
+            }
         }
     }
-
 }

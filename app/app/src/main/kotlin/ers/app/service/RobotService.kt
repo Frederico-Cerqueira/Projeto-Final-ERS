@@ -1,20 +1,12 @@
 package ers.app.service
 
 import ers.app.domainEntities.*
-import ers.app.repo.dtos.RobotDto
+import ers.app.domainEntities.outputModels.RobotIDOutputModel
+import ers.app.domainEntities.outputModels.RobotOutputModel
+import ers.app.domainEntities.outputModels.RobotsOutputModel
 import ers.app.repo.transaction.TransactionManager
 import ers.app.utils.Error
 import org.springframework.stereotype.Component
-
-data class RobotOutputModel(
-    val id: Int,
-    val name: String,
-    val status: String,
-    val characteristics: String
-)
-
-data class RobotIDOutputModel(val id: Int)
-data class RobotsOutputModel(val tasks: List<RobotDto>)
 
 @Component
 class RobotService(private val transactionManager: TransactionManager) {
@@ -22,6 +14,10 @@ class RobotService(private val transactionManager: TransactionManager) {
     fun createRobot(name: String, characteristics: String): RobotResult =
         transactionManager.run {
             try {
+                if (name.length > 255 || characteristics.length > 255)
+                    failure(Error.InputTooLong)
+                if (name.isEmpty() || characteristics.isEmpty())
+                    failure(Error.InvalidInput)
                 val robot = it.robotData.createRobot(name, characteristics)
                 success(RobotOutputModel(robot.id, robot.name, robot.status, robot.characteristics))
             } catch (e: Exception) {
@@ -30,15 +26,14 @@ class RobotService(private val transactionManager: TransactionManager) {
         }
 
 
-    fun getRobotById(id: Int): RobotResult =
+    fun getRobotByID(id: Int): RobotResult =
         transactionManager.run {
             try {
                 val robot = it.robotData.getRobotById(id)
-                if (robot != null) {
+                if (robot != null)
                     success(RobotOutputModel(robot.id, robot.name, robot.status, robot.characteristics))
-                } else {
+                else
                     failure(Error.RobotNotFound)
-                }
             } catch (e: Exception) {
                 failure(Error.InternalServerError)
             }
@@ -47,8 +42,9 @@ class RobotService(private val transactionManager: TransactionManager) {
     fun updateRobotStatus(id: Int, status: String): RobotResult =
         transactionManager.run {
             try {
-                if (it.robotData.getRobotById(id) == null)
-                    failure(Error.RobotNotFound)
+                it.robotData.getRobotById(id) ?: failure(Error.RobotNotFound)
+                if (status !in setOf("available", "busy", "maintenance", "unavailable", "charging", "error"))
+                    failure(Error.InvalidInput)
                 val robot = it.robotData.updateRobotStatus(id, status)
                 success(RobotOutputModel(robot.id, robot.name, robot.status, robot.characteristics))
             } catch (e: Exception) {
@@ -59,8 +55,7 @@ class RobotService(private val transactionManager: TransactionManager) {
     fun deleteRobot(id: Int): RobotIDResult =
         transactionManager.run {
             try {
-                if (it.robotData.getRobotById(id) == null)
-                    failure(Error.RobotNotFound)
+                it.robotData.getRobotById(id) ?: failure(Error.RobotNotFound)
                 it.robotData.deleteRobot(id)
                 success(RobotIDOutputModel(id))
             } catch (e: Exception) {
@@ -68,18 +63,16 @@ class RobotService(private val transactionManager: TransactionManager) {
             }
         }
 
-    fun getRobotByUserId(offset: Int, limit: Int, id: Int): RobotsResult =
+    fun getRobotByUserID(offset: Int = 0, limit: Int = 0, id: Int): RobotsResult =
         transactionManager.run {
             try {
-                val user = it.usersData.getUserById(id)
-                if (user == null)
-                    failure(Error.UserNotFound)
+                it.usersData.getUserById(id) ?: failure(Error.UserNotFound)
+                if (offset < 0 || limit < 0)
+                    failure(Error.InvalidInput)
                 val robot = it.robotData.getRobotByUserId(offset, limit, id)
                 success(RobotsOutputModel(robot))
             } catch (e: Exception) {
                 failure(Error.InternalServerError)
             }
         }
-
-
 }

@@ -28,7 +28,7 @@ class TimeData (private val handle: Handle) : TimeDataI {
         endTime: Time,
         weekDay: String,
         description: String
-    ): TimeDto? {
+    ): TimeDto {
         val newTime = handle.createUpdate("INSERT INTO time (taskId, start_time, end_time, weekDay, description) VALUES (:taskId, :startTime, :endTime, :weekDay, :description)")
             .bind("taskId", taskId)
             .bind("startTime", startTime)
@@ -37,27 +37,27 @@ class TimeData (private val handle: Handle) : TimeDataI {
             .bind("description", description)
             .executeAndReturnGeneratedKeys()
             .map(TimeDtoMapper())
-            .singleOrNull()
+            .first()
         return newTime
     }
 
     /**
      * Method to update the time of a task
-     * @param taskId Id of the task
+     * @param id Id of the time
      * @param startTime Start time of the task
      * @param endTime End time of the task
      * @param weekDay Week day of the task
      * @return TimeDto? Returns the time updated
      */
-    override fun updateTime(taskId: Int, startTime: Time, endTime: Time, weekDay: String): TimeDto? {
-        val time = handle.createUpdate("UPDATE time SET start_time = :startTime, end_time = :endTime, weekDay = :weekDay WHERE taskId = :taskId")
-            .bind("taskId", taskId)
+    override fun updateTime(id: Int, startTime: Time, endTime: Time, weekDay: String): TimeDto {
+        val time = handle.createUpdate("UPDATE time SET start_time = :startTime, end_time = :endTime, weekDay = :weekDay WHERE id = :id")
+            .bind("taskId", id)
             .bind("startTime", startTime)
             .bind("endTime", endTime)
             .bind("weekDay", weekDay)
             .executeAndReturnGeneratedKeys()
             .map(TimeDtoMapper())
-            .singleOrNull()
+            .first()
         return time
     }
 
@@ -67,13 +67,13 @@ class TimeData (private val handle: Handle) : TimeDataI {
      * @param description Description of the task
      * @return TimeDto? Returns the time updated
      */
-    override fun updateTimeDescription(id: Int, description: String): TimeDto? {
+    override fun updateTimeDescription(id: Int, description: String): TimeDto {
         val time = handle.createUpdate("UPDATE time SET description = :description WHERE id = :id")
             .bind("taskId", id)
             .bind("description", description)
             .executeAndReturnGeneratedKeys()
             .map(TimeDtoMapper())
-            .singleOrNull()
+            .first()
         return time
     }
 

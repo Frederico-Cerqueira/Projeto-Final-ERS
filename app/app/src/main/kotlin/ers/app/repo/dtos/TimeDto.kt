@@ -4,7 +4,7 @@ data class TimeDto (
     val id: Int,
     val taskId: Int,
     val weekDay : String,
-    val startHour : String,
-    val endHour : String,
+    val startTime : String,
+    val endTime : String,
     val description : String
 )

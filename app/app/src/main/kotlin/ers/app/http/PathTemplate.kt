@@ -7,8 +7,7 @@ object PathTemplate {
     const val USER_BY_TOKEN = "/token"
     const val LOGIN = "/login"
     const val UPDATE = "/update/{id}"
-    const val CREATE_AREA = "/{taskID}"
+    const val CREATE_WITH_TASK = "/{taskID}"
     const val UPDATE_DESCRIPTION = "/update/description/{id}"
     const val TASK_ID = "/task/{id}"
-
 }
