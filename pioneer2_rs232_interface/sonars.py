@@ -3,11 +3,11 @@ from enum import Enum
 
 
 class Direction(Enum):
-    BACKWARD = -1,
-    STAY = 0
-    LEFT = 1,
-    RIGHT = 2,
-    FORWARD = 3
+    BACKWARD = "HEAD 180",
+    STAY = "STOP",
+    LEFT = "HEAD 90",
+    RIGHT = "HEAD -90",
+    FORWARD = "MOVE 2000"
 
 
 class SonarInfo:
@@ -42,10 +42,11 @@ def detect_obj(arr_sonar):
     for sonar in arr_sonar:
         if 0 < sonar.distance < 50 and sonar.id in (3, 4):
             print("STOP GIGANTE DO 3 E 4")
-            return "STOP"
+            return True
         if 0 < sonar.distance < 40 and sonar.id in (2, 5):
             print("STOP GIGANTE DO 2 E 5")
-            return "STOP"
+            return True
+    return False
 
 
 def detects_an_object_left(sonars):
@@ -63,18 +64,14 @@ def detects_an_object_right(sonars):
 
 
 def detects_an_object_ahead(sonars):
-    sublist = sonars[:]
-    for sonar in sublist:
-        if sonar.distance == -1:
-            sublist.remove(sonar)
-
-    for sonar in sublist:
-        if sonar.id in (2, 3, 4, 5) and sonar.distance < 50:
-            for s in sublist:
-                if s.distance > 50 and s.id in (0, 1):
+    for sonar in sonars:
+        if (sonar.id in (2, 3) and 0 < sonar.distance < 50) or (0 < sonar.id in (4, 5) and sonar.distance < 40):
+            for s in sonars:
+                if 0 < s.distance > 50 and s.id in (0, 1):
                     return Direction.LEFT
-                elif s.distance > 50 and s.id in (6, 7):
+                elif 0 < s.distance > 50 and s.id in (6, 7):
                     return Direction.RIGHT
-                else:
-                    return Direction.STAY
     return Direction.STAY
+
+
+

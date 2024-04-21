@@ -10,18 +10,18 @@ import java.util.*
 @Component
 class UserService(private val transactionManager: TransactionManager) {
 
-    fun createUser(name: String, email: String, password: String): UserResult =
-        transactionManager.run {
+    fun createUser(name: String, email: String, password: String): UserResult {
+        if (name.length > 50 || email.length > 50 || password.length > 50)
+            return failure(Error.InputTooLong)
+        if (name.isEmpty() || email.isEmpty() || password.isEmpty())
+            return failure(Error.InvalidInput)
+        val regex = Regex("[a-zA-Z0-9.\\-_]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}")
+        if (!regex.matches(email))
+            return failure(Error.InvalidEmail)
+        return transactionManager.run {
             try {
-                if (it.usersData.getUserByEmail)
+                if (it.usersData.getUserByEmail(email) != null)
                     failure(Error.UserAlreadyExists)
-                if (name.length > 50 || email.length > 50 || password.length > 50)
-                    failure(Error.InputTooLong)
-                if (name.isEmpty() || email.isEmpty() || password.isEmpty())
-                    failure(Error.InvalidInput)
-                val regex = Regex("[a-zA-Z0-9.\\-_]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}")
-                if (!regex.matches(email))
-                    failure(Error.InvalidEmail)
                 val hashPassword = password.hashCode()
                 val token = UUID.randomUUID().toString()
                 val user = it.usersData.createUser(name, email, hashPassword, token)
@@ -30,12 +30,13 @@ class UserService(private val transactionManager: TransactionManager) {
                 failure(Error.InternalServerError)
             }
         }
+    }
 
 
     fun getUserByID(id: Int): UserResult =
         transactionManager.run {
             try {
-                val user = it.usersData.getUserById(id)
+                val user = it.usersData.getUserByID(id)
                 if (user == null)
                     failure(Error.UserNotFound)
                 else
@@ -58,11 +59,11 @@ class UserService(private val transactionManager: TransactionManager) {
             }
         }
 
-    fun loginUser(email: String, password: String): UserResult =
-        transactionManager.run {
+    fun loginUser(email: String, password: String): UserResult {
+        if (email.length > 50 || password.length > 50 || email.isEmpty() || password.isEmpty())
+            return failure(Error.InputTooLong)
+        return transactionManager.run {
             try {
-                if (email.length > 50 || password.length > 50 || email.isEmpty() || password.isEmpty())
-                    failure(Error.InputTooLong)
                 val user = it.usersData.loginUser(email, password)
                 if (user == null)
                     failure(Error.UserNotFound)
@@ -72,4 +73,5 @@ class UserService(private val transactionManager: TransactionManager) {
                 failure(Error.InternalServerError)
             }
         }
+    }
 }

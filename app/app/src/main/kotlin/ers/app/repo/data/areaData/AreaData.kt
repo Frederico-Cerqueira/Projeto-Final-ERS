@@ -17,7 +17,7 @@ class AreaData (private val handle: Handle) : AreaDataI {
      * @param id the id of the area.
      * @return the area with the id passed as parameter.
      */
-    override fun getAreaById(id: Int): AreaDto? {
+    override fun getAreaByID(id: Int): AreaDto? {
         return handle.createQuery("SELECT * FROM area WHERE id = :id")
             .bind("id", id)
             .map(AreaDtoMapper())
@@ -28,16 +28,16 @@ class AreaData (private val handle: Handle) : AreaDataI {
      * Function that creates an area in the database.
      * @param height the height of the area.
      * @param width the width of the area.
-     * @param taskId the id of the task that the area is related to.
+     * @param taskID the id of the task that the area is related to.
      * @param name the name of the area.
      * @param description the description of the area.
      * @return the area created.
      */
-    override fun createArea(height: Int, width: Int, taskId: Int, name: String, description: String): AreaDto {
+    override fun createArea(height: Int, width: Int, taskID: Int, name: String, description: String): AreaDto {
         return handle.createUpdate("INSERT INTO area (height, width, taskId, name, description) VALUES (:height, :width, :taskId, :name, :description)")
             .bind("height", height)
             .bind("width", width)
-            .bind("taskId", taskId)
+            .bind("taskId", taskID)
             .bind("name", name)
             .bind("description", description)
             .executeAndReturnGeneratedKeys()
@@ -81,12 +81,12 @@ class AreaData (private val handle: Handle) : AreaDataI {
      * Function that gets a list of areas by the id of the task that they are related to with pagination.
      * @param offset the number of areas to skip.
      * @param limit the maximum number of areas to get.
-     * @param taskId the id of the task that the areas are related to.
+     * @param taskID the id of the task that the areas are related to.
      * @return a list of areas related to the task.
      */
-    override fun getAreasByTaskId(offset: Int, limit: Int, taskId: Int): List<AreaDto> {
+    override fun getAreasByTaskID(offset: Int, limit: Int, taskID: Int): List<AreaDto> {
         return handle.createQuery("SELECT * FROM area WHERE taskId = :taskId LIMIT :limit OFFSET :offset")
-            .bind("taskId", taskId)
+            .bind("taskId", taskID)
             .bind("limit", limit)
             .bind("offset", offset)
             .map(AreaDtoMapper())

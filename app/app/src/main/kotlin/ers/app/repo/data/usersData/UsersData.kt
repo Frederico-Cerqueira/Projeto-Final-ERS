@@ -3,7 +3,7 @@ package ers.app.repo.data.usersData
 import org.jdbi.v3.core.Handle
 import ers.app.repo.mappers.UserDtoMapper
 import ers.app.repo.dtos.UserDto
-import java.util.*
+
 
 /**
  * Class that implements the UsersDataI interface and contains the methods to interact with the database for the users
@@ -17,7 +17,7 @@ class UsersData(private val handle: Handle) : UsersDataI {
      * Method to create a new user in the database
      * @param name Name of the user
      * @param email Email of the user
-     * @param password Password of the user
+     * @param hashPass Password of the user
      * @return UserDto? Returns the user created
      */
     override fun createUser(name: String, email: String, hashPass: Int, token:String): UserDto {
@@ -38,7 +38,7 @@ class UsersData(private val handle: Handle) : UsersDataI {
      * @param id Id of the user
      * @return UserDto? Returns the user found
      */
-    override fun getUserById(id: Int): UserDto? {
+    override fun getUserByID(id: Int): UserDto? {
         val user = handle.createQuery("SELECT * FROM users WHERE id = :id")
             .bind("id", id)
             .map(UserDtoMapper())
@@ -70,6 +70,19 @@ class UsersData(private val handle: Handle) : UsersDataI {
         val user = handle.createQuery("SELECT * FROM users WHERE email = :email AND password = :password")
             .bind("email", email)
             .bind("password", hashPass)
+            .map(UserDtoMapper())
+            .singleOrNull()
+        return user
+    }
+
+    /**
+     * Method to get a user by its email
+     * @param email Email of the user
+     * @return UserDto? Returns the user found
+     */
+    override fun getUserByEmail(email: String): UserDto? {
+        val user = handle.createQuery("SELECT * FROM users WHERE email = :email")
+            .bind("email", email)
             .map(UserDtoMapper())
             .singleOrNull()
         return user

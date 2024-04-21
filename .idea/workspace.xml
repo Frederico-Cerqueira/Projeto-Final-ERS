@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7280efd5-d652-48a1-ac95-0b917dc122da" name="Changes" comment="pasta docs, CreateTables.sql atualizado" />
+    <list default="true" id="7280efd5-d652-48a1-ac95-0b917dc122da" name="Changes" comment="sonars a printar bem tentativa 2">
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_08_04_2024_14_05_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_08_04_2024_14_05__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pioneer2_rs232_interface/sonars.py" beforeDir="false" afterPath="$PROJECT_DIR$/pioneer2_rs232_interface/sonars.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -47,6 +52,7 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;Python.sonars.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
@@ -72,6 +78,36 @@
       <recent name="C:\Users\missf\Documents\ISEL\3ANO\PS\Projeto\ERS" />
     </key>
   </component>
+  <component name="RunManager">
+    <configuration name="sonars" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="ERS" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/pioneer2_rs232_interface" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pioneer2_rs232_interface/sonars.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.sonars" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -96,6 +132,7 @@
       <workItem from="1712848484732" duration="492000" />
       <workItem from="1712861878831" duration="706000" />
       <workItem from="1712867128457" duration="76000" />
+      <workItem from="1713353762995" duration="10566000" />
     </task>
     <task id="LOCAL-00001" summary="testes da visão por computador">
       <option name="closed" value="true" />
@@ -129,7 +166,15 @@
       <option name="project" value="LOCAL" />
       <updated>1712862313610</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="sonars a printar bem tentativa 2">
+      <option name="closed" value="true" />
+      <created>1713355367990</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1713355367990</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -140,6 +185,11 @@
     <MESSAGE value="SONAR" />
     <MESSAGE value="BUMP?" />
     <MESSAGE value="pasta docs, CreateTables.sql atualizado" />
-    <option name="LAST_COMMIT_MESSAGE" value="pasta docs, CreateTables.sql atualizado" />
+    <MESSAGE value="sonars a printar bem tentativa 2" />
+    <option name="LAST_COMMIT_MESSAGE" value="sonars a printar bem tentativa 2" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/ERS$ers.coverage" NAME="ers Coverage Results" MODIFIED="1713201975742" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pioneer2_rs232_interface" />
+    <SUITE FILE_PATH="coverage/ERS$sonars.coverage" NAME="sonars Coverage Results" MODIFIED="1713365130545" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pioneer2_rs232_interface" />
   </component>
 </project>

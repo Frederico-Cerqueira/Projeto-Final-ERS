@@ -13,15 +13,15 @@ import java.sql.Time
 @Component
 class TimeService(private val transactionManager: TransactionManager) {
 
-    fun createTime(taskId: Int, startTime: String, endTime: String, weekDay: String, description: String): TimeResult =
-        transactionManager.run {
+    fun createTime(taskId: Int, startTime: String, endTime: String, weekDay: String, description: String): TimeResult {
+        if (startTime > endTime || startTime.isEmpty() || endTime.isEmpty() || weekDay.isEmpty() || description.isEmpty())
+            return failure(Error.InvalidInput)
+        if (weekDay !in setOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
+            return failure(Error.InvalidInput)
+        if (description.length > 255)
+            return failure(Error.InputTooLong)
+        return transactionManager.run {
             try {
-                if (startTime > endTime || startTime.isEmpty() || endTime.isEmpty() || weekDay.isEmpty() || description.isEmpty())
-                    failure(Error.InvalidInput)
-                if (weekDay !in setOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
-                    failure(Error.InvalidInput)
-                if (description.length > 255)
-                    failure(Error.InputTooLong)
                 val time =
                     it.timeData.createTime(taskId, Time.valueOf(startTime), Time.valueOf(endTime), weekDay, description)
                 success(
@@ -38,11 +38,13 @@ class TimeService(private val transactionManager: TransactionManager) {
                 failure(Error.InternalServerError)
             }
         }
+    }
+
 
     fun getTimeByID(id: Int): TimeResult =
         transactionManager.run {
             try {
-                val time = it.timeData.getTimeById(id)
+                val time = it.timeData.getTimeByID(id)
                 if (time != null)
                     success(
                         TimeOutputModel(
@@ -62,14 +64,16 @@ class TimeService(private val transactionManager: TransactionManager) {
             }
         }
 
-    fun updateTime(id: Int, startTime: String, endTime: String, weekDay: String): TimeResult =
-        transactionManager.run {
+    fun updateTime(id: Int, startTime: String, endTime: String, weekDay: String): TimeResult {
+        if (startTime.isEmpty() || endTime.isEmpty() || weekDay.isEmpty())
+            return failure(Error.InvalidInput)
+        if (startTime > endTime)
+            return failure(Error.InvalidInput)
+        if (weekDay !in setOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
+            return failure(Error.InvalidInput)
+        return transactionManager.run {
             try {
-                it.timeData.getTimeById(id) ?: failure(Error.TimeNotFound)
-                if (startTime > endTime || startTime.isEmpty() || endTime.isEmpty() || weekDay.isEmpty())
-                    failure(Error.InvalidInput)
-                if (weekDay !in setOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
-                    failure(Error.InvalidInput)
+                it.timeData.getTimeByID(id) ?: failure(Error.TimeNotFound)
                 val time = it.timeData.updateTime(id, Time.valueOf(startTime), Time.valueOf(endTime), weekDay)
                 success(
                     TimeOutputModel(
@@ -85,13 +89,17 @@ class TimeService(private val transactionManager: TransactionManager) {
                 failure(Error.InternalServerError)
             }
         }
+    }
 
-    fun updateTimeDescription(id: Int, description: String): TimeResult =
-        transactionManager.run {
+
+    fun updateTimeDescription(id: Int, description: String): TimeResult {
+        if (description.isEmpty())
+            return failure(Error.InvalidInput)
+        if (description.length > 255)
+            return failure(Error.InputTooLong)
+        return transactionManager.run {
             try {
-                it.timeData.getTimeById(id) ?: failure(Error.TimeNotFound)
-                if (description.length > 255)
-                    failure(Error.InputTooLong)
+                it.timeData.getTimeByID(id) ?: failure(Error.TimeNotFound)
                 val time = it.timeData.updateTimeDescription(id, description)
                 success(
                     TimeOutputModel(
@@ -107,11 +115,12 @@ class TimeService(private val transactionManager: TransactionManager) {
                 failure(Error.InternalServerError)
             }
         }
+    }
 
     fun deleteTime(id: Int): TimeIDResult =
         transactionManager.run {
             try {
-                it.timeData.getTimeById(id) ?: failure(Error.TimeNotFound)
+                it.timeData.getTimeByID(id) ?: failure(Error.TimeNotFound)
                 it.timeData.deleteTime(id)
                 success(TimeIDOutputModel(id))
             } catch (e: Exception) {
@@ -119,16 +128,18 @@ class TimeService(private val transactionManager: TransactionManager) {
             }
         }
 
-    fun getTimesByTaskId(offset: Int = 0, limit: Int = 0, taskId: Int): TimesResult =
-        transactionManager.run {
+    fun getTimesByTaskId(offset: Int = 0, limit: Int = 0, taskId: Int): TimesResult {
+        if (offset < 0 || limit < 0)
+            return failure(Error.InvalidInput)
+        return transactionManager.run {
             try {
-                it.taskData.getTaskById(taskId) ?: failure(Error.TaskNotFound)
-                if (offset < 0 || limit < 0)
-                    failure(Error.InvalidInput)
-                val times = it.timeData.getTimesByTaskId(offset, limit, taskId)
+                it.taskData.getTaskByID(taskId) ?: failure(Error.TaskNotFound)
+                val times = it.timeData.getTimesByTaskID(offset, limit, taskId)
                 success(TimesOutputModel(times))
             } catch (e: Exception) {
                 failure(Error.InternalServerError)
             }
         }
+    }
+
 }

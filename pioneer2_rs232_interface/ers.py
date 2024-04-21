@@ -131,10 +131,10 @@ class ERS:
             if self.sip_info is not None:
                 sonar_info = self.sip_info['sonars']
                 update_sonar_info(sonar_info, sonars)
-                if detect_obj(sonars) == 'STOP':
+                if detect_obj(sonars):
                     self.stopped_flag = True
                     self.__object_detected = True
-                # print_sonar_info(sonars)
+                    # print_sonar_info(sonars)
 
             if not self.pause:
                 if not self.stopped_flag:
@@ -180,7 +180,7 @@ def current_position(pioneer):
 
 
 if __name__ == '__main__':
-    pioneer2 = ERS('COM10', 9600)
+    pioneer2 = ERS('COM3', 9600)
     try:
         # pioneer2.turn_off()
         # pioneer2.add_console_command(Command('MOVE', 6000))

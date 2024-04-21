@@ -7,7 +7,8 @@ import ers.app.repo.dtos.UserDto
  */
 interface UsersDataI {
     fun createUser(name: String, email: String, hashPass: Int,token: String) : UserDto
-    fun getUserById(id: Int) : UserDto?
+    fun getUserByID(id: Int) : UserDto?
     fun getUserByToken(token : String) : UserDto?
     fun loginUser(email: String, password: String) : UserDto?
+    fun getUserByEmail(email: String) : UserDto?
 }

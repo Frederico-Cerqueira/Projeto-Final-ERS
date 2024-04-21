@@ -14,15 +14,15 @@ class TaskData(private val handle: Handle) : TaskDataI {
     /**
      * Function that creates a task in the database.
      * @param name the name of the task.
-     * @param userId the id of the user that created the task.
+     * @param userID the id of the user that created the task.
      * @param robotId the id of the robot that will execute the task.
      * @return the task created.
      */
-    override fun createTask(name: String, userId: Int, robotId: Int): TaskDto {
+    override fun createTask(name: String, userID: Int, robotId: Int): TaskDto {
         val newTask =
             handle.createUpdate("INSERT INTO task (name, status, userId, robotId) VALUES (:name, 'pending', :userId, :robotId)")
                 .bind("name", name)
-                .bind("userId", userId)
+                .bind("userId", userID)
                 .bind("robotId", robotId)
                 .executeAndReturnGeneratedKeys()
                 .map(TaskDtoMapper())
@@ -35,7 +35,7 @@ class TaskData(private val handle: Handle) : TaskDataI {
      * @param id the id of the task.
      * @return the task with the id passed as parameter.
      */
-    override fun getTaskById(id: Int): TaskDto? {
+    override fun getTaskByID(id: Int): TaskDto? {
         val task = handle.createQuery("SELECT * FROM task WHERE id = :id")
             .bind("id", id)
             .map(TaskDtoMapper())
@@ -73,12 +73,12 @@ class TaskData(private val handle: Handle) : TaskDataI {
      * Function that gets the tasks of a user with pagination.
      * @param offset the offset of the pagination.
      * @param limit the limit of the pagination.
-     * @param userId the id of the user.
+     * @param userID the id of the user.
      * @return the list of tasks of the user with the id passed as parameter.
      */
-    override fun getTasksByUserId(offset: Int, limit: Int, userId: Int): List<TaskDto> {
+    override fun getTasksByUserID(offset: Int, limit: Int, userID: Int): List<TaskDto> {
         val tasks = handle.createQuery("SELECT * FROM task WHERE userId = :userId LIMIT :limit OFFSET :offset")
-            .bind("userId", userId)
+            .bind("userId", userID)
             .bind("limit", limit)
             .bind("offset", offset)
             .map(TaskDtoMapper())
@@ -90,12 +90,12 @@ class TaskData(private val handle: Handle) : TaskDataI {
      * Function that gets the tasks of a robot with pagination.
      * @param offset the offset of the pagination.
      * @param limit the limit of the pagination.
-     * @param robotId the id of the robot.
+     * @param robotID the id of the robot.
      * @return the list of tasks of the robot with the id passed as parameter.
      */
-    override fun getTasksByRobotId(offset: Int, limit: Int, robotId: Int): List<TaskDto> {
+    override fun getTasksByRobotID(offset: Int, limit: Int, robotID: Int): List<TaskDto> {
         val tasks = handle.createQuery("SELECT * FROM task WHERE robotId = :robotId LIMIT :limit OFFSET :offset")
-            .bind("robotId", robotId)
+            .bind("robotId", robotID)
             .bind("limit", limit)
             .bind("offset", offset)
             .map(TaskDtoMapper())
