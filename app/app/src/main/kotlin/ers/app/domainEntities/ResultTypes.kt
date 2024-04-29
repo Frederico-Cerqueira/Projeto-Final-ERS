@@ -1,22 +1,22 @@
 package ers.app.domainEntities
 
 import ers.app.domainEntities.outputModels.*
-import ers.app.utils.Error
+import ers.app.utils.Errors
 
-typealias UserResult = Either<Error, UserOutputModel>
+typealias UserResult = Either<Errors, UserOutputModel>
 
-typealias TaskResult = Either<Error, TaskOutputModel>
-typealias TasksResult = Either<Error, TasksOutputModel>
-typealias TaskIDResult = Either<Error, TaskIDOutputModel>
+typealias TaskResult = Either<Errors, TaskOutputModel>
+typealias TasksResult = Either<Errors, TasksOutputModel>
+typealias TaskIDResult = Either<Errors, TaskIDOutputModel>
 
-typealias RobotResult = Either<Error, RobotOutputModel>
-typealias RobotsResult = Either<Error, RobotsOutputModel>
-typealias RobotIDResult = Either<Error, RobotIDOutputModel>
+typealias RobotResult = Either<Errors, RobotOutputModel>
+typealias RobotsResult = Either<Errors, RobotsOutputModel>
+typealias RobotIDResult = Either<Errors, RobotIDOutputModel>
 
-typealias AreaResult = Either<Error, AreaOutputModel>
-typealias AreasResult = Either<Error, AreasOutputModel>
-typealias AreaIDResult = Either<Error, AreaIDOutputModel>
+typealias AreaResult = Either<Errors, AreaOutputModel>
+typealias AreasResult = Either<Errors, AreasOutputModel>
+typealias AreaIDResult = Either<Errors, AreaIDOutputModel>
 
-typealias TimeResult = Either<Error, TimeOutputModel>
-typealias TimesResult = Either<Error, TimesOutputModel>
-typealias TimeIDResult = Either<Error, TimeIDOutputModel>
+typealias TimeResult = Either<Errors, TimeOutputModel>
+typealias TimesResult = Either<Errors, TimesOutputModel>
+typealias TimeIDResult = Either<Errors, TimeIDOutputModel>

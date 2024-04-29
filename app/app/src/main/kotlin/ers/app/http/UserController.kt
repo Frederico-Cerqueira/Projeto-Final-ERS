@@ -5,7 +5,7 @@ import ers.app.domainEntities.inputModels.LoginInputModel
 import ers.app.domainEntities.inputModels.TokenInputModel
 import ers.app.domainEntities.inputModels.UserInputModel
 import ers.app.service.UserService
-import ers.app.utils.Error
+import ers.app.utils.Errors
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -18,10 +18,10 @@ class UserController(private val userService: UserService) {
         return when (val res = userService.createUser(user.name, user.email, user.password)) {
             is Either.Right -> ResponseEntity.status(201).body(res.value)
             is Either.Left -> when (res.value) {
-                Error.InvalidInput -> ResponseEntity.badRequest().body(res.value)
-                Error.InputTooLong -> ResponseEntity.status(413).body(res.value)
-                Error.UserAlreadyExists -> ResponseEntity.status(409).body(res.value)
-                Error.InvalidEmail -> ResponseEntity.badRequest().body(res.value)
+                Errors.InvalidInput -> ResponseEntity.badRequest().body(res.value)
+                Errors.InputTooLong -> ResponseEntity.status(413).body(res.value)
+                Errors.UserAlreadyExists -> ResponseEntity.status(409).body(res.value)
+                Errors.InvalidEmail -> ResponseEntity.badRequest().body(res.value)
                 else -> ResponseEntity.internalServerError().body(res.value)
             }
         }
@@ -32,7 +32,7 @@ class UserController(private val userService: UserService) {
         return when (val res = userService.getUserByID(id)) {
             is Either.Right -> ResponseEntity.ok(res.value)
             is Either.Left -> when (res.value) {
-                Error.UserNotFound -> ResponseEntity.badRequest().body(res.value)
+                Errors.UserNotFound -> ResponseEntity.badRequest().body(res.value)
                 else -> ResponseEntity.internalServerError().body(res.value)
             }
         }
@@ -43,7 +43,7 @@ class UserController(private val userService: UserService) {
         return when (val res = userService.getUserByToken(token.token)) {
             is Either.Right -> ResponseEntity.ok(res.value)
             is Either.Left -> when (res.value) {
-                Error.UserNotFound -> ResponseEntity.badRequest().body(res.value)
+                Errors.UserNotFound -> ResponseEntity.badRequest().body(res.value)
                 else -> ResponseEntity.internalServerError().body(res.value)
             }
         }
@@ -54,8 +54,8 @@ class UserController(private val userService: UserService) {
         return when (val res = userService.loginUser(login.email, login.password)) {
             is Either.Right -> ResponseEntity.ok(res.value)
             is Either.Left -> when (res.value) {
-                Error.UserNotFound -> ResponseEntity.badRequest().body(res.value)
-                Error.InputTooLong -> ResponseEntity.status(413).body(res.value)
+                Errors.UserNotFound -> ResponseEntity.badRequest().body(res.value)
+                Errors.InputTooLong -> ResponseEntity.status(413).body(res.value)
                 else -> ResponseEntity.internalServerError().body(res.value)
             }
         }

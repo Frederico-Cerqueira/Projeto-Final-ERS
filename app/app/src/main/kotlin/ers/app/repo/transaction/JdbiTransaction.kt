@@ -7,6 +7,10 @@ import ers.app.repo.data.timeData.TimeData
 import ers.app.repo.data.usersData.UsersData
 import org.jdbi.v3.core.Handle
 
+/**
+ * Transaction implementation that uses Jdbi to manage transactions and provides access to repositories.
+ * @param handle Jdbi handle to use for the transaction.
+ */
 class JdbiTransaction(
         private val handle:Handle
 ) : Transaction {

@@ -7,6 +7,9 @@ import ers.app.repo.data.timeData.TimeDataI
 import ers.app.repo.data.usersData.UsersDataI
 import org.springframework.stereotype.Component
 
+/**
+ * Transaction interface that provides access to repositories.
+ */
 @Component
 interface Transaction {
     val robotData: RobotDataI

@@ -10,4 +10,4 @@ data class RobotOutputModel(
 )
 
 data class RobotIDOutputModel(val id: Int)
-data class RobotsOutputModel(val tasks: List<RobotDto>)
+data class RobotsOutputModel(val robots: List<RobotDto>)

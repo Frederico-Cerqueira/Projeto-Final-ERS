@@ -51,7 +51,7 @@ class TimeData (private val handle: Handle) : TimeDataI {
      */
     override fun updateTime(id: Int, startTime: Time, endTime: Time, weekDay: String): TimeDto {
         val time = handle.createUpdate("UPDATE time SET start_time = :startTime, end_time = :endTime, weekDay = :weekDay WHERE id = :id")
-            .bind("taskId", id)
+            .bind("id", id)
             .bind("startTime", startTime)
             .bind("endTime", endTime)
             .bind("weekDay", weekDay)
@@ -69,7 +69,7 @@ class TimeData (private val handle: Handle) : TimeDataI {
      */
     override fun updateTimeDescription(id: Int, description: String): TimeDto {
         val time = handle.createUpdate("UPDATE time SET description = :description WHERE id = :id")
-            .bind("taskId", id)
+            .bind("id", id)
             .bind("description", description)
             .executeAndReturnGeneratedKeys()
             .map(TimeDtoMapper())
@@ -93,9 +93,8 @@ class TimeData (private val handle: Handle) : TimeDataI {
      * @return TimeDto? Returns the time found
      */
     override fun getTimeByID(id: Int): TimeDto? {
-        val time = handle.createUpdate("SELECT * FROM time WHERE id = :id")
+        val time = handle.createQuery("SELECT * FROM time WHERE ID = :id")
             .bind("id", id)
-            .executeAndReturnGeneratedKeys()
             .map(TimeDtoMapper())
             .singleOrNull()
         return time
@@ -108,11 +107,10 @@ class TimeData (private val handle: Handle) : TimeDataI {
      * @param offset Offset of the pagination
      */
     override fun getTimesByTaskID(offset: Int, limit: Int, taskID: Int): List<TimeDto> {
-        val time = handle.createUpdate("SELECT * FROM time WHERE taskId = :taskId LIMIT :limit OFFSET :offset")
+        val time = handle.createQuery("SELECT * FROM time WHERE taskId = :taskId ORDER BY id LIMIT :limit OFFSET :offset")
             .bind("taskId", taskID)
             .bind("limit", limit)
             .bind("offset", offset)
-            .executeAndReturnGeneratedKeys()
             .map(TimeDtoMapper())
             .list()
         return time

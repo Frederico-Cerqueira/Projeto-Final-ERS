@@ -10,17 +10,14 @@ import org.jdbi.v3.core.Handle
  */
 class RobotData(private val handle: Handle) : RobotDataI {
 
-    //PROVAVELMENTE NÃO IRÁ RETORNAR UM DTO MAS UM ROBOT NO FUTURO
-
     /**
      * Method to get a robot by its id
-     * @param id Id of the robot
+     * @param id ID of the robot
      * @return RobotDto? Returns the robot found
      */
     override fun getRobotByID(id: Int): RobotDto? {
-        val robot = handle.createUpdate("SELECT * FROM robot WHERE id = :id")
-            .bind("id", id)
-            .executeAndReturnGeneratedKeys()
+        val robot = handle.createQuery("SELECT * FROM robot WHERE ID = :ID")
+            .bind("ID", id)
             .map(RobotDtoMapper())
             .singleOrNull()
         return robot
@@ -45,7 +42,7 @@ class RobotData(private val handle: Handle) : RobotDataI {
 
     /**
      * Method to update the status of a robot
-     * @param id Id of the robot
+     * @param id ID of the robot
      * @param status New status of the robot
      * @return RobotDto? Returns the robot updated
      */
@@ -61,7 +58,7 @@ class RobotData(private val handle: Handle) : RobotDataI {
 
     /**
      * Method to delete a robot from the database
-     * @param id Id of the robot
+     * @param id ID of the robot
      */
     override fun deleteRobot(id: Int) {
         handle.createUpdate("DELETE FROM robot WHERE id = :id")
@@ -78,7 +75,7 @@ class RobotData(private val handle: Handle) : RobotDataI {
      */
     override fun getRobotByUserID(offset: Int, limit: Int, userID: Int): List<RobotDto> {
         val robots =
-            handle.createQuery("SELECT robot.id, robot.name, robot.status, characteristics FROM robot JOIN TASK ON task.robotid == robot.id WHERE userid = :userId LIMIT :limit OFFSET :offset")
+            handle.createQuery("SELECT DISTINCT robot.id, robot.name, robot.status, robot.characteristics FROM robot JOIN TASK ON task.robotid = robot.id WHERE userid = :userId ORDER BY robot.id  LIMIT :limit OFFSET :offset")
                 .bind("userId", userID)
                 .bind("limit", limit)
                 .bind("offset", offset)

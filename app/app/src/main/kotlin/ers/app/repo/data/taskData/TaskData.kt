@@ -77,7 +77,7 @@ class TaskData(private val handle: Handle) : TaskDataI {
      * @return the list of tasks of the user with the id passed as parameter.
      */
     override fun getTasksByUserID(offset: Int, limit: Int, userID: Int): List<TaskDto> {
-        val tasks = handle.createQuery("SELECT * FROM task WHERE userId = :userId LIMIT :limit OFFSET :offset")
+        val tasks = handle.createQuery("SELECT * FROM task WHERE userId = :userId ORDER BY id LIMIT :limit OFFSET :offset")
             .bind("userId", userID)
             .bind("limit", limit)
             .bind("offset", offset)
@@ -94,7 +94,7 @@ class TaskData(private val handle: Handle) : TaskDataI {
      * @return the list of tasks of the robot with the id passed as parameter.
      */
     override fun getTasksByRobotID(offset: Int, limit: Int, robotID: Int): List<TaskDto> {
-        val tasks = handle.createQuery("SELECT * FROM task WHERE robotId = :robotId LIMIT :limit OFFSET :offset")
+        val tasks = handle.createQuery("SELECT * FROM task WHERE robotId = :robotId ORDER BY id LIMIT :limit OFFSET :offset")
             .bind("robotId", robotID)
             .bind("limit", limit)
             .bind("offset", offset)

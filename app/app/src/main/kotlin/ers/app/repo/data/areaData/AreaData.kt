@@ -85,7 +85,7 @@ class AreaData (private val handle: Handle) : AreaDataI {
      * @return a list of areas related to the task.
      */
     override fun getAreasByTaskID(offset: Int, limit: Int, taskID: Int): List<AreaDto> {
-        return handle.createQuery("SELECT * FROM area WHERE taskId = :taskId LIMIT :limit OFFSET :offset")
+        return handle.createQuery("SELECT * FROM area WHERE taskId = :taskId ORDER BY id LIMIT :limit OFFSET :offset")
             .bind("taskId", taskID)
             .bind("limit", limit)
             .bind("offset", offset)
