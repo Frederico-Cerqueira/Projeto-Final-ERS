@@ -22,10 +22,10 @@ class UsersData(private val handle: Handle) : UsersDataI {
      */
     override fun createUser(name: String, email: String, hashPass: Int, token:String): UserDto {
         val newUser =
-            handle.createUpdate("INSERT INTO users (name, email, password, token) VALUES (:name, :email, :password, :token)")
+            handle.createUpdate("INSERT INTO users (name, email, hashPass, token) VALUES (:name, :email, :hashPass, :token)")
                 .bind("name", name)
                 .bind("email", email)
-                .bind("password", hashPass)
+                .bind("hashPass", hashPass)
                 .bind("token", token)
                 .executeAndReturnGeneratedKeys()
                 .map(UserDtoMapper())
@@ -35,7 +35,7 @@ class UsersData(private val handle: Handle) : UsersDataI {
 
     /**
      * Method to get a user by its id
-     * @param id Id of the user
+     * @param id ID of the user
      * @return UserDto? Returns the user found
      */
     override fun getUserByID(id: Int): UserDto? {
@@ -60,16 +60,16 @@ class UsersData(private val handle: Handle) : UsersDataI {
     }
 
     /**
-     * Method to login a user
+     * Method to log in a user
      * @param email Email of the user
      * @param password Password of the user
      * @return UserDto? Returns the user found
      */
     override fun loginUser(email: String, password: String): UserDto? {
         val hashPass = password.hashCode()
-        val user = handle.createQuery("SELECT * FROM users WHERE email = :email AND password = :password")
+        val user = handle.createQuery("SELECT * FROM users WHERE email = :email AND hashPass = :hashPass")
             .bind("email", email)
-            .bind("password", hashPass)
+            .bind("hashPass", hashPass)
             .map(UserDtoMapper())
             .singleOrNull()
         return user

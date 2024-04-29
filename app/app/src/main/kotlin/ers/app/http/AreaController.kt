@@ -5,7 +5,7 @@ import ers.app.domainEntities.inputModels.AreaInputModel
 import ers.app.domainEntities.inputModels.AreaUpdateDescriptionInputModel
 import ers.app.domainEntities.inputModels.AreaUpdateInputModel
 import ers.app.service.AreaService
-import ers.app.utils.Error
+import ers.app.utils.Errors
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -17,8 +17,8 @@ class AreaController(private val areaService: AreaService) {
         return when (val res = areaService.createArea(area.height, area.width, taskID, area.name, area.description)) {
             is Either.Right -> ResponseEntity.status(201).body(res.value)
             is Either.Left -> when (res.value) {
-                Error.InvalidInput -> ResponseEntity.badRequest().body(res.value)
-                Error.InputTooLong -> ResponseEntity.status(413).body(res.value)
+                Errors.InvalidInput -> ResponseEntity.badRequest().body(res.value)
+                Errors.InputTooLong -> ResponseEntity.status(413).body(res.value)
                 else -> ResponseEntity.internalServerError().body(res.value)
             }
         }
@@ -29,7 +29,7 @@ class AreaController(private val areaService: AreaService) {
         return when (val res = areaService.getAreaByID(id)) {
             is Either.Right -> ResponseEntity.ok(res.value)
             is Either.Left -> when (res.value) {
-                Error.AreaNotFound -> ResponseEntity.badRequest().body(res.value)
+                Errors.AreaNotFound -> ResponseEntity.badRequest().body(res.value)
                 else -> ResponseEntity.internalServerError().body(res.value)
             }
         }
@@ -40,8 +40,8 @@ class AreaController(private val areaService: AreaService) {
         return when (val res = areaService.updateArea(id, area.height, area.width)) {
             is Either.Right -> ResponseEntity.ok(res.value)
             is Either.Left -> when (res.value) {
-                Error.InvalidInput -> ResponseEntity.badRequest().body(res.value)
-                Error.AreaNotFound -> ResponseEntity.badRequest().body(res.value)
+                Errors.InvalidInput -> ResponseEntity.badRequest().body(res.value)
+                Errors.AreaNotFound -> ResponseEntity.badRequest().body(res.value)
                 else -> ResponseEntity.internalServerError().body(res.value)
             }
         }
@@ -55,9 +55,9 @@ class AreaController(private val areaService: AreaService) {
         return when (val res = areaService.updateAreaDescription(id, description.description)) {
             is Either.Right -> ResponseEntity.ok(res.value)
             is Either.Left -> when (res.value) {
-                Error.InvalidInput -> ResponseEntity.badRequest().body(res.value)
-                Error.AreaNotFound -> ResponseEntity.badRequest().body(res.value)
-                Error.InputTooLong -> ResponseEntity.status(413).body(res.value)
+                Errors.InvalidInput -> ResponseEntity.badRequest().body(res.value)
+                Errors.AreaNotFound -> ResponseEntity.badRequest().body(res.value)
+                Errors.InputTooLong -> ResponseEntity.status(413).body(res.value)
                 else -> ResponseEntity.internalServerError().body(res.value)
             }
         }
@@ -68,7 +68,7 @@ class AreaController(private val areaService: AreaService) {
         return when (val res = areaService.deleteArea(id)) {
             is Either.Right -> ResponseEntity.ok(res.value)
             is Either.Left -> when (res.value) {
-                Error.AreaNotFound -> ResponseEntity.badRequest().body(res.value)
+                Errors.AreaNotFound -> ResponseEntity.badRequest().body(res.value)
                 else -> ResponseEntity.internalServerError().body(res.value)
             }
         }
@@ -83,8 +83,8 @@ class AreaController(private val areaService: AreaService) {
         return when (val res = areaService.getAreasByTaskID(offset, limit, id)) {
             is Either.Right -> ResponseEntity.ok(res.value)
             is Either.Left -> when (res.value) {
-                Error.AreaNotFound -> ResponseEntity.badRequest().body(res.value)
-                Error.InvalidInput -> ResponseEntity.badRequest().body(res.value)
+                Errors.AreaNotFound -> ResponseEntity.badRequest().body(res.value)
+                Errors.InvalidInput -> ResponseEntity.badRequest().body(res.value)
                 else -> ResponseEntity.internalServerError().body(res.value)
             }
         }
