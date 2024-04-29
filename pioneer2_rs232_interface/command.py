@@ -1,4 +1,4 @@
 class Command:
-    def __init__(self, comando, args):
-        self.comando = comando
+    def __init__(self, name, args):
+        self.name = name
         self.args = args
