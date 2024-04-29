@@ -32,7 +32,21 @@ class ERS:
             'th_pos': None
         }
         # Create commands queue
-        self.__commands_queue = queue.Queue()
+        #self.__commands_queue = queue.Queue()
+        self.queue = [
+            Command('MOVE', 500),
+            Command('MOVE', 500),
+            Command('MOVE', 500),
+            Command('MOVE', 500),
+            Command('MOVE', 500),
+            Command('MOVE', 500),
+            Command('MOVE', 500),
+            Command('MOVE', 500),
+            Command('MOVE', 500),
+            Command('MOVE', 500),
+            Command('MOVE', 500),
+            Command('MOVE', 500)
+        ]
         # Start serial communication
         self.__serial_communication = SerialCommunication(port, baudrate)
         # self.initial_time = datetime.now().timestamp()
@@ -96,14 +110,15 @@ class ERS:
         while True:
             if self.__serial_communication.is_connected() and (final_pulse_time - initial_pulse_time > 1.500):
                 # Send Pulse
-                initial_pulse_time = datetime.now().timestamp()
+                initial_pulse_time = time.time()
                 self.send_pulse()
             # Check SIP availability
             if self.__serial_communication.check_sip_availability() and (final_time - init_time > 0.100):
                 print("AVAILABLE SIP")
                 # Process SIP
-                init_time = datetime.now().timestamp()
+                init_time = time.time()
                 self.process_sip()
+
                 # There's a valid SIP?
                 if self.sip_info is not None:
                     print("SIP IS NOT NONE")
@@ -114,8 +129,8 @@ class ERS:
                         print("Obstacle found!")
                         # Obstacle found!
                         # self.dodge_obstacle(sonars)
-                        self.send_stop()
-                        self.turn_off()
+                        self.dodge_obstacle(sonars)
+                        #self.turn_off()
                     else:
                         print("NO OBSTACLE FOUND")
                         # There are no close obstacles, now we have to verify if there is any detectable trash
@@ -123,9 +138,9 @@ class ERS:
                         if detect_trash():
                             print("Trash found!")
                             # Trash detected send a STOP command
-                            self.send_stop()
+                            self.dodge_obstacle(sonars)
                             """ Q: Do i have to make sure that stop was executed before turning off the robot?"""
-                            self.turn_off()
+                            #self.turn_off()
                         else:
                             print("NO TRASH FOUND")
                             # No trash detected. Is the last command done?
@@ -151,7 +166,10 @@ class ERS:
                                     if self.movement_completed_with_success():
                                         print("Executing next command")
                                         # Send next command
-                                        self.command = self.__commands_queue.get()
+
+                                        #self.command = self.__commands_queue.get()
+                                        self.command = self.queue[0]
+                                        self.queue.pop(0)
                                         self.process_command()
                                     else:
                                         # Resend last command
@@ -159,11 +177,12 @@ class ERS:
                 elif self.command is None:
                     # There is no valid sip which means that no command has been executed yet. Send 1st command
                     print("Executing the 1st command")
-                    self.command = self.__commands_queue.get()
+                    #self.command = self.__commands_queue.get()
+                    self.command = self.queue[0]
+                    self.queue.pop(0)
                     self.process_command()
             final_time = datetime.now().timestamp()
             final_pulse_time = datetime.now().timestamp()
-            time.sleep(0.0019)
 
     def dodge_obstacle(self, sonars):
         self.command = Command('STOP', 0)
@@ -181,9 +200,10 @@ class ERS:
 
     def command_execution_started(self):
         print("CHECKING IF THE EXECUTION HAS STARTED")
-        print("COMMAND: ", self.command)
         if self.command is None:
+            print("command is none ")
             return True
+        print("COMMAND: ", self.command.name)
         return False
 
     def process_command(self):
@@ -251,9 +271,12 @@ class ERS:
         self.send_command('STOP', 0)
 
     """ WARNING: This function is not being used"""
+
     def send_next_command(self):
         print("Executing next command")
-        self.command = self.__commands_queue.get()
+        self.command = self.queue[0]
+        self.queue.pop(0)
+        #self.command = self.__commands_queue.get()
         self.process_command()
 
     def add_console_command(self, command):
@@ -272,20 +295,7 @@ if __name__ == '__main__':
         # pioneer2.turn_off()
         # pioneer2.add_console_command(Command('MOVE', 6000))
 
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
-        pioneer2.add_console_command(Command('MOVE', 500))
 
-        pioneer2.add_console_command(Command('EXIT', None))
 
         # pioneer2.add_console_command(Command('HEAD', 90))
         # pioneer2.add_console_command(Command('SETO', None))
