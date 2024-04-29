@@ -12,6 +12,8 @@ class AreaDtoMapper : RowMapper<AreaDto> {
             taskId = rs.getInt("taskId"),
             height = rs.getInt("height"),
             width = rs.getInt("width"),
+            name = rs.getString("name"),
+            description = rs.getString("description")
         )
     }
 }
