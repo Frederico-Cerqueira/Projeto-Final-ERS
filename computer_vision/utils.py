@@ -8,7 +8,7 @@ OUTPUT_DIR = os.path.join('data', 'output')
 
 def in_file(filename):
     """Returns the path of an input file"""
-    return os.path.join(INPUT_DIR_HALL, filename)
+    return os.path.join(INPUT_DIR_OUTSIDE, filename)
 
 
 def out_file(filename):
