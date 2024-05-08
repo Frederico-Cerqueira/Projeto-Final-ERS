@@ -12,10 +12,11 @@ import org.springframework.context.annotation.Bean
 class Application {
 	@Bean
 	fun jdbi(): Jdbi {
-		val jdbcDatabaseUrl =
-			System.getenv("ERS_DATABASE")
+		val jdbcDatabaseURL =
+			System.getenv("JDBC_DATABASE_URL")
+				?: "jdbc:postgresql://localhost/ProjetoFinal?user=postgres&password=Asus"
 		val dataSource = PGSimpleDataSource()
-		dataSource.setURL(jdbcDatabaseUrl)
+		dataSource.setURL(jdbcDatabaseURL)
 		return Jdbi.create(dataSource)
 			.registerRowMapper(RobotDtoMapper())
 			.registerRowMapper(TaskDtoMapper())
