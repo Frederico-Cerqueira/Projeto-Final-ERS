@@ -1,8 +1,8 @@
 import React, {useState} from "react";
 import {Link} from "react-router-dom";
-import {RobotInputModel} from "../types/RobotInputModel";
 import {fetchWrapper} from "../fetch/fetchPost";
 import {CreateRobotForm} from "../forms/robotForms";
+import {RobotInputModel} from "../types/RobotInputModel";
 
 
 export function CreateRobot() {
