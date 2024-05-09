@@ -4,16 +4,16 @@ import {RouterProvider} from "react-router";
 import {router} from "./router";
 
 
-function App(){
+function App() {
     return (
         <div>
-           <RouterProvider router={router} />
+            <RouterProvider router={router}/>
         </div>
     )
 
 }
 
-export function app(){
+export function app() {
     const root = createRoot(document.getElementById("container"))
-    root.render(<App />)
+    root.render(<App/>)
 }

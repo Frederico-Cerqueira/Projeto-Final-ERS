@@ -1,4 +1,4 @@
-import {UserManagement} from "../userManagement";
+import {UserManagement} from "./userManagement";
 import React from "react";
 
 export function CreateUser() {

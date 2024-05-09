@@ -1,119 +1,62 @@
-import React, {ChangeEvent, useState} from "react";
+import React, {useState} from "react";
 import {Link} from "react-router-dom";
-import {AreaInputModel} from "../types/AreaInputModel";
-import {fetchPost} from "../fetch/fetchPost";
+
+import {fetchWrapper} from "../fetch/fetchPost";
+import {UpdateAreaForm} from "../forms/areaForms";
+import {DeleteButton} from "../elements/deteleButton";
+import {AreaUpdateInputModel} from "../types/AreaInputModel";
+
 
 export function Area() {
     return (
         <div>
-            Area
-            <p><Link to="/robot">Robot</Link></p>
-            <CreateArea></CreateArea>
+            <h1>Area</h1>
+            <p><Link to="/task">Back to Task</Link></p>
+            <UpdateArea></UpdateArea>
+            <DeleteButton onClick={fetchDeleteArea} name={"Area"}></DeleteButton>
         </div>
     )
 }
 
-export function CreateArea() {
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
+
+async function fetchDeleteArea() {
+    const uri = 'api/area/1';
+    try {
+        const jsonData = await fetchWrapper(uri, 'DELETE', {});
+        console.log('Success!', jsonData);
+    } catch (error) {
+        console.error('There was an error in the request:', error);
+    }
+}
+
+
+export function UpdateArea() {
     const [height, setHeight] = useState(0);
     const [width, setWidth] = useState(0);
-    //const navigate = useNavigate();
 
-    function changeHandlerName(event: ChangeEvent<HTMLInputElement>) {
-        setName(event.target.value);
+    async function clickHandler() {
+        const body: AreaUpdateInputModel = {height, width};
+        const uri = 'api/area/update/1';
+        try {
+            const jsonData = await fetchWrapper(uri, 'POST', body);
+            console.log('Success', jsonData);
+        } catch (error) {
+            console.error('There was an error in the request:', error);
+        }
     }
 
-    function changeHandlerDescription(event: ChangeEvent<HTMLInputElement>) {
-        setDescription(event.target.value);
-    }
-
-    function changeHandlerHeight(event: ChangeEvent<HTMLInputElement>) {
-        setHeight(Number(event.target.value));
-    }
-
-    function changeHandlerWidth(event: ChangeEvent<HTMLInputElement>) {
-        setWidth(Number(event.target.value));
-    }
-
-    function clickHandler() {
-        const body: AreaInputModel = {name, description, height, width};
-        const taskID = 1;
-        const uri = 'api/'+taskID+'/area';
-        fetchPost(uri, body)
-            .then(it => {
-                const jsonData = JSON.parse(it);
-                console.log(jsonData);
-                if (JSON.stringify(jsonData) === '{}') {
-
-                } else {
-                    //navigate("/area");
-                }
-            })
-            .catch();
-    }
-
-    return (
-        <div className="container">
-            <CreateAreaForm
-                name={name}
-                description={description}
-                height={height}
-                width={width}
-                changeHandlerName={changeHandlerName}
-                changeHandlerDescription={changeHandlerDescription}
-                changeHandlerHeight={changeHandlerHeight}
-                changeHandlerWidth={changeHandlerWidth}
-                clickHandler={clickHandler}></CreateAreaForm>
-        </div>
-    );
-}
-
-function CreateAreaForm({
-                            name,
-                            description,
-                            height,
-                            width,
-                            changeHandlerName,
-                            changeHandlerDescription,
-                            changeHandlerHeight,
-                            changeHandlerWidth,
-                            clickHandler,
-                        }: {
-    name: string,
-    description: string,
-    height: number,
-    width: number,
-    changeHandlerName: (event: ChangeEvent<HTMLInputElement>) => void,
-    changeHandlerDescription: (event: ChangeEvent<HTMLInputElement>) => void,
-    changeHandlerHeight: (event: ChangeEvent<HTMLInputElement>) => void,
-    changeHandlerWidth: (event: ChangeEvent<HTMLInputElement>) => void,
-    clickHandler: () => void,
-
-}) {
     return (
         <div>
-            <label className="labelForm">Name:</label>
-            <input type="text" className="input-styled" value={name} onChange={changeHandlerName}/>
-
-            <br/>
-
-            <label className="labelForm">Description:</label>
-            <input type="text" className="input-styled" value={description} onChange={changeHandlerDescription}/>
-
-            <br/>
-
-            <label className="labelForm">Height:</label>
-            <input type="number" className="input-styled" value={height} onChange={changeHandlerHeight}/>
-
-            <br/>
-
-            <label className="labelForm">Width:</label>
-            <input type="number" className="input-styled" value={width} onChange={changeHandlerWidth}/>
-
-            <br/>
-            <button className="buttonForm" onClick={clickHandler}>{"Create Area"}</button>
+            <UpdateAreaForm
+                height={height}
+                width={width}
+                changeHandlerHeight={event => setHeight(Number(event.target.value))}
+                changeHandlerWidth={event => setWidth(Number(event.target.value))}
+                clickHandler={clickHandler}
+            />
         </div>
     );
 }
+
+
 

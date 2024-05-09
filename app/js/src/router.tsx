@@ -7,10 +7,11 @@ import {User} from "./screens/userScreen";
 import {Robots} from "./screens/robotsScreen";
 import {Tasks} from "./screens/tasksScreen";
 import {Area} from "./screens/areaScreen";
-import {CreateRobot} from "./screens/createRobot";
+import {CreateRobot} from "./screens/createRobotScreen";
 import {Robot} from "./screens/robotScreen";
 import {Task} from "./screens/taskScreen";
 import {Time} from "./screens/timeScreen";
+import {CreateTask} from "./screens/createTaskScreen";
 
 
 export const router = createBrowserRouter(
@@ -20,11 +21,11 @@ export const router = createBrowserRouter(
             element: <InitialScreen/>
         },
         {
-            path:"area",
+            path: "area",
             element: <Area/>
         },
         {
-            path:"createRobot",
+            path: "createRobot",
             element: <CreateRobot/>
         },
         {
@@ -32,31 +33,35 @@ export const router = createBrowserRouter(
             element: <CreateUser/>,
         },
         {
-            path:"login",
+            path: "createTask",
+            element: <CreateTask/>,
+        },
+        {
+            path: "login",
             element: <Login/>
         },
         {
-            path:"robot",
+            path: "robot",
             element: <Robot/>
         },
         {
-            path:"robots",
+            path: "robots",
             element: <Robots/>
         },
         {
-            path:"task",
+            path: "task",
             element: <Task/>
         },
         {
-            path:"tasks",
+            path: "tasks",
             element: <Tasks/>
         },
         {
-            path:"time",
+            path: "time",
             element: <Time/>
         },
         {
-            path:"user",
+            path: "user",
             element: <User/>
         },
 
