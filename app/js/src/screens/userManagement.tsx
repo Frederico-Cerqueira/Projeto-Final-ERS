@@ -4,8 +4,6 @@ import {Form} from "../forms/loginForm";
 import {fetchWrapper} from "../fetch/fetchPost";
 import {UserInputModel} from "../types/userInputModel";
 
-
-
 export function UserManagement({uri, msg, buttonName, link, linkMessage}: {
     uri: string,
     msg: string,

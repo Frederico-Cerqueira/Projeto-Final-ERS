@@ -8,14 +8,14 @@ import {CreateTimeForm} from "../forms/timeForms";
 import {TaskUpdateInputModel} from "../types/TaskInputModel";
 import {UpdateTaskForm} from "../forms/taskForms";
 import {DeleteButton} from "../elements/deteleButton";
+import {convertToObject} from "../fetch/fetchGet";
 
 export function Task() {
+
     return (
         <div>
             <h1>Task</h1>
             <p><Link to="/robot">Robot</Link></p>
-            <p><Link to="/area">Area</Link></p>
-            <p><Link to="/time">Time</Link></p>
             <div>
                 <h2>Create Area</h2>
                 <CreateArea></CreateArea>
@@ -26,13 +26,44 @@ export function Task() {
             </div>
             <br></br>
             <DeleteButton onClick={fetchDeleteTask} name={"Task"}></DeleteButton>
-            <br></  br>
+            <br></br>
             <UpdateTask></UpdateTask>
+            <GetAreas></GetAreas>
+            <GetTimes></GetTimes>
         </div>
     )
 }
 
-export function CreateArea() {
+function GetAreas() {
+    const areas = convertToObject(`api/area/task/1?offset=0&limit=100`, 'areas');
+    return <div>
+        <h1>Areas</h1>
+        {areas && areas.map(area => (
+            <div key={area.id}>
+                <h2><Link to={"/area"}>{area.name}</Link></h2>
+                <p>Description: {area.description}</p>
+                <p>Size: {area.width}x{area.height}</p>
+            </div>
+        ))}
+    </div>
+}
+
+function GetTimes() {
+    const times = convertToObject(`api/time/task/1?offset=0&limit=100`, 'times');
+    return <div>
+        <h1>Times</h1>
+        {times && times.map(time => (
+            <div key={time.id}>
+                <h2><Link to={"/time"}>{time.description}</Link></h2>
+                <h2>{time.weekDay}</h2>
+                <p>Start Time: {time.startTime}</p>
+                <p>End Time: {time.endTime}</p>
+            </div>
+        ))}
+    </div>
+}
+
+function CreateArea() {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [height, setHeight] = useState(0);
@@ -71,7 +102,7 @@ export function CreateArea() {
 }
 
 
-export function CreateTime() {
+function CreateTime() {
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
     const [weekDay, setWeekDay] = useState('');
@@ -116,7 +147,7 @@ async function fetchDeleteTask() {
 }
 
 
-export function UpdateTask() {
+function UpdateTask() {
     const [status, setStatus] = useState('');
 
     async function clickHandler() {

@@ -4,12 +4,22 @@ import {fetchWrapper} from "../fetch/fetchPost";
 import {RobotUpdateInputModel} from "../types/RobotInputModel";
 import {UpdateRobotForm} from "../forms/robotForms";
 import {DeleteButton} from "../elements/deteleButton";
+import {convertToObject} from "../fetch/fetchGet";
 
 export function Robot() {
+    const robot = convertToObject(`api/robot/1`)
+
     return (
         <div>
-            <h1>Robot</h1>
             <p><Link to="/robots">Back to Robots</Link></p>
+            {robot !== undefined && (
+                <div>
+                    <h1>{robot.name}</h1>
+                    <p>Status: {robot.status}</p>
+                    <p>Characteristics: {robot.characteristics}</p>
+                    <br></br>
+                </div>
+            )}
             <p><Link to="/tasks">My Tasks</Link></p>
             <DeleteButton onClick={fetchDeleteRobot} name={"Robot"}></DeleteButton>
             <UpdateRobotPage></UpdateRobotPage>
@@ -36,11 +46,12 @@ export function UpdateRobotPage() {
         const uri = 'api/robot/update/1';
         try {
             const jsonData = await fetchWrapper(uri, 'POST', body);
-            console.log('Sucesso!', jsonData);
+            console.log('Success!', jsonData);
         } catch (error) {
-            console.error('Houve um erro na requisição:', error);
+            console.error('There was an error in the request:', error);
         }
     }
+
     return (
         <div className="container">
             <UpdateRobotForm

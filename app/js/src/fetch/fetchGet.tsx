@@ -29,3 +29,25 @@ export function useFetchGet({uri}: { uri: string }): string | undefined {
     }, [])
     return content
 }
+
+export function convertToObject(uri, propertyName = undefined) {
+    const content = useFetchGet({uri});
+    let object;
+    if (propertyName == undefined) {
+        if (content !== undefined) {
+            object = JSON.parse(content);
+            console.log("AAA" + object);
+        }
+    } else {
+        if (content !== undefined) {
+            console.log("PN" + propertyName);
+            object = JSON.parse(content)[propertyName];
+
+            console.log("CC" + object);
+            console.log("BB" + content);
+        }
+    }
+
+    return object;
+}
+

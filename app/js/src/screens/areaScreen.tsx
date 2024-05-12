@@ -5,13 +5,23 @@ import {fetchWrapper} from "../fetch/fetchPost";
 import {UpdateAreaForm} from "../forms/areaForms";
 import {DeleteButton} from "../elements/deteleButton";
 import {AreaUpdateInputModel} from "../types/AreaInputModel";
+import {convertToObject} from "../fetch/fetchGet";
 
 
 export function Area() {
+    const area = convertToObject(`api/area/1`)
+
     return (
         <div>
-            <h1>Area</h1>
             <p><Link to="/task">Back to Task</Link></p>
+            {area !== undefined && (
+                <div>
+                    <h1>{area.name}</h1>
+                    <p>Size: {area.width}x{area.height}</p>
+                    <p>Description: {area.description}</p>
+                    <br></br>
+                </div>
+            )}
             <UpdateArea></UpdateArea>
             <DeleteButton onClick={fetchDeleteArea} name={"Area"}></DeleteButton>
         </div>

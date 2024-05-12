@@ -4,12 +4,23 @@ import {TimeUpdateInputModel} from "../types/TimeInputModel";
 import {fetchWrapper} from "../fetch/fetchPost";
 import {UpdateTimeForm} from "../forms/timeForms";
 import {DeleteButton} from "../elements/deteleButton";
+import {convertToObject} from "../fetch/fetchGet";
 
 export function Time() {
+
+    const times = convertToObject(`api/time/1`);
+
     return (
         <div>
-            <h1>Time</h1>
             <p><Link to="/task">Back to Task</Link></p>
+            {times && (
+                <div>
+                    <h1>Description: {times.description}</h1>
+                    <p>Start Time: {times.startTime}</p>
+                    <p>End Time: {times.endTime}</p>
+                    <p>Week Day: {times.weekDay}</p>
+                </div>
+            )}
             <UpdateTime></UpdateTime>
             <DeleteButton onClick={fetchDeleteTime} name={"Time"}></DeleteButton>
         </div>
