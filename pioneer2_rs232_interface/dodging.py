@@ -8,7 +8,7 @@ from pioneer2_rs232_interface.utils import process_command
 
 
 # E4a
-def dodge_obstacle(ers, sonars, state_machine):
+def dodge_obstacle(ers, state_machine, sonars):
     direction = detects_an_object_ahead(sonars)
     if direction == Direction.LEFT:
         state_machine.dodge_direction = direction
@@ -25,11 +25,11 @@ def dodge_obstacle(ers, sonars, state_machine):
 
 
 # E4a1
-def get_sip_for_dodge(state_machine, ers):
-    initial = state_machine.initial_sip_time
+def get_sip_for_dodge(ers, state_machine):
+    initial = ers.init_time_sip
     current = datetime.now().timestamp()
-    if ers.__serial_communication.check_sip_availability() and (initial - current > 0.100):
-        state_machine.initial_sip_time = datetime.now().timestamp()
+    if ers.__serial_communication.check_sip_availability() and (current - initial > 0.100):
+        ers.init_time_sip = datetime.now().timestamp()
         sip_info_aux = ers.__serial_communication.get_sip()
         if sip_info_aux != ers.sip_info:
             ers.sip_info = sip_info_aux

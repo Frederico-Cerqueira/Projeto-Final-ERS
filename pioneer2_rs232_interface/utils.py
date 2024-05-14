@@ -1,9 +1,5 @@
 from datetime import datetime
 
-from computer_vision.main import there_is_trash
-from pioneer2_rs232_interface.command import Command
-
-
 def process_command(ers):
     # Set initial coordinates
     if ers.sip_info is not None:
@@ -18,9 +14,10 @@ def process_command(ers):
     elif ers.__serial_communication.is_connected():
         ers.__serial_communication.send_command(ers.command.name, ers.command.args)
 
-
+# TODO
 def detect_trash():
-    return there_is_trash()
+    #Chamar função da visão que deteta o lixo e retorna true or false
+    return False
 
 #TODO
 def detect_limit():
