@@ -13,21 +13,21 @@ export function Form({
                          buttonName
                      }) {
     return (<div>
-        <label className="labelForm">Name:</label>
+        <label>Name:</label>
         <input type="text" className="input-styled" value={name} onChange={changeHandlerName}/>
 
         <br/>
 
-        <label className="labelForm">Email:</label>
-        <input type="text" className="input-styled" value={email} onChange={changeHandlerEmail}/>
+        <label>Email:</label>
+        <input type="text" value={email} onChange={changeHandlerEmail}/>
 
         <br/>
 
-        <label className="labelForm">Password:</label>
-        <input type="password" className="input-styled" autoComplete="off" value={password}
+        <label>Password:</label>
+        <input type="password" autoComplete="off" value={password}
                onChange={changeHandlerPassword}/>
         <Error error={error} msg={msg}/>
-        <button className="buttonForm" onClick={clickHandler}>{buttonName}</button>
+        <button onClick={clickHandler}>{buttonName}</button>
     </div>)
 }
 
