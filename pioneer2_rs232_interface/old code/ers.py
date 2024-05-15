@@ -4,8 +4,8 @@
 import sys
 import queue
 
-sys.path.append("./serial_communication")
-sys.path.append("./serial_communication/communication_protocol")
+sys.path.append("../serial_communication")
+sys.path.append("../serial_communication/communication_protocol")
 
 from command import Command
 from sonars import create_sonar, update_sonar_info, detect_obj, detects_an_object_ahead, Direction

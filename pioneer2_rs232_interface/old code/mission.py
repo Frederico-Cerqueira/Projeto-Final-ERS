@@ -2,7 +2,6 @@ import datetime
 import time
 
 from command import Command
-from ers import ERS
 
 
 def area(height, width, side_distance):

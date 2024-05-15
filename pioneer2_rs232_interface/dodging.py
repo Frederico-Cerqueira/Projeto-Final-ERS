@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from pioneer2_rs232_interface.command import Command
-from pioneer2_rs232_interface.sonars import update_sonar_info, Direction, \
-    detects_an_object_left, detects_an_object_right, detects_an_object_ahead
-from pioneer2_rs232_interface.state_machine import States
-from pioneer2_rs232_interface.utils import process_command
+from command import Command
+from sonars import detects_an_object_ahead, Direction, update_sonar_info, detects_an_object_left, \
+    detects_an_object_right
+from state_machine import States
+from utils import process_command
 
 
 # E4a

@@ -3,8 +3,8 @@ import time
 import sys
 from datetime import datetime
 
-sys.path.append("./serial_communication")
-sys.path.append("./serial_communication/communication_protocol")
+sys.path.append("../serial_communication")
+sys.path.append("../serial_communication/communication_protocol")
 
 from command import Command
 from serial_communication.serial_communication import SerialCommunication
@@ -284,26 +284,16 @@ def add_commands(robo, cmds):
 
 
 if __name__ == '__main__':
-    pioneer2 = ERS('COM10', 9600)
+    pioneer2 = ERS('COM6', 9600)
     try:
         # pioneer2.turn_off()
         # pioneer2.add_console_command(Command('MOVE', 6000))
         commands = [
             Command('MOVE', 1000),
+            Command('HEAD', 180),
             Command('MOVE', 1000),
-            Command('MOVE', 1000),
-            Command('MOVE', 1000),
-            Command('MOVE', 1000),
-            Command('MOVE', 1000),
-            Command('HEAD', 90),
-            Command('MOVE', 1000),
-            Command('HEAD', 90),
-            Command('MOVE', 1000),
-            Command('MOVE', 1000),
-            Command('MOVE', 1000),
-            Command('MOVE', 1000),
-            Command('MOVE', 1000),
-            Command('MOVE', 1000),
+            #Command('MOVE', 1000),
+
         ]
         add_commands(pioneer2, commands)
         add_commands(pioneer2, commands)

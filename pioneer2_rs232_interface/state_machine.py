@@ -1,12 +1,9 @@
+from command import Command
+from dodging import dodge_obstacle, get_sip_for_dodge, process_sip_for_dodge, dodge_obstacle_left, dodge_obstacle_right
+from sonars import update_sonar_info, detect_obj
+from utils import process_command, detect_trash, detect_limit, last_command_terminated, get_sip_for_change_direction
 from datetime import datetime
 from enum import Enum
-
-from pioneer2_rs232_interface.command import Command
-from pioneer2_rs232_interface.dodging import get_sip_for_dodge, process_sip_for_dodge, dodge_obstacle_left, \
-    dodge_obstacle_right, dodge_obstacle
-from pioneer2_rs232_interface.sonars import update_sonar_info, detect_obj
-from pioneer2_rs232_interface.utils import process_command, detect_trash, detect_limit, last_command_terminated
-
 
 # E1
 def initial_state(ers, state_machine):
@@ -67,10 +64,36 @@ def rate_obstacle(ers, state_machine):
 
 
 # E6
-# TODO
-def change_direction():
-    # O robô chegou a um limite definido, deve virar-se e voltar par
-    pass
+def change_direction(ers, state_machine, limit,initial_side):
+    x_pos = ers.sip_info['x_pos']
+    y_pos = ers.sip_info['y_pos']
+    x_limit, y_limit = limit
+    state_machine.side = initial_side
+
+    if detect_limit(x_pos, x_limit, y_pos, y_limit):
+        if state_machine.side == 'left':
+            state_machine.side = 'right'
+            ers.command = Command('HEAD', -90)
+            process_command(ers)
+            if last_command_terminated(ers):
+                ers.command = Command('MOVE', 1000)
+                process_command(ers)
+                if last_command_terminated(ers):
+                    ers.command = Command('HEAD', -90)
+                    process_command(ers)
+                    state_machine.state = States.E2
+        else:
+            state_machine.side = 'left'
+            ers.command = Command('HEAD', 90)
+            process_command(ers)
+            if last_command_terminated(ers):
+                ers.command = Command('MOVE', 1000)
+                process_command(ers)
+                if last_command_terminated(ers):
+                    ers.command = Command('HEAD', 90)
+                    process_command(ers)
+                    state_machine.state = States.E2
+        state_machine.state = States.E6
 
 
 def get_trash(ers, state_machine):
@@ -105,6 +128,7 @@ class States(Enum):
 class StateMachine:
     def __init__(self):
         self.state = States.E1
+        self.side = None
         # self.initial_pulse_time = datetime.now().timestamp()
         # self.initial_sip_time = datetime.now().timestamp()
         self.wait_for_obs = datetime.now().timestamp()

@@ -50,11 +50,18 @@ function GetAreas() {
 
 function GetTimes() {
     const times = convertToObject(`api/time/task/1?offset=0&limit=100`, 'times');
+    const timeId = 1;
+    const linkPath = {
+        pathname: '/time',
+        search: "AAA",
+        hash: "BBB",
+        state: { data: "CCC" }
+    };
     return <div>
         <h1>Times</h1>
         {times && times.map(time => (
             <div key={time.id}>
-                <h2><Link to={"/time"}>{time.description}</Link></h2>
+                <h2><Link to={linkPath}>{time.description}</Link></h2>
                 <h2>{time.weekDay}</h2>
                 <p>Start Time: {time.startTime}</p>
                 <p>End Time: {time.endTime}</p>

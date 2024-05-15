@@ -3,8 +3,8 @@
 # Define import path
 import sys
 
-sys.path.append("./serial_communication")
-sys.path.append("./serial_communication/communication_protocol")
+sys.path.append("../serial_communication")
+sys.path.append("../serial_communication/communication_protocol")
 
 import threading
 import queue

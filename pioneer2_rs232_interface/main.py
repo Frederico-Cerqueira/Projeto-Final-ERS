@@ -1,5 +1,5 @@
-from pioneer2_rs232_interface.ers_final import ERS
-from pioneer2_rs232_interface.state_machine import StateMachine
+from ers_final import ERS
+from state_machine import StateMachine
 
 if __name__ == '__main__':
     pioneer2 = ERS('COM3', 9600)

@@ -55,22 +55,12 @@ class ERS:
 
     def turn_off(self):
         if self.__serial_communication.is_connected():
-            # Disables the motors
             self.send_command('STOP', None)
-
-            # Close server and client connection
             self.send_command('CLOSE')
-
-            # Terminate serial connection
             self.__serial_communication.disconnect()
 
     def send_command(self, command, arg=None):
         self.__serial_communication.send_command(command, arg)
-
-    def send_pulse(self):
-        # Keep the robot awake
-        print("Sending pulse")
-        self.send_command('PULSE')
 
     def check_pulse(self):
         final = datetime.now().timestamp()
@@ -78,15 +68,14 @@ class ERS:
         if self.__serial_communication.is_connected() and (final - init > 1.500):
             # Send Pulse
             self.init_time_pulse = datetime.now().timestamp()
-            self.send_pulse()
+            self.send_command('PULSE')
 
     #TODO
-    def check_photo(self):
+    def take_photo(self):
         #Tem de ver se já passou x tempo para tirar proxima foto
         pass
 
     def run(self, machine):
-
         # Initial time sip and pulse
         self.init_time_pulse, self.init_time_sip = datetime.now().timestamp()
 
@@ -97,5 +86,5 @@ class ERS:
             self.check_pulse()
             # tira foto e processa? assim vai ter prioridade sob obj
             # só tira foto aqui e no process_sip vê se há lixo? assim posso passar por cima do lixo
-            self.check_photo()
+            self.take_photo()
             machine.state_machine(ers=self, sonars=sonars)

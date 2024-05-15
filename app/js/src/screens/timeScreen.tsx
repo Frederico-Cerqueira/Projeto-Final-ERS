@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Link} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import {TimeUpdateInputModel} from "../types/TimeInputModel";
 import {fetchWrapper} from "../fetch/fetchPost";
 import {UpdateTimeForm} from "../forms/timeForms";
@@ -7,8 +7,12 @@ import {DeleteButton} from "../elements/deteleButton";
 import {convertToObject} from "../fetch/fetchGet";
 
 export function Time() {
-
+    const location = useLocation();
+    //const timeId = location.state?.timeId;
+    console.log('location:', location)
+    //console.log('timeId:', timeId)
     const times = convertToObject(`api/time/1`);
+
 
     return (
         <div>
