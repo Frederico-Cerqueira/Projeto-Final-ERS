@@ -1,4 +1,5 @@
 import sys
+
 from datetime import datetime
 from serial_communication.serial_communication import SerialCommunication
 from sonars import create_sonar
