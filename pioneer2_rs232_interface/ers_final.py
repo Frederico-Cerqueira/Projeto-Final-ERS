@@ -1,11 +1,10 @@
 import sys
 from datetime import datetime
+from serial_communication.serial_communication import SerialCommunication
+from sonars import create_sonar
 
 sys.path.append("./serial_communication")
 sys.path.append("./serial_communication/communication_protocol")
-
-from serial_communication.serial_communication import SerialCommunication
-from sonars import create_sonar
 
 DISTANCE_ERROR_RANGE = range(-30, 30)
 ANGLE_ERROR_RANGE = range(-3, 3)
@@ -30,13 +29,13 @@ class ERS:
         self.init_time_pulse = datetime.now().timestamp()
 
         # Start serial communication
-        self.__serial_communication = SerialCommunication(port, baudrate)
+        self.serial_communication = SerialCommunication(port, baudrate)
 
         # Establish communication with the robot if the serial connection is started.
-        if self.__serial_communication.is_connected():
-            self.__establish_communication()
+        if self.serial_communication.is_connected():
+            self.establish_communication()
 
-    def __establish_communication(self):
+    def establish_communication(self):
         """ Synchronize communication with the robot and start the robot's servers and motors. """
         print("Pioneer2 RS-232 Interface - Establishing Connection")
 
@@ -54,30 +53,31 @@ class ERS:
         self.send_command('SETO')
 
     def turn_off(self):
-        if self.__serial_communication.is_connected():
+        if self.serial_communication.is_connected():
             self.send_command('STOP', None)
             self.send_command('CLOSE')
-            self.__serial_communication.disconnect()
+            self.serial_communication.disconnect()
 
     def send_command(self, command, arg=None):
-        self.__serial_communication.send_command(command, arg)
+        self.serial_communication.send_command(command, arg)
 
     def check_pulse(self):
         final = datetime.now().timestamp()
         init = self.init_time_pulse
-        if self.__serial_communication.is_connected() and (final - init > 1.500):
+        if self.serial_communication.is_connected() and (final - init > 1.500):
             # Send Pulse
             self.init_time_pulse = datetime.now().timestamp()
             self.send_command('PULSE')
 
-    #TODO
+    # TODO
     def take_photo(self):
-        #Tem de ver se já passou x tempo para tirar proxima foto
+        # Tem de ver se já passou x tempo para tirar proxima foto
         pass
 
     def run(self, machine):
         # Initial time sip and pulse
-        self.init_time_pulse, self.init_time_sip = datetime.now().timestamp()
+        self.init_time_pulse = datetime.now().timestamp()
+        self.init_time_sip = datetime.now().timestamp()
 
         sonars = []
         create_sonar(sonars)

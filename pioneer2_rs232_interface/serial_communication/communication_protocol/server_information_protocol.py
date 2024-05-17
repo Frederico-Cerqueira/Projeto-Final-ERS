@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from protocol_functions import calculate_packet_checksum
 
 """
 """

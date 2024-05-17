@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 from state_machine import States
 
 
@@ -13,8 +14,9 @@ def process_command(ers):
     if ers.command.name == 'EXIT':
         ers.turn_off()
     # Otherwise, if the serial communication is active, attempt to send the command to the robot
-    elif ers.__serial_communication.is_connected():
-        ers.__serial_communication.send_command(ers.command.name, ers.command.args)
+    elif ers.serial_communication.is_connected():
+        ers.send_command(ers.command.name, ers.command.args)
+
 
 
 # TODO
@@ -37,14 +39,15 @@ def detect_limit(x_pos, x_lim, y_pos, y_lim):
 
 def last_command_terminated(ers):
     if ers.sip_info['motor_status']:
-        if ers.command is not None:
-            print("Saving current command")
-            ers.last_command = ers.command
-            ers.command = None
+        print("motors on")
+        ers.command = None
+    if not ers.sip_info['motor_status'] and ers.command is None:
+        print("motors off")
+        print("true")
+        return True
     else:
-        if ers.command is None:
-            return True
-    return False
+        print("false")
+        return False
 
 def get_sip_for_change_direction(ers, state_machine):
     initial = ers.init_time_sip

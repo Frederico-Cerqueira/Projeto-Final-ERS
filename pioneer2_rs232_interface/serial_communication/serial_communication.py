@@ -2,8 +2,8 @@
 
 import serial
 import time
-from communication_protocol.client_command_protocol import get_client_command_packet
-from communication_protocol.server_information_protocol import get_server_information_packet
+from pioneer2_rs232_interface.serial_communication.communication_protocol.client_command_protocol import get_client_command_packet
+from pioneer2_rs232_interface.serial_communication.communication_protocol.server_information_protocol import get_server_information_packet
 
 """
 
