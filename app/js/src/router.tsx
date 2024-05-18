@@ -24,49 +24,45 @@ export const router = createBrowserRouter(
                     element: <InitialScreen/>
                 },
                 {
-                    path: "area",
+                    path: "/area/:id",
                     element: <Area/>
                 },
                 {
-                    path: "createRobot",
+                    path: "/createRobot",
                     element: <CreateRobot/>
                 },
                 {
-                    path: "createUser",
+                    path: "/createUser",
                     element: <CreateUser/>,
                 },
                 {
-                    path: "createTask",
+                    path: "/createTask",
                     element: <CreateTask/>,
                 },
                 {
-                    path: "login",
+                    path: "/login",
                     element: <Login/>
                 },
                 {
-                    path: "robot",
+                    path: "/robot/:id",
                     element: <Robot/>
                 },
                 {
-                    path: "robots",
+                    path: "/robots",
                     element: <Robots/>
                 },
                 {
-                    path: "task",
+                    path: "/task/:id",
                     element: <Task/>
                 },
                 {
-                    path: "tasks",
+                    path: "/tasks",
                     element: <Tasks/>
                 },
                 {
-                    path: "time",
+                    path: "/time/:id",
                     element: <Time/>
                 },
-                /** URGENTEEE
-                 * atrás de cada path temos de meter "/" tal como está no do User
-                 * atrás de cada path para fazer fetch temos de meter "/api"
-                 */
                 {
                     path: "/user/:id",
                     element: <User/>

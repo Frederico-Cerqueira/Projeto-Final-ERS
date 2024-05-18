@@ -1,28 +1,29 @@
 import React, {useState} from "react";
-import {Link, useLocation} from "react-router-dom";
+import {Link, useLocation, useParams} from "react-router-dom";
 import {TimeUpdateInputModel} from "../types/TimeInputModel";
 import {fetchWrapper} from "../fetch/fetchPost";
 import {UpdateTimeForm} from "../forms/timeForms";
 import {DeleteButton} from "../elements/deteleButton";
-import {convertToObject} from "../fetch/fetchGet";
+import {useFetchGet} from "../fetch/fetchGet";
 
 export function Time() {
-    const location = useLocation();
-    //const timeId = location.state?.timeId;
-    console.log('location:', location)
-    //console.log('timeId:', timeId)
-    const times = convertToObject(`api/time/1`);
+    const param = useParams()
+    const [time, setTime] = useState(null)
+    useFetchGet(`/api/time/${param.id}`, param.id, setTime);
 
+    const location = useLocation();
+    const taskDetails = location.state;
+    console.log('taskDetails', location);
 
     return (
         <div>
             <p><Link to="/task">Back to Task</Link></p>
-            {times && (
+            {time && (
                 <div>
-                    <h1>Description: {times.description}</h1>
-                    <p>Start Time: {times.startTime}</p>
-                    <p>End Time: {times.endTime}</p>
-                    <p>Week Day: {times.weekDay}</p>
+                    <h1>Description: {time.description}</h1>
+                    <p>Start Time: {time.startTime}</p>
+                    <p>End Time: {time.endTime}</p>
+                    <p>Week Day: {time.weekDay}</p>
                 </div>
             )}
             <UpdateTime></UpdateTime>

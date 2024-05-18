@@ -14,7 +14,7 @@ export function Tasks() {
             <div>
                 {tasks !== undefined && tasks.map(task => (
                     <div key={task.id}>
-                        <h2><Link to={`/task`}>{task.name}</Link></h2>
+                        <h2><Link to={`/task/`+task.id}>{task.name}</Link></h2>
                         <p>Status: {task.status}</p>
                         <br></br>
                     </div>

@@ -1,16 +1,13 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Link, useParams} from "react-router-dom";
-import {convertToObject} from "../fetch/fetchGet";
+import {useFetchGet} from "../fetch/fetchGet";
+
 
 
 export function User() {
     const param = useParams()
-    console.log("param = " + param.id)
     const [user, setUser] = useState(null)
-
-    /** FAZ COM ESTES FETCHES ELES FUNCIONAM
-     * **/
-    fetch(`/api/user/`+ param.id).then(response => response.json()).then(data => setUser(data))
+    useFetchGet(`/api/user/${param.id}`, param.id, setUser);
 
     return (
         <div>

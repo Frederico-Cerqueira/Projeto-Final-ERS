@@ -1,25 +1,27 @@
 import React, {useState} from 'react';
-import {Link} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import {fetchWrapper} from "../fetch/fetchPost";
 import {RobotUpdateInputModel} from "../types/RobotInputModel";
 import {UpdateRobotForm} from "../forms/robotForms";
 import {DeleteButton} from "../elements/deteleButton";
-import {convertToObject} from "../fetch/fetchGet";
+import {convertToObject, useFetchGet} from "../fetch/fetchGet";
 
 export function Robot() {
-    const robot = convertToObject(`api/robot/1`)
+    const param = useParams()
+    const [robot, setRobot] = useState(null)
+    useFetchGet(`/api/robot/${param.id}`, param.id, setRobot);
 
     return (
         <div>
             <p><Link to="/robots">Back to Robots</Link></p>
-            {robot !== undefined && (
+            {robot && (
                 <div>
                     <h1>{robot.name}</h1>
                     <p>Status: {robot.status}</p>
                     <p>Characteristics: {robot.characteristics}</p>
                     <br></br>
-                </div>
-            )}
+                </div>)
+            }
             <p><Link to="/tasks">My Tasks</Link></p>
             <DeleteButton onClick={fetchDeleteRobot} name={"Robot"}></DeleteButton>
             <UpdateRobotPage></UpdateRobotPage>

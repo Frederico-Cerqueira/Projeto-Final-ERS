@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Link} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import {AreaInputModel} from "../types/AreaInputModel";
 import {fetchWrapper} from "../fetch/fetchPost";
 import {CreateAreaForm} from "../forms/areaForms";
@@ -8,13 +8,17 @@ import {CreateTimeForm} from "../forms/timeForms";
 import {TaskUpdateInputModel} from "../types/TaskInputModel";
 import {UpdateTaskForm} from "../forms/taskForms";
 import {DeleteButton} from "../elements/deteleButton";
-import {convertToObject} from "../fetch/fetchGet";
+import {useFetchGet} from "../fetch/fetchGet";
 
 export function Task() {
-
+    const { id } = useParams()
+    const [task, setTask] = useState(null)
+    useFetchGet(`/api/task/${id}`,id, setTask);
     return (
         <div>
-            <h1>Task</h1>
+            {task && (
+                <h1>{task.name}</h1>)
+            }
             <p><Link to="/robot">Robot</Link></p>
             <div>
                 <h2>Create Area</h2>
@@ -28,40 +32,41 @@ export function Task() {
             <DeleteButton onClick={fetchDeleteTask} name={"Task"}></DeleteButton>
             <br></br>
             <UpdateTask></UpdateTask>
-            <GetAreas></GetAreas>
-            <GetTimes></GetTimes>
+            <GetAreas taskID={id}></GetAreas>
+            <GetTimes taskID={id}></GetTimes>
+
         </div>
     )
 }
 
-function GetAreas() {
-    const areas = convertToObject(`api/area/task/1?offset=0&limit=100`, 'areas');
+function GetAreas(id) {
+    const taskID = id.taskID
+    const [areas, setAreas] = useState(null)
+    useFetchGet('/api/area/task/'+taskID+'?offset=0&limit=100', taskID, setAreas);
+
     return <div>
         <h1>Areas</h1>
-        {areas && areas.map(area => (
+        {areas && areas.areas.map(area => (
             <div key={area.id}>
-                <h2><Link to={"/area"}>{area.name}</Link></h2>
-                <p>Description: {area.description}</p>
-                <p>Size: {area.width}x{area.height}</p>
+                <h2><Link to={'/area/'+area.id}>{area.name}</Link></h2>
+                <p>{area.description}</p>
+                <p>Height: {area.height}</p>
+                <p>Width: {area.width}</p>
             </div>
         ))}
     </div>
 }
 
-function GetTimes() {
-    const times = convertToObject(`api/time/task/1?offset=0&limit=100`, 'times');
-    const timeId = 1;
-    const linkPath = {
-        pathname: '/time',
-        search: "AAA",
-        hash: "BBB",
-        state: { data: "CCC" }
-    };
+function GetTimes(id) {
+
+    const taskID = id.taskID
+    const [times, setTimes] = useState(null)
+    useFetchGet('/api/time/task/'+taskID+'?offset=0&limit=100', taskID, setTimes);
     return <div>
         <h1>Times</h1>
-        {times && times.map(time => (
+        {times && times.times.map(time => (
             <div key={time.id}>
-                <h2><Link to={linkPath}>{time.description}</Link></h2>
+                <h2><Link to={'/time/'+time.id}>{time.description}</Link></h2>
                 <h2>{time.weekDay}</h2>
                 <p>Start Time: {time.startTime}</p>
                 <p>End Time: {time.endTime}</p>

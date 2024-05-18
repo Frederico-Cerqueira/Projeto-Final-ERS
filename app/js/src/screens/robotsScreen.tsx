@@ -13,7 +13,7 @@ export function Robots() {
             <p><Link to="/createRobot">Create Robot</Link></p>
             <div>{robots !== undefined && robots.map(robot => (
                 <div key={robot.id}>
-                    <h2><Link to={`/robot`}>{robot.name}</Link></h2>
+                    <h2><Link to={`/robot/`+robot.id}>{robot.name}</Link></h2>
                     <p>Status: {robot.status}</p>
                     <p>Characteristics: {robot.characteristics}</p>
 

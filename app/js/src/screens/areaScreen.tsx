@@ -1,20 +1,22 @@
 import React, {useState} from "react";
-import {Link} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 
 import {fetchWrapper} from "../fetch/fetchPost";
 import {UpdateAreaForm} from "../forms/areaForms";
 import {DeleteButton} from "../elements/deteleButton";
 import {AreaUpdateInputModel} from "../types/AreaInputModel";
-import {convertToObject} from "../fetch/fetchGet";
+import {convertToObject, useFetchGet} from "../fetch/fetchGet";
 
 
 export function Area() {
-    const area = convertToObject(`api/area/1`)
+    const param = useParams()
+    const [area, setArea] = useState(null)
+    useFetchGet(`/api/area/${param.id}`, param.id, setArea);
 
     return (
         <div>
             <p><Link to="/task">Back to Task</Link></p>
-            {area !== undefined && (
+            {area && (
                 <div>
                     <h1>{area.name}</h1>
                     <p>Size: {area.width}x{area.height}</p>
