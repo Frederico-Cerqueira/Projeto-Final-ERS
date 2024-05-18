@@ -35,8 +35,8 @@ module.exports = {
         static: path.resolve(__dirname, 'dist'),
         proxy: {
             '/api': {
-                target: 'http://localhost:8080/',
-                pathRewrite: { '^/api': '/' },
+                target: 'http://localhost:8080',
+                pathRewrite: { '^/api': '' },
             },
         },
         port: 8081,

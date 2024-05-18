@@ -22,6 +22,7 @@ export function UserManagement({uri, msg, buttonName, link, linkMessage}: {
         const body: UserInputModel = {name, email, password}
         try {
             const jsonData = await fetchWrapper(uri, 'POST', body);
+            navigate('/user/'+jsonData.id) //usar o navigate e fazer sempre o / antes
             console.log('Success!', jsonData);
         } catch (error) {
             console.error('There was an error in the request:', error);

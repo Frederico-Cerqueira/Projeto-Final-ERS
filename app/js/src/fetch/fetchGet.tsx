@@ -5,6 +5,8 @@ export async function fetchGet(uri: string) {
     return await response.text();
 }
 
+/** ESTAS DUAS É QUE NÃO DEIXAVAM FAZER ESTA PORRA BEM
+ * */
 export function useFetchGet({uri}: { uri: string }): string | undefined {
     const [content, setContent] = useState<string>(undefined)
 

@@ -18,53 +18,63 @@ export const router = createBrowserRouter(
     [
         {
             path: "/",
-            element: <InitialScreen/>
-        },
-        {
-            path: "area",
-            element: <Area/>
-        },
-        {
-            path: "createRobot",
-            element: <CreateRobot/>
-        },
-        {
-            path: "createUser",
-            element: <CreateUser/>,
-        },
-        {
-            path: "createTask",
-            element: <CreateTask/>,
-        },
-        {
-            path: "login",
-            element: <Login/>
-        },
-        {
-            path: "robot",
-            element: <Robot/>
-        },
-        {
-            path: "robots",
-            element: <Robots/>
-        },
-        {
-            path: "task",
-            element: <Task/>
-        },
-        {
-            path: "tasks",
-            element: <Tasks/>
-        },
-        {
-            path: "time",
-            element: <Time/>
-        },
-        {
-            path: "user",
-            element: <User/>
-        },
+            children: [
+                {
+                    path: "/",
+                    element: <InitialScreen/>
+                },
+                {
+                    path: "area",
+                    element: <Area/>
+                },
+                {
+                    path: "createRobot",
+                    element: <CreateRobot/>
+                },
+                {
+                    path: "createUser",
+                    element: <CreateUser/>,
+                },
+                {
+                    path: "createTask",
+                    element: <CreateTask/>,
+                },
+                {
+                    path: "login",
+                    element: <Login/>
+                },
+                {
+                    path: "robot",
+                    element: <Robot/>
+                },
+                {
+                    path: "robots",
+                    element: <Robots/>
+                },
+                {
+                    path: "task",
+                    element: <Task/>
+                },
+                {
+                    path: "tasks",
+                    element: <Tasks/>
+                },
+                {
+                    path: "time",
+                    element: <Time/>
+                },
+                /** URGENTEEE
+                 * atrás de cada path temos de meter "/" tal como está no do User
+                 * atrás de cada path para fazer fetch temos de meter "/api"
+                 */
+                {
+                    path: "/user/:id",
+                    element: <User/>
+                },
 
+            ]
+        }
     ]
 )
+
 
