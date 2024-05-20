@@ -84,7 +84,17 @@ def change_direction(ers, state_machine, limit,initial_side):
     y_pos = ers.sip_info['y_pos']
     x_limit, y_limit = limit
     state_machine.side = initial_side
-
+    if detect_limit(x_pos, x_limit, y_pos, y_limit):
+        if state_machine.side == 'left':
+            state_machine.side = 'right'
+            ers.command = Command('HEAD', -180)
+            ers.command = Command('MOVE', 1000)
+        else:
+            state_machine.side = 'left'
+            ers.command = Command('HEAD', 180)
+            ers.command = Command('MOVE', 1000)
+    state_machine.state = States.E6
+    """
     if detect_limit(x_pos, x_limit, y_pos, y_limit):
         if state_machine.side == 'left':
             state_machine.side = 'right'
@@ -107,8 +117,8 @@ def change_direction(ers, state_machine, limit,initial_side):
                 if last_command_terminated(ers):
                     ers.command = Command('HEAD', 90)
                     process_command(ers)
-                    state_machine.state = States.E2
-        state_machine.state = States.E6
+                    state_machine.state = States.E2"""
+
 
 
 def get_trash(ers, state_machine):
