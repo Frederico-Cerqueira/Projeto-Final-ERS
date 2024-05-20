@@ -1,8 +1,12 @@
 import sys
 
 from datetime import datetime
+
+from pioneer2_rs232_interface.sip_information.coordinates import CoordinatesInfo
+from pioneer2_rs232_interface.sip_information.motors import MotorsInfo
+from pioneer2_rs232_interface.sip_information.sip_info import SipInfo
 from serial_communication.serial_communication import SerialCommunication
-from sonars import create_sonar
+from pioneer2_rs232_interface.sip_information.sonars import create_sonar
 
 sys.path.append("./serial_communication")
 sys.path.append("./serial_communication/communication_protocol")
@@ -13,19 +17,8 @@ ANGLE_ERROR_RANGE = range(-3, 3)
 
 class ERS:
     def __init__(self, port, baudrate):
-        self.sip_info = None
+        self.sip_info = []
         self.command = None
-        self.last_command = None
-        self.initial_coordinates = {
-            'x_pos': None,
-            'y_pos': None,
-            'th_pos': None
-        }
-        self.expected_final_coordinates = {
-            'x_pos': None,
-            'y_pos': None,
-            'th_pos': None
-        }
         self.init_time_sip = datetime.now().timestamp()
         self.init_time_pulse = datetime.now().timestamp()
 
@@ -75,6 +68,16 @@ class ERS:
         # Tem de ver se já passou x tempo para tirar proxima foto
         pass
 
+    # E2
+    def get_sip(self):
+        initial = self.init_time_sip
+        current = datetime.now().timestamp()
+        if self.serial_communication.check_sip_availability() and (current - initial > 0.100):
+            self.init_time_sip = datetime.now().timestamp()
+            sip_info_aux = self.serial_communication.get_sip()
+            if sip_info_aux != self.sip_info[-1]:
+                self.sip_info.append(sip_info_aux)
+
     def run(self, machine):
         # Initial time sip and pulse
         self.init_time_pulse = datetime.now().timestamp()
@@ -82,10 +85,12 @@ class ERS:
 
         sonars = []
         create_sonar(sonars)
+        coordinates = CoordinatesInfo(0, 0, 0, datetime.now())
+        motors = MotorsInfo(False, datetime.now())
+        sip = SipInfo(sonars, coordinates, motors)
 
         while True:
+            self.get_sip()
             self.check_pulse()
-            # tira foto e processa? assim vai ter prioridade sob obj
-            # só tira foto aqui e no process_sip vê se há lixo? assim posso passar por cima do lixo
             self.take_photo()
-            machine.state_machine(ers=self, sonars=sonars)
+            machine.state_machine(ers=self, sip=sip)

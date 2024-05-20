@@ -1,22 +1,17 @@
 from datetime import datetime
 
-
+from pioneer2_rs232_interface.sip_information.coordinates import update_coordinate_info
+from pioneer2_rs232_interface.sip_information.sonars import update_sonar_info
 from state_machine import States
 
 
 def process_command(ers):
-    # Set initial coordinates
-    if ers.sip_info is not None:
-        ers.initial_coordinates['x_pos'] = ers.sip_info['x_pos']
-        ers.initial_coordinates['y_pos'] = ers.sip_info['y_pos']
-        ers.initial_coordinates['th_pos'] = ers.sip_info['th_pos']
     # Process command
     if ers.command.name == 'EXIT':
         ers.turn_off()
     # Otherwise, if the serial communication is active, attempt to send the command to the robot
     elif ers.serial_communication.is_connected():
         ers.send_command(ers.command.name, ers.command.args)
-
 
 
 # TODO
@@ -37,17 +32,18 @@ def detect_limit(x_pos, x_lim, y_pos, y_lim):
     return False
 
 
-def last_command_terminated(ers):
-    if ers.sip_info['motor_status']:
+def last_command_terminated(ers, sip):
+    if sip.motors.on:
         print("motors on")
         ers.command = None
-    if not ers.sip_info['motor_status'] and ers.command is None:
+    if not sip.motors.on and ers.command is None:
         print("motors off")
         print("true")
         return True
     else:
         print("false")
         return False
+
 
 def get_sip_for_change_direction(ers, state_machine):
     initial = ers.init_time_sip
@@ -58,3 +54,10 @@ def get_sip_for_change_direction(ers, state_machine):
         if sip_info_aux != ers.sip_info:
             ers.sip_info = sip_info_aux
             state_machine.state = States.E6a2
+
+
+def process_sip(ers, sip):
+    for current_sip_info in ers.sip_info:
+        update_sonar_info(current_sip_info['sonars'], sip.sonars)
+        update_coordinate_info(current_sip_info, sip.coordinates)
+        ers.sip_info.remove(current_sip_info)
