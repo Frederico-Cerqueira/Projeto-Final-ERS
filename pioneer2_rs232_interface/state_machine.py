@@ -1,14 +1,14 @@
-import pioneer2_rs232_interface.sip_information.sonars
-from utils import process_sip
+from pioneer2_rs232_interface.sip_information.coordinates import update_coordinate_info
+from pioneer2_rs232_interface.sip_information.sonars import detect_obj, update_sonar_info, print_sonar_info
 from command import Command
-from pioneer2_rs232_interface.sip_information.sonars import detect_obj
-from utils import process_command, detect_trash, detect_limit, last_command_terminated
+from utils import process_command, detect_trash, detect_limit, last_command_terminated, process_sip
 from datetime import datetime
 from enum import Enum
 
 
 # E1 - pulse e tempo
 def initial_state(state_machine, ers):
+    print("ENTROU no E1")
     ers.command = Command('MOVE', 5000)
     process_command(ers)
     state_machine.state = States.E2
@@ -17,6 +17,7 @@ def initial_state(state_machine, ers):
 # E2 - processa sip e vê se é obj, lixo, limite ou next cmd
 def process_sip1(state_machine, ers, sip):
     process_sip(ers, sip)
+    print_sonar_info(sip.sonars)
     if detect_obj(sip.sonars):
         print("obj detected")
         state_machine.state = States.E3
@@ -55,12 +56,12 @@ def wait_for_obj(state_machine, ers):
 # E3b - vê se ainda há obj e vira para o lado certo e faz andar
 def theres_still_obj(state_machine, ers, sip):
     process_sip(ers, sip)
-    direction = pioneer2_rs232_interface.sip_information.sonars.detects_an_object_ahead(sip.sonars)
-    if direction != pioneer2_rs232_interface.sip_information.sonars.Direction.STAY:
-        print("obj detected -  turn to " + str(direction))
+    direction = sip.sonars.detects_an_object_ahead(sip.sonars)
+    if direction != sip.sonars.Direction.STAY:
+        print("obj detected -  turn to ", direction)
         state_machine.dodge_direction(direction)
         state_machine.x = sip.coordinates.x
-        if state_machine.dodge_direction is pioneer2_rs232_interface.sip_information.sonars.Direction.RIGHT:
+        if state_machine.dodge_direction is sip.sonars.Direction.RIGHT:
             ers.command = Command('HEAD', -90)  # DIREITA
             process_command(ers)
             ers.command = Command('MOVE', 5000)
@@ -79,14 +80,14 @@ def theres_still_obj(state_machine, ers, sip):
 # E3c - Fica a mover até deixar de ter obj na sua lateral e vira
 def first_move_until_obj(state_machine, ers, sip):
     process_sip(ers, sip)
-    if state_machine.dodge_direction is pioneer2_rs232_interface.sip_information.sonars.Direction.RIGHT:
-        if pioneer2_rs232_interface.sip_information.sonars.detects_an_object_left(sip.sonars):
+    if state_machine.dodge_direction is sip.sonars.Direction.RIGHT:
+        if sip.sonars.detects_an_object_left(sip.sonars):
             state_machine.dist = sip.coordinates.x - state_machine.x
             ers.command = Command('HEAD', 90)  # ESQUERDA
             process_command(ers)
             state_machine.state = States.E3d
     else:
-        if pioneer2_rs232_interface.sip_information.sonars.detects_an_object_right(sip.sonars):
+        if sip.sonars.detects_an_object_right(sip.sonars):
             ers.command = Command('HEAD', -90)  # DIREITA
             process_command(ers)
             state_machine.state = States.E3d
@@ -95,25 +96,25 @@ def first_move_until_obj(state_machine, ers, sip):
 # E3d - Fica a mover até ter obj na sua lateral
 def move_while_obj(state_machine, ers, sip):
     process_sip(ers, sip)
-    if state_machine.dodge_direction is pioneer2_rs232_interface.sip_information.sonars.Direction.RIGHT:
-        if pioneer2_rs232_interface.sip_information.sonars.detects_an_object_left(sip.sonars):
+    if state_machine.dodge_direction is sip.sonars.Direction.RIGHT:
+        if sip.sonars.detects_an_object_left(sip.sonars):
             state_machine.state = States.E3e
     else:
-        if pioneer2_rs232_interface.sip_information.sonars.detects_an_object_right(sip.sonars):
+        if sip.sonars.detects_an_object_right(sip.sonars):
             state_machine.state = States.E3e
 
 
 # E3e - Fica a mover até deixar de ter obj na sua lateral e vira
 def second_move_until_obj(state_machine, ers, sip):
     process_sip(ers, sip)
-    if state_machine.dodge_direction is pioneer2_rs232_interface.sip_information.sonars.Direction.RIGHT:
-        if pioneer2_rs232_interface.sip_information.sonars.detects_an_object_left(sip.sonars):
+    if state_machine.dodge_direction is sip.sonars.Direction.RIGHT:
+        if sip.sonars.detects_an_object_left(sip.sonars):
             state_machine.x = sip.coordinates.x
             ers.command = Command('HEAD', 90)  # ESQUERDA
             process_command(ers)
             state_machine.state = States.E3f
     else:
-        if pioneer2_rs232_interface.sip_information.sonars.detects_an_object_right(sip.sonars):
+        if sip.sonars.detects_an_object_right(sip.sonars):
             state_machine.x = sip.coordinates.x
             ers.command = Command('HEAD', -90)  # DIREITA
             process_command(ers)
@@ -124,7 +125,7 @@ def second_move_until_obj(state_machine, ers, sip):
 def return_to_path(state_machine, ers, sip):
     process_sip(ers, sip)
     if sip.coordinates.x - state_machine.dist == state_machine.x:
-        if state_machine.dodge_direction is pioneer2_rs232_interface.sip_information.sonars.Direction.RIGHT:
+        if state_machine.dodge_direction is sip.sonars.Direction.RIGHT:
             ers.command = Command('HEAD', -90)  # DIREITA
             process_command(ers)
             state_machine.state = States.E2
@@ -143,6 +144,11 @@ def get_trash(state_machine, ers):
     state_machine.state = States.E2
 
 
+def change_direction(state_machine, ers):
+    pass
+
+
+"""
 # E5
 def change_direction(state_machine, ers, limit, initial_side):
     x_pos = ers.sip_info['x_pos']
@@ -159,7 +165,8 @@ def change_direction(state_machine, ers, limit, initial_side):
             ers.command = Command('HEAD', 180)
             ers.command = Command('MOVE', 1000)
     state_machine.state = States.E6
-    """
+"""
+"""
     if detect_limit(x_pos, x_limit, y_pos, y_limit):
         if state_machine.side == 'left':
             state_machine.side = 'right'
@@ -190,6 +197,7 @@ def send_next_command(state_machine, ers):
     ers.command = Command('MOVE', 5000)
     process_command(ers)
     state_machine.state = States.E2
+
 
 
 class States(Enum):

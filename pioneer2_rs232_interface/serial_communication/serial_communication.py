@@ -60,6 +60,7 @@ class SerialCommunication:
         return get_server_information_packet(packet)
 
     def send_command(self, command, arg=None):
+        print("sending command")
         """ Send a command to the serial port """
         if arg is not None:
             arg = int(arg)
