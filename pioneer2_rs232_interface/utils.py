@@ -4,13 +4,11 @@ from pioneer2_rs232_interface.sip_information.sonars import update_sonar_info
 
 
 def process_command(ers):
-    print("A PROCESSAR COMANDO")
     # Process command
     if ers.command.name == 'EXIT':
         ers.turn_off()
     # Otherwise, if the serial communication is active, attempt to send the command to the robot
     elif ers.serial_communication.is_connected():
-        print("aqUI")
         ers.send_command(ers.command.name, ers.command.args)
 
 
@@ -21,7 +19,8 @@ def detect_trash():
 
 
 def process_sip(ers, sip):
-    print(len(ers.sip_info))
+    print("N sips a processar: ", len(ers.sip_info))
+
     if len(ers.sip_info) > 0:
         for current_sip_info in ers.sip_info:
             update_sonar_info(current_sip_info['sonars'], sip.sonars)

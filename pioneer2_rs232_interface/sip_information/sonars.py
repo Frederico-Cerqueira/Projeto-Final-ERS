@@ -51,6 +51,7 @@ def detect_obj(arr_sonar):
 
 def detects_an_object_left(sonars):
     if not (0 < sonars[6].distance <= 50 or 0 < sonars[7].distance <= 50):
+        print("TENHO CENAS À MINHA ESQUERDA")
         return True
     else:
         return False
@@ -58,6 +59,7 @@ def detects_an_object_left(sonars):
 
 def detects_an_object_right(sonars):
     if not (0 < sonars[0].distance <= 50 or 0 < sonars[1].distance <= 50):
+        print("TENHO CENAS À MINHA DIREITA")
         return True
     else:
         return False
