@@ -1,15 +1,9 @@
-from datetime import datetime
-
-
-from state_machine import States
+from pioneer2_rs232_interface.sip_information.coordinates import update_coordinate_info
+from pioneer2_rs232_interface.sip_information.motors import update_motors_info
+from pioneer2_rs232_interface.sip_information.sonars import update_sonar_info
 
 
 def process_command(ers):
-    # Set initial coordinates
-    if ers.sip_info is not None:
-        ers.initial_coordinates['x_pos'] = ers.sip_info['x_pos']
-        ers.initial_coordinates['y_pos'] = ers.sip_info['y_pos']
-        ers.initial_coordinates['th_pos'] = ers.sip_info['th_pos']
     # Process command
     if ers.command.name == 'EXIT':
         ers.turn_off()
@@ -18,13 +12,28 @@ def process_command(ers):
         ers.send_command(ers.command.name, ers.command.args)
 
 
-
 # TODO
 def detect_trash():
     # Chamar função da visão que deteta o lixo e retorna true or false
     return False
 
 
+def process_sip(ers, sip):
+    print("N sips a processar: ", len(ers.sip_info))
+
+    if len(ers.sip_info) > 0:
+        for current_sip_info in ers.sip_info:
+            update_sonar_info(current_sip_info['sonars'], sip.sonars)
+            update_coordinate_info(current_sip_info, sip.coordinates)
+            update_motors_info(current_sip_info, sip.motors)
+            ers.sip_info.remove(current_sip_info)
+
+
+def detect_limit():
+    return False
+
+
+"""
 def detect_limit(x_pos, x_lim, y_pos, y_lim):
     error = 7
     x_maximo_range = range(x_lim - error, x_lim + error)
@@ -35,26 +44,13 @@ def detect_limit(x_pos, x_lim, y_pos, y_lim):
             y_pos in y_maximo_range or y_pos in y_minumum_range):
         return True
     return False
+"""
 
 
-def last_command_terminated(ers):
-    if ers.sip_info['motor_status']:
-        print("motors on")
+def last_command_terminated(ers, sip):
+    if sip.motors.on:
         ers.command = None
-    if not ers.sip_info['motor_status'] and ers.command is None:
-        print("motors off")
-        print("true")
+    if not sip.motors.on and ers.command is None:
         return True
     else:
-        print("false")
         return False
-
-def get_sip_for_change_direction(ers, state_machine):
-    initial = ers.init_time_sip
-    current = datetime.now().timestamp()
-    if ers.__serial_communication.check_sip_availability() and (current - initial > 0.100):
-        ers.init_time_sip = datetime.now().timestamp()
-        sip_info_aux = ers.__serial_communication.get_sip()
-        if sip_info_aux != ers.sip_info:
-            ers.sip_info = sip_info_aux
-            state_machine.state = States.E6a2
