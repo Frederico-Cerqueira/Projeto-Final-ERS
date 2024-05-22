@@ -7,6 +7,7 @@ import ers.app.repo.dtos.RobotDto
  */
 interface RobotDataI{
     fun getRobotByID(id: Int): RobotDto?
+    fun getRobots(offset: Int, limit: Int): List<RobotDto>
     fun createRobot(name: String, characteristics: String): RobotDto
     fun updateRobotStatus(id: Int, status: String): RobotDto
     fun deleteRobot(id: Int)

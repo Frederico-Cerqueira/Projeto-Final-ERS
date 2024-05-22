@@ -26,6 +26,19 @@ class RobotService(private val transactionManager: TransactionManager) {
         }
     }
 
+    fun getRobots(offset: Int, limit: Int): RobotsResult {
+        if (offset < 0 || limit < 0)
+            return failure(Errors.InvalidInput)
+        return transactionManager.run {
+            try {
+                val robots = it.robotData.getRobots(offset, limit)
+                success(RobotsOutputModel(robots))
+            } catch (e: Exception) {
+                failure(Errors.InternalServerError)
+            }
+        }
+    }
+
     fun getRobotByID(id: Int): RobotResult =
         transactionManager.run {
             try {

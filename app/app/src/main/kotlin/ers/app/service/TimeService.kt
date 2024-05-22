@@ -79,9 +79,9 @@ class TimeService(private val transactionManager: TransactionManager) {
                     TimeOutputModel(
                         time.id,
                         time.taskId,
+                        time.weekDay,
                         time.startTime,
                         time.endTime,
-                        time.weekDay,
                         time.description
                     )
                 )

@@ -1,16 +1,17 @@
 import {Link} from "react-router-dom";
-import React from "react";
+import React, {useContext} from "react";
 import {convertToObject} from "../fetch/fetchGet";
+import {AuthContext} from "../App";
 
 export function Tasks() {
-
-    const tasks = convertToObject('api/task/user/1?offset=0&limit=100', 'tasks')
+    const auth = useContext(AuthContext)
+    const userID = auth.userID
+    const tasks = convertToObject('/api/task/user/'+userID+'?offset=0&limit=100', 'tasks')
 
     return (
         <div>
             <h1>Tasks</h1>
-            <p><Link to="/user">Back to User</Link></p>
-            <p><Link to="/createTask">CreateTask</Link></p>
+            <p><Link to={"/user/"+userID}>Back to User</Link></p>
             <div>
                 {tasks !== undefined && tasks.map(task => (
                     <div key={task.id}>
@@ -19,6 +20,7 @@ export function Tasks() {
                         <br></br>
                     </div>
                 ))}
+
             </div>
         </div>
     )
