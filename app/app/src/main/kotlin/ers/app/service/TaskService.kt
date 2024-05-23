@@ -19,7 +19,7 @@ class TaskService(private val transactionManager: TransactionManager) {
         return transactionManager.run {
             try {
                 val task = it.taskData.createTask(name, userID, robotID)
-                success(TaskOutputModel(task.name, task.userId, task.robotId))
+                success(TaskOutputModel(task.name, task.userId, task.robotId, task.status))
             } catch (e: Exception) {
                 failure(Errors.InternalServerError)
             }
@@ -31,7 +31,7 @@ class TaskService(private val transactionManager: TransactionManager) {
             try {
                 val task = it.taskData.getTaskByID(id)
                 if (task != null)
-                    success(TaskOutputModel(task.name, task.userId, task.robotId))
+                    success(TaskOutputModel(task.name, task.userId, task.robotId, task.status))
                 else
                     failure(Errors.TaskNotFound)
             } catch (e: Exception) {
@@ -47,7 +47,7 @@ class TaskService(private val transactionManager: TransactionManager) {
             try {
                 it.taskData.getTaskByID(id) ?: failure(Errors.TaskNotFound)
                 val task = it.taskData.updateTask(id, status)
-                success(TaskOutputModel(task.name, task.userId, task.robotId))
+                success(TaskOutputModel(task.name, task.userId, task.robotId, task.status))
             } catch (e: Exception) {
                 failure(Errors.InternalServerError)
             }

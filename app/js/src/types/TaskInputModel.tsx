@@ -1,7 +1,7 @@
 export type TaskInputModel = {
     name: string,
     userID: number,
-    robotID: number
+    robotID: string,
 }
 
 export type TaskUpdateInputModel = {

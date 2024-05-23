@@ -1,8 +1,9 @@
-import React, {useState} from 'react'
+import React, {useContext, useState} from 'react'
 import {Link, useNavigate} from "react-router-dom";
 import {Form} from "../forms/loginForm";
 import {fetchWrapper} from "../fetch/fetchPost";
 import {UserInputModel} from "../types/userInputModel";
+import {AuthContext} from "../App";
 
 export function UserManagement({uri, msg, buttonName, link, linkMessage}: {
     uri: string,
@@ -16,13 +17,14 @@ export function UserManagement({uri, msg, buttonName, link, linkMessage}: {
     const [password, setPassword] = useState('');
     const [error, setError] = useState(false);
     const navigate = useNavigate();
-
+    const auth = useContext(AuthContext)
 
     async function clickHandler() {
         const body: UserInputModel = {name, email, password}
         try {
             const jsonData = await fetchWrapper(uri, 'POST', body);
-            navigate('/user/'+jsonData.id) //usar o navigate e fazer sempre o / antes
+            auth.setUserID(jsonData.id);
+            navigate('/user/'+jsonData.id)
             console.log('Success!', jsonData);
         } catch (error) {
             console.error('There was an error in the request:', error);

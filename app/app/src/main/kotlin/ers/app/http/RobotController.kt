@@ -24,6 +24,17 @@ class RobotController(private val robotService: RobotService) {
         }
     }
 
+    @GetMapping
+    fun getRobots (@RequestParam offset: Int, @RequestParam limit: Int): ResponseEntity<*> {
+        return when (val res = robotService.getRobots(offset, limit)) {
+            is Either.Right -> ResponseEntity.ok(res.value)
+            is Either.Left -> when (res.value) {
+                Errors.InvalidInput -> ResponseEntity.badRequest().body(res.value)
+                else -> ResponseEntity.internalServerError().body(res.value)
+            }
+        }
+    }
+
     @GetMapping(PathTemplate.ID)
     fun getRobotByID(@PathVariable id: Int): ResponseEntity<*> {
         return when (val res = robotService.getRobotByID(id)) {

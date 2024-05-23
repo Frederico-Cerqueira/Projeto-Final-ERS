@@ -49,7 +49,7 @@ class UserController(private val userService: UserService) {
         }
     }
 
-    @GetMapping(PathTemplate.LOGIN)
+    @PostMapping(PathTemplate.LOGIN)
     fun loginUser(@RequestBody login: LoginInputModel): ResponseEntity<*> {
         return when (val res = userService.loginUser(login.email, login.password)) {
             is Either.Right -> ResponseEntity.ok(res.value)

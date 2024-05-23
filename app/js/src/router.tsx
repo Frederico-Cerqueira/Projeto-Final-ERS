@@ -24,7 +24,7 @@ export const router = createBrowserRouter(
                     element: <InitialScreen/>
                 },
                 {
-                    path: "/area/:id",
+                    path: "/task/:taskID/area/:id",
                     element: <Area/>
                 },
                 {
@@ -36,7 +36,7 @@ export const router = createBrowserRouter(
                     element: <CreateUser/>,
                 },
                 {
-                    path: "/createTask",
+                    path: "/robot/:id/createTask",
                     element: <CreateTask/>,
                 },
                 {
@@ -60,7 +60,7 @@ export const router = createBrowserRouter(
                     element: <Tasks/>
                 },
                 {
-                    path: "/time/:id",
+                    path: "/task/:taskID/time/:id",
                     element: <Time/>
                 },
                 {

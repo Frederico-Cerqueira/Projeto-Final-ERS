@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {fetchWrapper} from "../fetch/fetchPost";
 import {CreateRobotForm} from "../forms/robotForms";
 import {RobotInputModel} from "../types/RobotInputModel";
@@ -18,13 +18,14 @@ export function CreateRobot() {
 export function CreateRobotPage() {
     const [name, setName] = useState('');
     const [characteristics, setCharacteristics] = useState('');
-
+    const navigate = useNavigate();
     async function clickHandler() {
         const body: RobotInputModel = {name, characteristics};
-        const uri = 'api/robot';
+        const uri = '/api/robot';
         try {
             const jsonData = await fetchWrapper(uri, 'POST', body);
             console.log('Success!', jsonData);
+            navigate('/robots')
         } catch (error) {
             console.error('There was an error in the request:', error);
         }

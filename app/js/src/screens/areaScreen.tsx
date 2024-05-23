@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Link, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 
 import {fetchWrapper} from "../fetch/fetchPost";
 import {UpdateAreaForm} from "../forms/areaForms";
@@ -9,13 +9,54 @@ import {convertToObject, useFetchGet} from "../fetch/fetchGet";
 
 
 export function Area() {
-    const param = useParams()
+    const {taskID, id} = useParams()
+    console.log(taskID, id)
     const [area, setArea] = useState(null)
-    useFetchGet(`/api/area/${param.id}`, param.id, setArea);
+    useFetchGet(`/api/area/${id}`, id, setArea);
+    const navigate = useNavigate();
+    async function fetchDeleteArea() {
+        const uri = '/api/area/' + id;
+        try {
+            const jsonData = await fetchWrapper(uri, 'DELETE', {});
+            console.log('Success!', jsonData);
+            navigate('/task/' + taskID)
+        } catch (error) {
+            console.error('There was an error in the request:', error);
+        }
+    }
+
+    function UpdateArea() {
+        const [height, setHeight] = useState(0);
+        const [width, setWidth] = useState(0);
+
+        async function clickHandler() {
+            const body: AreaUpdateInputModel = {height, width};
+            const uri = '/api/area/update/' + id;
+            try {
+                const jsonData = await fetchWrapper(uri, 'POST', body);
+                setArea(jsonData)
+                console.log('Success', jsonData);
+            } catch (error) {
+                console.error('There was an error in the request:', error);
+            }
+        }
+
+        return (
+            <div>
+                <UpdateAreaForm
+                    height={height}
+                    width={width}
+                    changeHandlerHeight={event => setHeight(Number(event.target.value))}
+                    changeHandlerWidth={event => setWidth(Number(event.target.value))}
+                    clickHandler={clickHandler}
+                />
+            </div>
+        );
+    }
 
     return (
         <div>
-            <p><Link to="/task">Back to Task</Link></p>
+            <p><Link to={'/task/' + taskID}>Back to Task</Link></p>
             {area && (
                 <div>
                     <h1>{area.name}</h1>
@@ -31,44 +72,10 @@ export function Area() {
 }
 
 
-async function fetchDeleteArea() {
-    const uri = 'api/area/1';
-    try {
-        const jsonData = await fetchWrapper(uri, 'DELETE', {});
-        console.log('Success!', jsonData);
-    } catch (error) {
-        console.error('There was an error in the request:', error);
-    }
-}
 
 
-export function UpdateArea() {
-    const [height, setHeight] = useState(0);
-    const [width, setWidth] = useState(0);
 
-    async function clickHandler() {
-        const body: AreaUpdateInputModel = {height, width};
-        const uri = 'api/area/update/1';
-        try {
-            const jsonData = await fetchWrapper(uri, 'POST', body);
-            console.log('Success', jsonData);
-        } catch (error) {
-            console.error('There was an error in the request:', error);
-        }
-    }
 
-    return (
-        <div>
-            <UpdateAreaForm
-                height={height}
-                width={width}
-                changeHandlerHeight={event => setHeight(Number(event.target.value))}
-                changeHandlerWidth={event => setWidth(Number(event.target.value))}
-                clickHandler={clickHandler}
-            />
-        </div>
-    );
-}
 
 
 
