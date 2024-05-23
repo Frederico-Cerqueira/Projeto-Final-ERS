@@ -1,6 +1,7 @@
 from pioneer2_rs232_interface.sip_information.coordinates import update_coordinate_info
 from pioneer2_rs232_interface.sip_information.sonars import detect_obj, update_sonar_info, print_sonar_info, \
-    detects_an_object_ahead, Direction, detects_an_object_left, detects_an_object_right
+    detects_an_object_ahead, Direction, detects_an_object_left, detects_an_object_left, \
+    detects_an_object_right
 from command import Command
 from utils import process_command, detect_trash, detect_limit, last_command_terminated, process_sip
 from datetime import datetime
@@ -8,9 +9,11 @@ from enum import Enum
 
 
 # E1 - pulse e tempo
-def initial_state(state_machine, ers):
+def initial_state(state_machine, ers, sip):
     ers.command = Command('MOVE', 5000)
     process_command(ers)
+    #process_sip(ers, sip)
+    #sip.sonars[0].display_info()
     state_machine.state = States.E2
 
 
@@ -21,15 +24,19 @@ def process_sip1(state_machine, ers, sip):
     if detect_obj(sip.sonars):
         print("obj detected")
         state_machine.state = States.E3
+        pass
     if detect_trash():
         print("trash detected")
         state_machine.state = States.E4
+        pass
     if detect_limit():
         print("limit detected")
         state_machine.state = States.E5
+        pass
     if last_command_terminated(ers, sip):
         print("last command terminated")
         state_machine.state = States.E6
+        pass
 
 
 # E3 - ve se é lim ou obj
@@ -48,9 +55,9 @@ def lim_or_obj(state_machine, ers, sip):
 # E3a - espera pelo obj
 def wait_for_obj(state_machine, ers):
     current_time = datetime.now().timestamp()
-    if current_time - state_machine.wait_for_obj >= 2:
-        #ers.command = Command('MOVE', -1000)
-        #process_command(ers)
+    if current_time - state_machine.wait_for_obj >= 5:
+        # ers.command = Command('MOVE', -1000)
+        # process_command(ers)
         state_machine.state = States.E3b
 
 
@@ -63,21 +70,21 @@ def theres_still_obj(state_machine, ers, sip):
         state_machine.dodge_direction = direction
         state_machine.x = sip.coordinates.x
         if direction is Direction.RIGHT:
-            print("TA A VIRAR à direita")
             ers.command = Command('HEAD', -90)  # DIREITA
             process_command(ers)
             ers.command = Command('MOVE', 5000)
             process_command(ers)
         else:
-            print("TA A VIRAR à Esquerda")
             ers.command = Command('HEAD', 90)  # ESQUERDA
             process_command(ers)
             ers.command = Command('MOVE', 5000)
             process_command(ers)
         state_machine.state = States.E3c
+        pass
     else:
         ers.command = Command('HEAD', 180)
         state_machine.state = States.E6
+        pass
 
 
 # E3c - Fica a mover até deixar de ter obj na sua lateral e vira
@@ -85,15 +92,25 @@ def first_move_until_obj(state_machine, ers, sip):
     process_sip(ers, sip)
     if state_machine.dodge_direction is Direction.RIGHT:
         if not detects_an_object_left(sip.sonars):
+            print("E3C - já não tem o objeto left")
+            sip.sonars[0].display_info()
             state_machine.dist = sip.coordinates.x - state_machine.x
             ers.command = Command('HEAD', 90)  # ESQUERDA
             process_command(ers)
             state_machine.state = States.E3d
+            pass
     else:
         if not detects_an_object_right(sip.sonars):
+            print("E3C - já não tem o objeto direita")
+            sip.sonars[7].display_info()
+            ers.command = Command('STOP', None)  # DIREITA
+            process_command(ers)
             ers.command = Command('HEAD', -90)  # DIREITA
             process_command(ers)
+            ers.command = Command('MOVE', 5000)  # DIREITA
+            process_command(ers)
             state_machine.state = States.E3d
+            pass
 
 
 # E3d - Fica a mover até ter obj na sua lateral
@@ -101,27 +118,39 @@ def move_while_obj(state_machine, ers, sip):
     process_sip(ers, sip)
     if state_machine.dodge_direction is Direction.RIGHT:
         if detects_an_object_left(sip.sonars):
+            print(" E3D - TEM OBJETO LEFT")
+            sip.sonars[0].display_info()
             state_machine.state = States.E3e
+            pass
     else:
         if detects_an_object_right(sip.sonars):
+            print(" E3D - TEM OBJETO RIGHT")
+            sip.sonars[7].display_info()
             state_machine.state = States.E3e
+            pass
 
 
 # E3e - Fica a mover até deixar de ter obj na sua lateral e vira
 def second_move_until_obj(state_machine, ers, sip):
     process_sip(ers, sip)
     if state_machine.dodge_direction is Direction.RIGHT:
-        if detects_an_object_left(sip.sonars):
+        if not detects_an_object_left(sip.sonars):
+            print("E3E - NÃO TEM OBJETO ESQ")
+            sip.sonars[0].display_info()
             state_machine.x = sip.coordinates.x
             ers.command = Command('HEAD', 90)  # ESQUERDA
             process_command(ers)
-            state_machine.state = States.E3f
+            state_machine.state = States.E5
+            pass
     else:
-        if detects_an_object_right(sip.sonars):
+        if not detects_an_object_right(sip.sonars):
+            print("E3E - NÃO TEM OBJETO DIR")
+            sip.sonars[7].display_info()
             state_machine.x = sip.coordinates.x
             ers.command = Command('HEAD', -90)  # DIREITA
             process_command(ers)
-            state_machine.state = States.E3f
+            state_machine.state = States.E5
+            pass
 
 
 # E3f - Anda até voltar ao caminho que estava antes do obj
@@ -148,6 +177,9 @@ def get_trash(state_machine, ers):
 
 
 def change_direction(state_machine, ers):
+    if state_machine.count == 0:
+        state_machine.count += 1
+        print("ESTOU NO E5")
     pass
 
 
@@ -202,7 +234,6 @@ def send_next_command(state_machine, ers):
     state_machine.state = States.E2
 
 
-
 class States(Enum):
     E1 = initial_state,
     E2 = process_sip1,
@@ -227,11 +258,11 @@ class StateMachine:
         self.dist = 0
         self.wait_for_obj = datetime.now().timestamp()
         self.dodge_direction = None
+        self.count = 0
 
     def state_machine(self, ers, sip):
-        print(self.state.name)
         if self.state == States.E1:
-            initial_state(self, ers)
+            initial_state(self, ers, sip)
         elif self.state == States.E2:
             process_sip1(self, ers, sip)
         elif self.state == States.E3:

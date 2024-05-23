@@ -53,7 +53,6 @@ class ERS:
             self.serial_communication.disconnect()
 
     def send_command(self, command, arg=None):
-        print("Sends a command")
         self.serial_communication.send_command(command, arg)
 
     def check_pulse(self):
@@ -76,13 +75,13 @@ class ERS:
         if self.serial_communication.check_sip_availability() and (current - initial > 0.100):
             self.init_time_sip = datetime.now().timestamp()
             sip_info_aux = self.serial_communication.get_sip()
-            print("sip info aux: ", sip_info_aux)
             if sip_info_aux is not None:
                 if len(self.sip_info) == 0:
                     self.sip_info.append(sip_info_aux)
+                    pass
                 elif sip_info_aux != self.sip_info[-1]:
-                    print("Sheeesh")
                     self.sip_info.append(sip_info_aux)
+                    pass
 
     def run(self, machine):
         # Initial time sip and pulse
