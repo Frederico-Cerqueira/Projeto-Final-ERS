@@ -1,7 +1,6 @@
 from pioneer2_rs232_interface.sip_information.coordinates import update_coordinate_info
-from pioneer2_rs232_interface.sip_information.sonars import detect_obj, update_sonar_info, print_sonar_info, \
-    detects_an_object_ahead, Direction, detects_an_object_left, detects_an_object_left, \
-    detects_an_object_right
+from pioneer2_rs232_interface.sip_information.sonars import detect_obj, print_sonar_info, \
+    detects_an_object_ahead, Direction, detects_an_object_left, detects_an_object_right
 from command import Command
 from utils import process_command, detect_trash, detect_limit, last_command_terminated, process_sip
 from datetime import datetime
