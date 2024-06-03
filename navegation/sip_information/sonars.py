@@ -53,36 +53,35 @@ def detects_an_object_right(sonars):
     return 0 < sonars[7].distance <= 70
 
 
-def detects_an_object_right(sonars):
-    if not (0 < sonars[0].distance <= 50 or 0 < sonars[1].distance <= 50):
-        print("TENHO CENAS À MINHA DIREITA")
-        return True
-    else:
-        return False
+def detects_an_object_left(sonars):
+    return 0 < sonars[0].distance <= 70
 
 
 def detects_an_object_ahead(sonars):
     for sonar in sonars:
-        if (sonar.id in (2, 3) and 0 < sonar.distance < 50) or (0 < sonar.id in (4, 5) and sonar.distance < 40):
+        if (sonar.id in (2, 3) and 0 < sonar.distance < 70) or (0 < sonar.id in (4, 5) and sonar.distance < 60):
             for s in sonars:
-                if 0 < s.distance > 50 and s.id in (0, 1):
+                if not 0 < s.distance < 70 and s.id in (0, 1):
                     return Direction.LEFT
-                elif 0 < s.distance > 50 and s.id in (6, 7):
+                elif not 0 < s.distance < 70 and s.id in (6, 7):
                     return Direction.RIGHT
     return Direction.STAY
 
-
 """
+
 if __name__ == '__main__':
     sonars = []
     create_sonar(sonars)
     new_sonar = [
-        {'sonar_number': 1, 'sonar_range': 300},
+        {'sonar_number': 1, 'sonar_range': 600},
         {'sonar_number': 3, 'sonar_range': 400},
-        {'sonar_number': 7, 'sonar_range': 800}
+        {'sonar_number': 7, 'sonar_range': 700}
     ]
     update_sonar_info(new_sonar, sonars)
     direction = detects_an_object_ahead(sonars)
-    boolean = detects_an_object_left(sonars)
     print(direction)
+    left = detects_an_object_left(sonars)
+    print(left)
+    right = detects_an_object_right(sonars)
+    print(right)
 """

@@ -1,4 +1,4 @@
-from ers_final import ERS
+from ers import ERS
 from state_machine import StateMachine
 
 if __name__ == '__main__':
