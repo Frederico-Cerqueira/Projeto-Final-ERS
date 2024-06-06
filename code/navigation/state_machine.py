@@ -4,6 +4,7 @@ from command import Command
 from utils import process_command, detect_trash, detect_limit, last_command_terminated, process_sip
 from datetime import datetime
 from enum import Enum
+from limit import Limit
 
 
 # E1 - pulse e tempo
@@ -24,7 +25,7 @@ def analyse_sip(state_machine, ers, sip):
         print("trash detected")
         state_machine.state = States.E4
         pass
-    if detect_limit():
+    if detect_limit(sip.coordinates.x, state_machine.limit.x, sip.coordinates.y, state_machine.limit.y, state_machine):
         print("limit detected")
         state_machine.state = States.E5
         pass
@@ -37,7 +38,7 @@ def analyse_sip(state_machine, ers, sip):
 # E3 - ve se é lim ou obj
 def lim_or_obj(state_machine, ers, sip):
     process_sip(ers, sip)
-    if detect_limit():
+    if detect_limit(sip.coordinates.x, state_machine.limit.x, sip.coordinates.y, state_machine.limit.y, state_machine):
         state_machine.state = States.E5
     else:
         print("ESTADO 3 OBJ")
@@ -225,55 +226,51 @@ def get_trash(state_machine, ers):
     state_machine.state = States.E2
 
 
-def change_direction(state_machine, ers):
-    if state_machine.count == 0:
-        state_machine.count += 1
-        print("ESTOU NO E5")
-    pass
-
-
-"""
 # E5
-def change_direction(state_machine, ers, limit, initial_side):
-    x_pos = ers.sip_info['x_pos']
-    y_pos = ers.sip_info['y_pos']
-    x_limit, y_limit = limit
-    state_machine.side = initial_side
-    if detect_limit(x_pos, x_limit, y_pos, y_limit):
-        if state_machine.side == 'left':
-            state_machine.side = 'right'
-            ers.command = Command('DHEAD', -180)
-            ers.command = Command('MOVE', 1000)
-        else:
-            state_machine.side = 'left'
-            ers.command = Command('DHEAD', 180)
-            ers.command = Command('MOVE', 1000)
-    state_machine.state = States.E6
-"""
-"""
-    if detect_limit(x_pos, x_limit, y_pos, y_limit):
-        if state_machine.side == 'left':
-            state_machine.side = 'right'
+def change_direction(state_machine, ers, sip):
+    process_sip(ers, sip)
+    print("CHANGE DIRECTION")
+    state_machine.novo_y = sip.coordinates.y
+    if state_machine.sentido == 'back':  # 'front':
+        ers.command = Command('DHEAD', -90)
+        process_command(ers)
+    else:
+        ers.command = Command('DHEAD', 90)
+        process_command(ers)
+    state_machine.state = States.E5a
+
+
+# E5a
+def rodar(state_machine, ers, sip):
+    process_sip(ers, sip)
+    print("ENTROU NO RODAR")
+    ers.command = Command('MOVE', 300)
+    process_command(ers)
+
+    # -1001 <= 0 - 1000 = -1001 <= -1000
+    if abs(sip.coordinates.y) >= (abs(state_machine.novo_y) + 300):
+        if state_machine.sentido == 'back':  # 'front':
             ers.command = Command('DHEAD', -90)
             process_command(ers)
-            if last_command_terminated(ers):
-                ers.command = Command('MOVE', 1000)
-                process_command(ers)
-                if last_command_terminated(ers):
-                    ers.command = Command('DHEAD', -90)
-                    process_command(ers)
-                    state_machine.state = States.E2
         else:
-            state_machine.side = 'left'
             ers.command = Command('DHEAD', 90)
             process_command(ers)
-            if last_command_terminated(ers):
-                ers.command = Command('MOVE', 1000)
-                process_command(ers)
-                if last_command_terminated(ers):
-                    ers.command = Command('DHEAD', 90)
-                    process_command(ers)
-                    state_machine.state = States.E2"""
+        state_machine.state = States.E5b
+
+
+# E5b
+def backwards(state_machine, ers, sip):
+    process_sip(ers, sip)
+    print("ENTROU NO BACKWARDS")
+    ers.command = Command('MOVE', 5000)
+    process_command(ers)
+    margin = 100
+    if state_machine.sentido == 'back':  # 'front':
+        if abs(sip.coordinates.x) <= abs(state_machine.limit.x - margin):
+            state_machine.state = States.E6
+    else:
+        if abs(sip.coordinates.x) >= margin:
+            state_machine.state = States.E6
 
 
 # E6
@@ -301,7 +298,9 @@ class States(Enum):
     E3f = return_to_path,
     E4 = get_trash,
     E5 = change_direction,
-    E6 = send_next_command,
+    E5a = rodar,
+    E5b = backwards,
+    E6 = send_next_command
 
 
 class StateMachine:
@@ -313,6 +312,9 @@ class StateMachine:
         self.wait_for_obj = datetime.now().timestamp()
         self.dodge_direction = None
         self.count = 0
+        self.novo_y = 0
+        self.limit = Limit(3000, 3000)
+        self.sentido = 'front'
 
     def state_machine(self, ers, sip):
         if self.state == States.E1:
@@ -348,6 +350,6 @@ class StateMachine:
         elif self.state == States.E4:
             get_trash(self, ers)
         elif self.state == States.E5:
-            change_direction(self, ers)
+            change_direction(self, ers, sip)
         elif self.state == States.E6:
             send_next_command(self, ers)
