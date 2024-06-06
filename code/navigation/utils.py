@@ -1,6 +1,6 @@
-from pioneer2_rs232_interface.sip_information.coordinates import update_coordinate_info
-from pioneer2_rs232_interface.sip_information.motors import update_motors_info
-from pioneer2_rs232_interface.sip_information.sonars import update_sonar_info
+from sip_information.coordinates import update_coordinate_info
+from sip_information.motors import update_motors_info
+from sip_information.sonars import update_sonar_info, print_sonar_info
 
 
 def process_command(ers):
@@ -9,6 +9,7 @@ def process_command(ers):
         ers.turn_off()
     # Otherwise, if the serial communication is active, attempt to send the command to the robot
     elif ers.serial_communication.is_connected():
+        print("Command to run: ", ers.command.name, ers.command.args)
         ers.send_command(ers.command.name, ers.command.args)
 
 
@@ -19,11 +20,11 @@ def detect_trash():
 
 
 def process_sip(ers, sip):
-    print("N sips a processar: ", len(ers.sip_info))
-
     if len(ers.sip_info) > 0:
         for current_sip_info in ers.sip_info:
             update_sonar_info(current_sip_info['sonars'], sip.sonars)
+            #print("Os sonares foram atualizados, estes são os seus valores: ")
+            #print_sonar_info(sip.sonars)
             update_coordinate_info(current_sip_info, sip.coordinates)
             update_motors_info(current_sip_info, sip.motors)
             ers.sip_info.remove(current_sip_info)

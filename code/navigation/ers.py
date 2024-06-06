@@ -2,14 +2,14 @@ import sys
 
 from datetime import datetime
 
-from pioneer2_rs232_interface.sip_information.coordinates import CoordinatesInfo
-from pioneer2_rs232_interface.sip_information.motors import MotorsInfo
-from pioneer2_rs232_interface.sip_information.sip_info import SipInfo
-from serial_communication.serial_communication import SerialCommunication
-from pioneer2_rs232_interface.sip_information.sonars import create_sonar
-
 sys.path.append("./serial_communication")
 sys.path.append("./serial_communication/communication_protocol")
+
+from sip_information.coordinates import CoordinatesInfo
+from sip_information.motors import MotorsInfo
+from sip_information.sip_info import SipInfo
+from serial_communication.serial_communication import SerialCommunication
+from sip_information.sonars import create_sonar
 
 DISTANCE_ERROR_RANGE = range(-30, 30)
 ANGLE_ERROR_RANGE = range(-3, 3)

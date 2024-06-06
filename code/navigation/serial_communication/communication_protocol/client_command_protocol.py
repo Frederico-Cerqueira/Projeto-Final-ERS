@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from pioneer2_rs232_interface.serial_communication.communication_protocol.protocol_functions import calculate_packet_checksum, calculate_int_data_bytes
+from protocol_functions import calculate_packet_checksum, calculate_int_data_bytes
 
 """
 
@@ -183,7 +183,6 @@ def __d_head(arg):
     # Converter argumento para bytes
     data_bytes = calculate_int_data_bytes(arg)
     # Colocar bytes do argumento no pacote
-    print("databytes", data_bytes)
     packet = b'\xfa\xfb\x06\x0d' + data_bytes + b'\x00\x00'
     # Calcular checksum do pacote
     packet_checksum = calculate_packet_checksum(packet)
@@ -226,7 +225,15 @@ def __r_vel(arg):
 
 # TODO
 def __dc_head(arg):
-    pass
+    # Converter argumento para bytes
+    data_bytes = calculate_int_data_bytes(arg)
+    # Colocar bytes do argumento no pacote
+    packet = b'\xfa\xfb\x06\x16' + data_bytes + b'\x00\x00'
+    # Calcular checksum do pacote
+    packet_checksum = calculate_packet_checksum(packet)
+    packet = packet[:-2] + packet_checksum
+
+    return packet
 
 
 def __set_ra(arg):
@@ -432,6 +439,7 @@ __commands = {
     'DHEAD': __d_head,
     'CONFIG': __config,
     'RVEL': __r_vel,
+    'DCHEAD': __dc_head,
     'SETRA': __set_ra,
     'STOP': __stop,
     'E_STOP': __e_stop,

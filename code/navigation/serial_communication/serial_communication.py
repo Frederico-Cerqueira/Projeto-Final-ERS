@@ -2,8 +2,13 @@
 
 import serial
 import time
-from pioneer2_rs232_interface.serial_communication.communication_protocol.client_command_protocol import get_client_command_packet
-from pioneer2_rs232_interface.serial_communication.communication_protocol.server_information_protocol import get_server_information_packet
+import sys
+
+sys.path.append("./serial_communication")
+sys.path.append("./serial_communication/communication_protocol")
+
+from communication_protocol.client_command_protocol import get_client_command_packet
+from communication_protocol.server_information_protocol import get_server_information_packet
 
 """
 
@@ -60,7 +65,6 @@ class SerialCommunication:
         return get_server_information_packet(packet)
 
     def send_command(self, command, arg=None):
-        #print("sending command")
         """ Send a command to the serial port """
         if arg is not None:
             arg = int(arg)
