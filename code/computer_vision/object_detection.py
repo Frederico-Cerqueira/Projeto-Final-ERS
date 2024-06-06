@@ -1,6 +1,6 @@
 import cv2
 import matplotlib.pyplot as plt
-from utils import in_file, out_file
+from utils import in_file
 import numpy as np
 
 image = cv2.imread(in_file('plastic_bag.jpg'))

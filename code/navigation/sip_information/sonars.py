@@ -49,11 +49,11 @@ def detect_obj(arr_sonar):
 
 
 def detects_an_object_right(sonars):
-    return 0 < sonars[7].distance <= 80
+    return 0 < sonars[7].distance <= 50
 
 
 def detects_an_object_left(sonars):
-    return 0 < sonars[0].distance <= 70
+    return 0 < sonars[0].distance <= 50
 
 
 def detects_an_object_ahead(sonars):

@@ -23,8 +23,6 @@ def process_sip(ers, sip):
     if len(ers.sip_info) > 0:
         for current_sip_info in ers.sip_info:
             update_sonar_info(current_sip_info['sonars'], sip.sonars)
-            #print("Os sonares foram atualizados, estes são os seus valores: ")
-            #print_sonar_info(sip.sonars)
             update_coordinate_info(current_sip_info, sip.coordinates)
             update_motors_info(current_sip_info, sip.motors)
             ers.sip_info.remove(current_sip_info)

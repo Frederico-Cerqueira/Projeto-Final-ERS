@@ -1,6 +1,6 @@
 import os
 
-INPUT_DIR_HALL = os.path.join('data', 'test-images/hall')
+INPUT_DIR_HALL = os.path.join('data', 'pi-images')
 INPUT_DIR_OUTSIDE = os.path.join('data', 'test-images/outside')
 INPUT_DIR_LAB = os.path.join('data', 'test-images/lab')
 OUTPUT_DIR = os.path.join('data', 'output')

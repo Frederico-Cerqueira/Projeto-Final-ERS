@@ -3,7 +3,17 @@ import cv2
 import numpy as np
 
 
-def convert_rgb_to_hsv(img):
+def convert_rgb_to_hsv(image):
+
+
+
+
+    return image_hsv
+
+
+def detect_object(img):
+
+
     # Read the input RGB image
     image = cv2.imread(img)
 
@@ -13,7 +23,15 @@ def convert_rgb_to_hsv(img):
     # Convert the image from RGB to HSV
     image_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-    matrix, opening, dilation = detect_object(image_hsv[:, :, 0])
+    threshold = 64
+    # Pixels with a value greater than the threshold become 1 (white), and those below become 0 (black) in the resulting
+    # binary matrix (matrix).
+    matrix = (image_hsv > threshold).astype(np.uint8)
+    kernel = np.ones((5, 5), np.uint8)
+    #opening_kernel = np.ones((, 12), np.uint8)
+    # Morphological Operations:
+    opening = cv2.morphologyEx(matrix, cv2.MORPH_OPEN, kernel)
+    dilation = cv2.dilate(opening, kernel, iterations=1)
 
     cv2.imshow('img', image)
     cv2.imshow('HSV', image_hsv)
@@ -22,26 +40,9 @@ def convert_rgb_to_hsv(img):
     cv2.imshow('matrix', matrix * 255)
     cv2.imshow('opening', opening * 255)
     cv2.imshow('dilation', dilation * 255)
-    cv2.rectangle(opening, (70, 150), (570, 450), (0, 0, 255), 2)  # Blue rectangle with thickness 2
-    cv2.imshow('area', opening * 255)
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-
-    return image_hsv
-
-
-def detect_object(hsv_image):
-    threshold = 64
-    # Pixels with a value greater than the threshold become 1 (white), and those below become 0 (black) in the resulting
-    # binary matrix (matrix).
-    matrix = (hsv_image > threshold).astype(np.uint8)
-    kernel = np.ones((5, 5), np.uint8)
-    opening_kernel = np.ones((12, 12), np.uint8)
-    # Morphological Operations:
-    #closing = cv2.morphologyEx(matrix, cv2.MORPH_CLOSE, kernel)
-    opening = cv2.morphologyEx(matrix, cv2.MORPH_OPEN, opening_kernel)
-    dilation = cv2.dilate(opening, kernel, iterations=1)
 
     return matrix, opening, dilation
 
@@ -63,5 +64,5 @@ def set_area_to_be_checked():
 
 
 if __name__ == '__main__':
-    convert_rgb_to_hsv(in_file('milk_pack.jpg'))
+    convert_rgb_to_hsv(in_file('chocolate_milk.jpg'))
     # set_area_to_be_checked()

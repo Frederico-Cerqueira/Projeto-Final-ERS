@@ -1,5 +1,5 @@
 from sip_information.sonars import detect_obj, \
-    detects_an_object_ahead, Direction, detects_an_object_left, detects_an_object_right
+    detects_an_object_ahead, Direction, detects_an_object_left, detects_an_object_right, print_sonar_info
 from command import Command
 from utils import process_command, detect_trash, detect_limit, last_command_terminated, process_sip
 from datetime import datetime
@@ -54,8 +54,8 @@ def wait_for_obj(state_machine, ers):
     current_time = datetime.now().timestamp()
     if current_time - state_machine.wait_for_obj >= 5:
         print("continuar a andar")
-        ers.command = Command('MOVE', -250) ##VER
-        process_command(ers)
+        # ers.command = Command('MOVE', -250) ##VER
+        # process_command(ers)
         state_machine.state = States.E3b
 
 
@@ -72,14 +72,16 @@ def theres_still_obj(state_machine, ers, sip):
             process_command(ers)
             ers.command = Command('MOVE', 10000)
             process_command(ers)
+            print("vou para o E3B2")
+            state_machine.state = States.E3b2
         else:
             print("turn left - SO", S0, "S7", S7)
             ers.command = Command('DHEAD', 90)  # ESQUERDA
             process_command(ers)
             ers.command = Command('MOVE', 10000)
             process_command(ers)
-        print("vou para o E3BA")
-        state_machine.state = States.E3b1
+            print("vou para o E3B1")
+            state_machine.state = States.E3b1
         pass
     else:
         ers.command = Command('MOVE', 10000)
@@ -92,7 +94,7 @@ def theres_still_obj(state_machine, ers, sip):
 def wait_for_first_turn_left(state_machine, ers, sip):
     process_sip(ers, sip)
     if detects_an_object_right(sip.sonars) and not detect_obj(sip.sonars):
-        print("já virou a 1ª vez")
+        print("já virou a 1ª esquerda")
         print("VOU PARA O E3C")
         state_machine.state = States.E3c
         pass
@@ -102,7 +104,7 @@ def wait_for_first_turn_left(state_machine, ers, sip):
 def wait_for_first_turn_right(state_machine, ers, sip):
     process_sip(ers, sip)
     if detects_an_object_left(sip.sonars) and not detect_obj(sip.sonars):
-        print("já virou a 1ª vez")
+        print("já virou a 1ª direita")
         print("VOU PARA O E3C")
         state_machine.state = States.E3c
         pass
@@ -112,11 +114,13 @@ def wait_for_first_turn_right(state_machine, ers, sip):
 def first_move_while_obj(state_machine, ers, sip):
     process_sip(ers, sip)
     if state_machine.dodge_direction is Direction.RIGHT:
+        sip.sonars[0].display_info()
         if not detects_an_object_left(sip.sonars):
             print("E3C - já não tem o objeto left")
             ers.command = Command('DHEAD', 90)  # ESQUERDA
             process_command(ers)
-            state_machine.state = States.E3d
+            print("Vou para o E3c3")
+            state_machine.state = States.E3c3
     else:
         if not detects_an_object_right(sip.sonars):
             print("E3C - já não tem o objeto à direita")
@@ -149,17 +153,17 @@ def wait_for_second_turn_right_without_obj(state_machine, ers, sip):
 def wait_for_secondo_turn_left_while_obj(state_machine, ers, sip):
     process_sip(ers, sip)
     if detects_an_object_left(sip.sonars):
-        print("estou a virar")
-        print("VOU PARA O E3C3")
+        print("estou a virar à esqueda")
+        print("VOU PARA O E3C4")
         state_machine.state = States.E3c4
 
 
 # E3C4 - espera até voltar a não ter obj enquanto vira à esquerda
 def wait_for_second_turn_left_without_obj(state_machine, ers, sip):
-    print("E3C2")
+    print("E3C4")
     process_sip(ers, sip)
     if not detects_an_object_left(sip.sonars):
-        print("já virou")
+        print("já virou À esquerda")
         print("VOU PARA O E3D")
         state_machine.state = States.E3d
 
@@ -201,6 +205,7 @@ def return_to_path(state_machine, ers, sip):
     print("y atual: ", sip.coordinates.y)
     if state_machine.dodge_direction is Direction.RIGHT:
         if sip.coordinates.y <= state_machine.y:
+            print("voltei ao sitio")
             ers.command = Command('DHEAD', -90)  # DIREITA
             process_command(ers)
             state_machine.state = States.E2
@@ -285,7 +290,7 @@ class States(Enum):
     E3a = wait_for_obj,
     E3b = theres_still_obj,
     E3b1 = wait_for_first_turn_left,
-    E3b2 = wait_for_first_turn_left,
+    E3b2 = wait_for_first_turn_right,
     E3c = first_move_while_obj,
     E3c1 = wait_for_secondo_turn_right_while_obj,
     E3c2 = wait_for_second_turn_right_without_obj,
@@ -330,6 +335,10 @@ class StateMachine:
             wait_for_secondo_turn_right_while_obj(self, ers, sip)
         elif self.state == States.E3c2:
             wait_for_second_turn_right_without_obj(self, ers, sip)
+        elif self.state == States.E3c3:
+            wait_for_secondo_turn_left_while_obj(self, ers, sip)
+        elif self.state == States.E3c4:
+            wait_for_second_turn_left_without_obj(self, ers, sip)
         elif self.state == States.E3d:
             move_until_obj(self, ers, sip)
         elif self.state == States.E3e:
