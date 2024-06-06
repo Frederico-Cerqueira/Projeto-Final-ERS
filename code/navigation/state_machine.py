@@ -14,7 +14,7 @@ def initial_state(state_machine, ers, sip):
 
 
 # E2 - processa sip e vê se é obj, lixo, limite ou next cmd
-def process_sip1(state_machine, ers, sip):
+def analyse_sip(state_machine, ers, sip):
     process_sip(ers, sip)
     if detect_obj(sip.sonars):
         print("obj detected")
@@ -54,8 +54,8 @@ def wait_for_obj(state_machine, ers):
     current_time = datetime.now().timestamp()
     if current_time - state_machine.wait_for_obj >= 5:
         print("continuar a andar")
-        # ers.command = Command('MOVE', -1000)
-        # process_command(ers)
+        ers.command = Command('MOVE', -250) ##VER
+        process_command(ers)
         state_machine.state = States.E3b
 
 
@@ -66,7 +66,6 @@ def theres_still_obj(state_machine, ers, sip):
     if direction != Direction.STAY:
         print("obj detected -  turn to ", direction)
         state_machine.dodge_direction = direction
-        state_machine.x = sip.coordinates.x
         if direction is Direction.RIGHT:
             print("turn right - SO", S0, "S7", S7)
             ers.command = Command('DHEAD', -90)  # DIREITA
@@ -80,16 +79,17 @@ def theres_still_obj(state_machine, ers, sip):
             ers.command = Command('MOVE', 10000)
             process_command(ers)
         print("vou para o E3BA")
-        state_machine.state = States.E3ba
+        state_machine.state = States.E3b1
         pass
     else:
-        ers.command = Command('DHEAD', 180)
+        ers.command = Command('MOVE', 10000)
+        process_command(ers)
         state_machine.state = States.E6
         pass
 
 
-# E3ba - Verifica se já virou
-def prof_state(state_machine, ers, sip):
+# E3b1 - Verifica se já virou à esquerda
+def wait_for_first_turn_left(state_machine, ers, sip):
     process_sip(ers, sip)
     if detects_an_object_right(sip.sonars) and not detect_obj(sip.sonars):
         print("já virou a 1ª vez")
@@ -98,8 +98,18 @@ def prof_state(state_machine, ers, sip):
         pass
 
 
+# E3b2 - Verifica se já virou à direita
+def wait_for_first_turn_right(state_machine, ers, sip):
+    process_sip(ers, sip)
+    if detects_an_object_left(sip.sonars) and not detect_obj(sip.sonars):
+        print("já virou a 1ª vez")
+        print("VOU PARA O E3C")
+        state_machine.state = States.E3c
+        pass
+
+
 # E3c - Fica a mover até deixar de ter obj na sua lateral e vira
-def first_move_until_obj(state_machine, ers, sip):
+def first_move_while_obj(state_machine, ers, sip):
     process_sip(ers, sip)
     if state_machine.dodge_direction is Direction.RIGHT:
         if not detects_an_object_left(sip.sonars):
@@ -116,16 +126,17 @@ def first_move_until_obj(state_machine, ers, sip):
             state_machine.state = States.E3c1
 
 
-# E3c1
-def prof_state2(state_machine, ers, sip):
+# E3c1 - esperar enquanto vira à direita enquanto tem obj
+def wait_for_secondo_turn_right_while_obj(state_machine, ers, sip):
     process_sip(ers, sip)
     if detects_an_object_right(sip.sonars):
         print("estou a virar")
         print("VOU PARA O E3C2")
         state_machine.state = States.E3c2
 
-# E3C2
-def prof_state3(state_machine, ers, sip):
+
+# E3C2 - espera até voltar a não ter obj enquanto vira à direita
+def wait_for_second_turn_right_without_obj(state_machine, ers, sip):
     print("E3C2")
     process_sip(ers, sip)
     if not detects_an_object_right(sip.sonars):
@@ -134,8 +145,27 @@ def prof_state3(state_machine, ers, sip):
         state_machine.state = States.E3d
 
 
+# E3c3 - esperar enquanto vira à esquerda enquanto tem obj
+def wait_for_secondo_turn_left_while_obj(state_machine, ers, sip):
+    process_sip(ers, sip)
+    if detects_an_object_left(sip.sonars):
+        print("estou a virar")
+        print("VOU PARA O E3C3")
+        state_machine.state = States.E3c4
+
+
+# E3C4 - espera até voltar a não ter obj enquanto vira à esquerda
+def wait_for_second_turn_left_without_obj(state_machine, ers, sip):
+    print("E3C2")
+    process_sip(ers, sip)
+    if not detects_an_object_left(sip.sonars):
+        print("já virou")
+        print("VOU PARA O E3D")
+        state_machine.state = States.E3d
+
+
 # E3d - Fica a mover até ter obj na sua lateral
-def move_while_obj(state_machine, ers, sip):
+def move_until_obj(state_machine, ers, sip):
     print("E3D")
     process_sip(ers, sip)
     if state_machine.dodge_direction is Direction.RIGHT:
@@ -149,12 +179,11 @@ def move_while_obj(state_machine, ers, sip):
 
 
 # E3e - Fica a mover até deixar de ter obj na sua lateral e vira
-def second_move_until_obj(state_machine, ers, sip):
+def second_move_while_obj(state_machine, ers, sip):
     process_sip(ers, sip)
     if state_machine.dodge_direction is Direction.RIGHT:
         if not detects_an_object_left(sip.sonars):
             print("E3E - NÃO TEM OBJETO ESQ")
-            state_machine.x = sip.coordinates.x
             ers.command = Command('DHEAD', 90)  # ESQUERDA
             process_command(ers)
             state_machine.state = States.E5
@@ -170,12 +199,13 @@ def second_move_until_obj(state_machine, ers, sip):
 def return_to_path(state_machine, ers, sip):
     process_sip(ers, sip)
     print("y atual: ", sip.coordinates.y)
-    if sip.coordinates.y <= state_machine.y:
-        if state_machine.dodge_direction is Direction.RIGHT:
+    if state_machine.dodge_direction is Direction.RIGHT:
+        if sip.coordinates.y <= state_machine.y:
             ers.command = Command('DHEAD', -90)  # DIREITA
             process_command(ers)
             state_machine.state = States.E2
-        else:
+    else:
+        if sip.coordinates.y >= state_machine.y:
             ers.command = Command('DHEAD', 90)  # ESQUERDA
             process_command(ers)
             state_machine.state = States.E2
@@ -250,16 +280,19 @@ def send_next_command(state_machine, ers):
 
 class States(Enum):
     E1 = initial_state,
-    E2 = process_sip1,
+    E2 = analyse_sip,
     E3 = lim_or_obj,
     E3a = wait_for_obj,
     E3b = theres_still_obj,
-    E3ba = prof_state,
-    E3c = first_move_until_obj,
-    E3c1 = prof_state2,
-    E3c2 = prof_state3,
-    E3d = move_while_obj,
-    E3e = second_move_until_obj,
+    E3b1 = wait_for_first_turn_left,
+    E3b2 = wait_for_first_turn_left,
+    E3c = first_move_while_obj,
+    E3c1 = wait_for_secondo_turn_right_while_obj,
+    E3c2 = wait_for_second_turn_right_without_obj,
+    E3c3 = wait_for_secondo_turn_left_while_obj,
+    E3c4 = wait_for_second_turn_left_without_obj
+    E3d = move_until_obj,
+    E3e = second_move_while_obj,
     E3f = return_to_path,
     E4 = get_trash,
     E5 = change_direction,
@@ -271,10 +304,7 @@ class StateMachine:
         self.state = States.E1
         self.side = None
         # MUDAR O NOME
-        self.x = 0
-        # MUDAR O NOME
         self.y = 0
-
         self.wait_for_obj = datetime.now().timestamp()
         self.dodge_direction = None
         self.count = 0
@@ -283,25 +313,27 @@ class StateMachine:
         if self.state == States.E1:
             initial_state(self, ers, sip)
         elif self.state == States.E2:
-            process_sip1(self, ers, sip)
+            analyse_sip(self, ers, sip)
         elif self.state == States.E3:
             lim_or_obj(self, ers, sip)
-        elif self.state == States.E3ba:
-            prof_state(self, ers, sip)
+        elif self.state == States.E3b1:
+            wait_for_first_turn_left(self, ers, sip)
+        elif self.state == States.E3b2:
+            wait_for_first_turn_right(self, ers, sip)
         elif self.state == States.E3a:
             wait_for_obj(self, ers)
         elif self.state == States.E3b:
             theres_still_obj(self, ers, sip)
         elif self.state == States.E3c:
-            first_move_until_obj(self, ers, sip)
+            first_move_while_obj(self, ers, sip)
         elif self.state == States.E3c1:
-            prof_state2(self, ers, sip)
+            wait_for_secondo_turn_right_while_obj(self, ers, sip)
         elif self.state == States.E3c2:
-            prof_state3(self, ers, sip)
+            wait_for_second_turn_right_without_obj(self, ers, sip)
         elif self.state == States.E3d:
-            move_while_obj(self, ers, sip)
+            move_until_obj(self, ers, sip)
         elif self.state == States.E3e:
-            second_move_until_obj(self, ers, sip)
+            second_move_while_obj(self, ers, sip)
         elif self.state == States.E3f:
             return_to_path(self, ers, sip)
         elif self.state == States.E4:
