@@ -43,8 +43,6 @@ def detect_obj(arr_sonar):
         if 0 < sonar.distance < 70 and sonar.id in (3, 4):
             #print("STOP GIGANTE DO 3 E 4")
             return True
-        if 0 < sonar.distance < 60 and sonar.id in (2, 5):
-            return True
     return False
 
 

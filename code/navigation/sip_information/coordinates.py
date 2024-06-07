@@ -13,7 +13,7 @@ class CoordinatesInfo:
 
 
 def update_coordinate_info(sip, coordinates):
-    coordinates.x = sip['x_pos']/10
-    coordinates.y = sip['y_pos']/10
+    coordinates.x = sip['x_pos']
+    coordinates.y = sip['y_pos']
     coordinates.degree = sip['th_pos']
     coordinates.timestamp = datetime.now()

@@ -55,8 +55,6 @@ def wait_for_obj(state_machine, ers):
     current_time = datetime.now().timestamp()
     if current_time - state_machine.wait_for_obj >= 5:
         print("continuar a andar")
-        # ers.command = Command('MOVE', -250) ##VER
-        # process_command(ers)
         state_machine.state = States.E3b
 
 
@@ -115,7 +113,6 @@ def wait_for_first_turn_right(state_machine, ers, sip):
 def first_move_while_obj(state_machine, ers, sip):
     process_sip(ers, sip)
     if state_machine.dodge_direction is Direction.RIGHT:
-        sip.sonars[0].display_info()
         if not detects_an_object_left(sip.sonars):
             print("E3C - já não tem o objeto left")
             ers.command = Command('DHEAD', 90)  # ESQUERDA
@@ -191,7 +188,7 @@ def second_move_while_obj(state_machine, ers, sip):
             print("E3E - NÃO TEM OBJETO ESQ")
             ers.command = Command('DHEAD', 90)  # ESQUERDA
             process_command(ers)
-            state_machine.state = States.E5
+            state_machine.state = States.E3f
     else:
         if not detects_an_object_right(sip.sonars):
             print("E3E - NÃO TEM OBJETO DIR")
@@ -237,6 +234,7 @@ def change_direction(state_machine, ers, sip):
     else:
         ers.command = Command('DHEAD', 90)
         process_command(ers)
+    print("vou para o rodar")
     state_machine.state = States.E5a
 
 
@@ -351,5 +349,9 @@ class StateMachine:
             get_trash(self, ers)
         elif self.state == States.E5:
             change_direction(self, ers, sip)
+        elif self.state == States.E5a:
+            rodar(self, ers, sip)
+        elif self.state == States.E5b:
+            backwards(self, ers, sip)
         elif self.state == States.E6:
             send_next_command(self, ers)

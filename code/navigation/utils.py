@@ -29,13 +29,12 @@ def process_sip(ers, sip):
 
 
 def detect_limit(x_pos, x_lim, y_pos, y_lim, state_machine):
-    print("x_pos: ", x_pos, " x_lim: ", x_lim)
-    if (x_pos >= x_lim and state_machine.sentido == 'front'):
-        print("Sentido: ", state_machine.sentido)
+    # print("x_pos: ", x_pos)
+    if x_pos >= x_lim and state_machine.sentido == 'front':
+        print("ENTREI NO FRONT")
         state_machine.sentido = 'back'
         return True
-    if (x_pos <= 0 and state_machine.sentido == 'back'):
-        print("Sentido: ", state_machine.sentido)
+    if x_pos <= 0 and state_machine.sentido == 'back':
         state_machine.sentido = 'front'
         return True
 
