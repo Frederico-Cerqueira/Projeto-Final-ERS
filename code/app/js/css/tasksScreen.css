@@ -1,0 +1,112 @@
+.tasks-title {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 28px;
+    text-align: center; /* Para centralizar o texto */
+}
+.task-header {
+    text-align: center; /* Alinha o texto no centro */
+    margin-top: 20px; /* Espaço superior */
+}
+
+.task-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Cada cartão com largura mínima de 200px e expansível */
+    grid-gap: 20px; /* Espaçamento entre os cartões */
+    justify-items: center;
+}
+
+.task-card {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9; /* Cor de fundo dos cartões */
+}
+
+.task-name {
+    margin-bottom: 10px;
+    font-size: 24px;
+    text-decoration: none; /* Removendo o sublinhado do link */
+    color: #333; /* Cor do texto */
+}
+
+.task-name:hover {
+    color: #5e8beb; /* Mudança de cor ao passar o mouse */
+}
+
+.task-link {
+    text-decoration: none; /* Remover sublinhado */
+    color: #5e8beb; /* Alterar cor do texto */
+}
+
+.task-link:hover {
+    color: #0056b3; /* Mudança de cor ao passar o mouse */
+}
+
+.task-status {
+    margin-bottom: 20px;
+}
+
+.add-task-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 200px;
+    border: 1px dashed #5e8beb;
+    border-radius: 5px;
+    background-color: #f9f9f9; /* Cor de fundo do cartão de adicionar */
+}
+
+.add-task-icon {
+    font-size: 48px;
+    color: #5e8beb;
+    cursor: pointer;
+}
+
+.add-task-icon:hover {
+    color: #0056b3; /* Mudança de cor ao passar o mouse */
+}
+.create-task-form {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #f9f9f9; /* Alterado para a cor de fundo dos cartões das tarefas */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.create-task-form label {
+    display: block;
+    margin-bottom: 10px;
+    color: #333;
+    font-weight: bold;
+}
+
+.create-task-form input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    background-color: #fff; /* Cor de fundo dos inputs */
+}
+
+.create-task-form button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #5e8beb;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.create-task-form button:hover {
+    background-color: #0056b3;
+}
+
+

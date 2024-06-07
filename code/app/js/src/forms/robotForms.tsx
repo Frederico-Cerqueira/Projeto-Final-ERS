@@ -15,21 +15,21 @@ export function CreateRobotForm({
     clickHandler: () => void,
 
 }) {
+
     return (
-        <div>
-            <label>Name:</label>
-            <input type="text" className="input-styled" value={name} onChange={changeHandlerName}/>
+        <div className="create-robot-form">
 
+            <input type="text" id="name" className="input-styled" value={name}
+                   onChange={changeHandlerName} placeholder="Enter name..."/>
             <br/>
 
-            <label>Characteristics:</label>
-            <input type="text" value={characteristics}
-                   onChange={changeHandlerCharacteristics}/>
+            <input type="text" id="characteristics" value={characteristics}
+                   onChange={changeHandlerCharacteristics}
+                   placeholder="Enter characteristics..."/>
             <br/>
-
-            <button onClick={clickHandler}>{"Create Robot"}</button>
+            <button onClick={clickHandler}>Create Robot</button>
         </div>
-    );
+    )
 }
 
 export function UpdateRobotForm({

@@ -11,10 +11,9 @@ export function CreateTaskForm({
     clickHandler: () => void,
 }) {
     return (
-        <div>
-            <label>Name:</label>
-            <input type="text" value={name} onChange={changeHandlerName}/>
-            <button onClick={clickHandler}>{"Create Task"}</button>
+        <div className="create-task-form">
+            <input type="text" id="task-name" value={name} onChange={changeHandlerName} placeholder={"Name"}/>
+            <button onClick={clickHandler}>Create Task</button>
         </div>
     );
 }
@@ -31,7 +30,8 @@ export function UpdateTaskForm({
     return (
         <div>
             <label className="labelForm">Status:</label>
-            <input type="text" className="input-styled" value={status} onChange={changeHandlerStatus}/>
+            <input type="text" className="input-styled" value={status} onChange={changeHandlerStatus}
+                   placeholder={"'pending' or 'in progress' or 'completed'"}/>
             <br/>
             <button className="buttonForm" onClick={clickHandler}>{"Update Task"}</button>
         </div>

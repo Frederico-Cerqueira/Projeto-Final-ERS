@@ -63,11 +63,9 @@ export function UpdateAreaForm({
 }) {
     return (
         <div>
-            <label>Height:</label>
-            <input type="number" value={height} onChange={changeHandlerHeight}/>
+            <input type="number" value={height} onChange={changeHandlerHeight} placeholder={"Height"}/>
             <br/>
-            <label>Width:</label>
-            <input type="number" value={width} onChange={changeHandlerWidth}/>
+            <input type="number" value={width} onChange={changeHandlerWidth} placeholder={"Width"}/>
             <br/>
             <button onClick={clickHandler}>Update Area</button>
         </div>

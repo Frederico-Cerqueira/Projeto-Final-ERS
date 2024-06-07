@@ -1,4 +1,5 @@
 import React from "react";
+import '../../css/robotScreen.css';
 
 export function DeleteButton({onClick, name}: { onClick: () => void, name: string }) {
 
@@ -8,7 +9,7 @@ export function DeleteButton({onClick, name}: { onClick: () => void, name: strin
     }
 
     return (
-        <button onClick={handleClick}>
+        <button className={"delete-button"} onClick={handleClick}>
             {"Delete " + name}
         </button>
     );

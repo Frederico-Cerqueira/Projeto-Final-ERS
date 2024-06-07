@@ -10,7 +10,7 @@ export async function fetchWrapper(uri, method, body) {
     try {
         const response = await fetch(uri, requestOptions);
         if (!response.ok) {
-            return response.status                                                               //Resolver melhor isto
+            return response.status
         }
         return await response.json();
     } catch (error) {

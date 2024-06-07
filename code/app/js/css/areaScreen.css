@@ -1,0 +1,64 @@
+.area-details {
+    width: 500px;
+    margin: auto;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    text-align: center; /* Centralizar conteúdo */
+    box-sizing: border-box; /* Incluir padding e borda no tamanho total */
+}
+
+.area-name {
+    text-align: center;
+}
+
+.area-info-item {
+    margin-top: 20px; /* Espaçamento entre os itens de informação */
+}
+
+.area-action-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px; /* Espaçamento entre os botões e o conteúdo acima */
+}
+
+.area-submit-button {
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 7px 5px;
+    margin-right: 10px;
+    width: 120px; /* Largura dos botões */
+    height: 68px;
+    background-color: #5e8beb;
+}
+
+.area-delete-button {
+    background-color: #ff6666;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 8px 16px;
+    margin-right: 10px;
+    width: 420px; /* Largura dos botões */
+    height: 36px;
+}
+
+.area-update-form {
+    display: flex;
+    align-items: center;
+    margin-top: 20px; /* Espaçamento entre o formulário de atualização e o conteúdo acima */
+}
+
+.area-update-inputs input {
+    flex-grow: 1;
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    margin-right: 10px;
+}

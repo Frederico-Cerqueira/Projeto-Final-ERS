@@ -1,13 +1,12 @@
 import React from 'react'
-import {createBrowserRouter} from "react-router-dom";
+import {createBrowserRouter, Link} from "react-router-dom";
 import {InitialScreen} from "./screens/initialScreen";
 import {CreateUser} from "./screens/createUserScreen";
 import {Login} from "./screens/loginScreen";
 import {User} from "./screens/userScreen";
 import {Robots} from "./screens/robotsScreen";
-import {Tasks} from "./screens/tasksScreen";
+import {Tasks, TasksPage} from "./screens/tasksScreen";
 import {Area} from "./screens/areaScreen";
-import {CreateRobot} from "./screens/createRobotScreen";
 import {Robot} from "./screens/robotScreen";
 import {Task} from "./screens/taskScreen";
 import {Time} from "./screens/timeScreen";
@@ -26,10 +25,6 @@ export const router = createBrowserRouter(
                 {
                     path: "/task/:taskID/area/:id",
                     element: <Area/>
-                },
-                {
-                    path: "/createRobot",
-                    element: <CreateRobot/>
                 },
                 {
                     path: "/createUser",
@@ -57,7 +52,7 @@ export const router = createBrowserRouter(
                 },
                 {
                     path: "/tasks",
-                    element: <Tasks/>
+                    element: <TasksPage/>
                 },
                 {
                     path: "/task/:taskID/time/:id",

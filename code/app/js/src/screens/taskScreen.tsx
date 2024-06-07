@@ -9,6 +9,7 @@ import {TaskUpdateInputModel} from "../types/TaskInputModel";
 import {UpdateTaskForm} from "../forms/taskForms";
 import {DeleteButton} from "../elements/deteleButton";
 import {useFetchGet} from "../fetch/fetchGet";
+import {NavBar} from "../elements/navBar";
 
 export function Task() {
     const {id} = useParams()
@@ -17,7 +18,7 @@ export function Task() {
     const navigate = useNavigate();
 
     async function fetchDeleteTask() {
-        const uri = '/api/task/'+id;
+        const uri = '/api/task/' + id;
         try {
             const jsonData = await fetchWrapper(uri, 'DELETE', {});
             console.log('Success!', jsonData);
@@ -56,6 +57,7 @@ export function Task() {
 
     return (
         <div>
+            <NavBar/>
             {task && (
                 <div>
                     <h1>{task.name}</h1>
@@ -63,7 +65,6 @@ export function Task() {
                 </div>
             )
             }
-            <p><Link to="/tasks">Tasks</Link></p>
             <div>
                 <h2>Create Area</h2>
                 <CreateArea taskID={id}></CreateArea>
@@ -92,7 +93,7 @@ function GetAreas(id) {
         <h1>Areas</h1>
         {areas && areas.areas.map(area => (
             <div key={area.id}>
-                <h2><Link to={'/task/'+taskID+'/area/' + area.id}>{area.name}</Link></h2>
+                <h2><Link to={'/task/' + taskID + '/area/' + area.id}>{area.name}</Link></h2>
                 <p>{area.description}</p>
                 <p>Height: {area.height}</p>
                 <p>Width: {area.width}</p>
@@ -110,7 +111,7 @@ function GetTimes(id) {
         <h1>Times</h1>
         {times && times.times.map(time => (
             <div key={time.id}>
-                <h2><Link to={'/task/'+taskID+'/time/' + time.id}>{time.description}</Link></h2>
+                <h2><Link to={'/task/' + taskID + '/time/' + time.id}>{time.description}</Link></h2>
                 <h2>{time.weekDay}</h2>
                 <p>Start Time: {time.startTime}</p>
                 <p>End Time: {time.endTime}</p>
@@ -135,7 +136,7 @@ function CreateArea(id) {
 
         try {
             const jsonData = await fetchWrapper(uri, 'POST', body);
-            navigate('/task/'+taskID+'/area/' + jsonData.id)
+            navigate('/task/' + taskID + '/area/' + jsonData.id)
             console.log('Success!', jsonData);
         } catch (error) {
             console.error('There was an error in the request:', error);
@@ -174,7 +175,7 @@ function CreateTime(id) {
         const uri = '/api/time/' + taskID;
         try {
             const jsonData = await fetchWrapper(uri, 'POST', body);
-            navigate('/task/'+taskID+'/time/' + jsonData.id)
+            navigate('/task/' + taskID + '/time/' + jsonData.id)
             console.log('Success!', jsonData);
         } catch (error) {
             console.error('There was an error in the request:', error);

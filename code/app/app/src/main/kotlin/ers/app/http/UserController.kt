@@ -39,7 +39,7 @@ class UserController(private val userService: UserService) {
     }
 
     @GetMapping(PathTemplate.USER_BY_TOKEN)
-    fun getUserByToken(@RequestBody token: TokenInputModel): ResponseEntity<*> {
+    fun getUserByToken(@RequestParam token: TokenInputModel): ResponseEntity<*> {
         return when (val res = userService.getUserByToken(token.token)) {
             is Either.Right -> ResponseEntity.ok(res.value)
             is Either.Left -> when (res.value) {

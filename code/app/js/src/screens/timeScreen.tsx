@@ -1,22 +1,24 @@
 import React, {useState} from "react";
-import {Link, useLocation, useNavigate, useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {TimeUpdateInputModel} from "../types/TimeInputModel";
 import {fetchWrapper} from "../fetch/fetchPost";
 import {UpdateTimeForm} from "../forms/timeForms";
 import {DeleteButton} from "../elements/deteleButton";
 import {useFetchGet} from "../fetch/fetchGet";
+import {NavBar} from "../elements/navBar";
 
 export function Time() {
-    const {taskID,id} = useParams()
+    const {taskID, id} = useParams()
     const [time, setTime] = useState(null)
     useFetchGet(`/api/time/` + id, id, setTime);
     const navigate = useNavigate();
+
     async function fetchDeleteTime() {
-        const uri = '/api/time/'+id;
+        const uri = '/api/time/' + id;
         try {
             const jsonData = await fetchWrapper(uri, 'DELETE', {});
             console.log('Success!', jsonData);
-            navigate('/task/'+taskID)
+            navigate('/task/' + taskID)
         } catch (error) {
             console.error('There was an error in the request:', error);
         }
@@ -58,7 +60,8 @@ export function Time() {
 
     return (
         <div>
-            <p><Link to={"/task/"+taskID}>Back to Task</Link></p>
+            <NavBar/>
+            <br/>
             {time && (
                 <div>
                     <h1>Description: {time.description}</h1>

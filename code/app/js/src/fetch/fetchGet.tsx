@@ -47,12 +47,14 @@ export function convertToObject(uri, propertyName = undefined) {
     return object;
 }
 
-export function  useFetchGet(uri, id, setFunction) {
+export function useFetchGet(uri, id, setFunction) {
     useEffect(() => {
         fetch(uri)
-            .then(response => response.json() )
-            .then(data => {console.log(data)
-        setFunction(data)})
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                setFunction(data)
+            })
             .catch(error => console.error('Error:', error));
     }, [id]);
 }

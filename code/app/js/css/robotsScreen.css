@@ -1,0 +1,90 @@
+.robots-title {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 28px;
+    text-align: center;
+}
+
+.robot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-gap: 20px;
+    justify-items: center;
+}
+
+.robot-card {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.robot-name {
+    margin-bottom: 10px;
+    font-size: 24px;
+    text-decoration: none;
+    color: #333;
+}
+
+.robot-name:hover {
+    color: #007bff;
+}
+
+.add-robot-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 200px;
+    border: 1px dashed #007bff;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.add-robot-icon {
+    font-size: 48px;
+    color: #007bff;
+    cursor: pointer;
+}
+
+.create-robot-form {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.create-robot-form label {
+    display: block;
+    margin-bottom: 10px;
+    color: #333;
+    font-weight: bold;
+}
+
+.create-robot-form input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    background-color: #fff;
+}
+
+.create-robot-form button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.create-robot-form button:hover {
+    background-color: #0056b3;
+}

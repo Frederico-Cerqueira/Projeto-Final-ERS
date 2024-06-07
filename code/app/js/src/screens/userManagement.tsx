@@ -1,9 +1,14 @@
 import React, {useContext, useState} from 'react'
-import {Link, useNavigate} from "react-router-dom";
-import {Form} from "../forms/loginForm";
+import {useNavigate} from "react-router-dom";
+
 import {fetchWrapper} from "../fetch/fetchPost";
 import {UserInputModel} from "../types/userInputModel";
 import {AuthContext} from "../App";
+import {useCookies} from 'react-cookie';
+import "../../css/authForm.css"
+import '../../css/initialScreen.css';
+import {AuthForm} from "../forms/AuthForm";
+
 
 export function UserManagement({uri, msg, buttonName, link, linkMessage}: {
     uri: string,
@@ -16,6 +21,7 @@ export function UserManagement({uri, msg, buttonName, link, linkMessage}: {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(false);
+    const [, setCookie] = useCookies(['token']);
     const navigate = useNavigate();
     const auth = useContext(AuthContext)
 
@@ -23,18 +29,20 @@ export function UserManagement({uri, msg, buttonName, link, linkMessage}: {
         const body: UserInputModel = {name, email, password}
         try {
             const jsonData = await fetchWrapper(uri, 'POST', body);
-            auth.setUserID(jsonData.id);
-            navigate('/user/'+jsonData.id)
+            setCookie('token', jsonData.token, {path: '/'});
+            if (auth.setUserID) {
+                auth.setUserID(jsonData.id);
+            }
+            navigate('/user/' + jsonData.id)
             console.log('Success!', jsonData);
         } catch (error) {
             console.error('There was an error in the request:', error);
         }
     }
 
-
     return (
         <div>
-            <Form
+            <AuthForm
                 name={name}
                 password={password}
                 email={email}
@@ -44,9 +52,11 @@ export function UserManagement({uri, msg, buttonName, link, linkMessage}: {
                 changeHandlerPassword={event => setPassword(event.target.value)}
                 changeHandlerEmail={event => setEmail(event.target.value)}
                 clickHandler={clickHandler}
-                buttonName={buttonName}/>
-            <Link to={link}>{linkMessage}</Link>
+                buttonName={buttonName}
+                link={link}
+                linkMessage={linkMessage}/>
         </div>
+
     );
 }
 
