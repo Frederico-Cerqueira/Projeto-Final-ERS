@@ -10,6 +10,7 @@ export function CreateAreaForm({
                                    changeHandlerHeight,
                                    changeHandlerWidth,
                                    clickHandler,
+                                   error
                                }: {
     name: string,
     description: string,
@@ -20,54 +21,47 @@ export function CreateAreaForm({
     changeHandlerHeight: (event: ChangeEvent<HTMLInputElement>) => void,
     changeHandlerWidth: (event: ChangeEvent<HTMLInputElement>) => void,
     clickHandler: () => void,
+    error: boolean
 
 }) {
     return (
-        <div>
-            <label>Name:</label>
-            <input type="text" value={name} onChange={changeHandlerName}/>
-
-            <br/>
-
-            <label>Description:</label>
-            <input type="text" value={description} onChange={changeHandlerDescription}/>
-
-            <br/>
-
-            <label>Height:</label>
-            <input type="number" value={height} onChange={changeHandlerHeight}/>
-
-            <br/>
-
-            <label>Width:</label>
-            <input type="number" value={width} onChange={changeHandlerWidth}/>
-
-            <br/>
-            <button onClick={clickHandler}>{"Create Area"}</button>
-        </div>
-    );
-}
-
-export function UpdateAreaForm({
-                                   height,
-                                   width,
-                                   changeHandlerHeight,
-                                   changeHandlerWidth,
-                                   clickHandler
-                               }: {
-    height: number,
-    width: number,
-    changeHandlerHeight: (event: ChangeEvent<HTMLInputElement>) => void,
-    changeHandlerWidth: (event: ChangeEvent<HTMLInputElement>) => void,
-    clickHandler: () => void
-}) {
-    return (
-        <div>
-            <input type="number" value={height} onChange={changeHandlerHeight} placeholder={"Height"}/>
-            <br/>
-            <input type="number" value={width} onChange={changeHandlerWidth} placeholder={"Width"}/>
-            <br/>
-            <button onClick={clickHandler}>Update Area</button>
+        <div className="form-box">
+            <input
+                type="text"
+                value={name}
+                onChange={changeHandlerName}
+                placeholder="Name"
+                className="input-styled"
+            />
+            <input
+                type="text"
+                value={description}
+                onChange={changeHandlerDescription}
+                placeholder="Description"
+                className="input-styled"
+            />
+            <input
+                type="number"
+                value={height}
+                onChange={changeHandlerHeight}
+                placeholder="Height"
+                className="input-styled"
+            />
+            <input
+                type="number"
+                value={width}
+                onChange={changeHandlerWidth}
+                placeholder="Width"
+                className="input-styled"
+            />
+            <button onClick={clickHandler} className="buttonForm">
+                Create Area
+            </button>
+            {error && (
+                <div className="error-message">
+                    {"Name, description, height, and width cannot be empty"}
+                </div>
+            )}
         </div>
     );
 }

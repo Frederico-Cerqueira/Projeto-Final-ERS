@@ -1,0 +1,38 @@
+.area-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-gap: 20px;
+    justify-items: center;
+}
+
+.area-card {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.area-name {
+    margin-bottom: 10px;
+    font-size: 24px;
+    text-decoration: none;
+    color: #333;
+}
+
+.area-link:hover {
+    color: #007bff;
+}
+
+.area-description,
+.area-dimensions {
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.area-description {
+    font-size: 16px;
+}
+
+.area-dimensions {
+    font-size: 14px;
+}

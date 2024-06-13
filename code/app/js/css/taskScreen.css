@@ -1,0 +1,165 @@
+.task-details {
+    width: 500px;
+    margin: auto;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    text-align: center; /* Centralizar conteúdo */
+    box-sizing: border-box; /* Incluir padding e borda no tamanho total */
+}
+
+.task-name {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.task-info-item {
+    margin-top: 20px; /* Espaçamento entre os itens de informação */
+}
+
+.task-action-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Centralizar verticalmente */
+    margin-top: 20px;
+}
+
+.task-action-buttons button {
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 8px 16px;
+    width: 120px; /* Largura dos botões */
+    height: 60px;
+}
+
+.task-action-buttons .update-button {
+    background-color: #5e8beb;
+}
+
+.task-action-buttons input {
+    flex-grow: 1; /* Ocupar o espaço disponível */
+    margin-right: 10px; /* Espaçamento entre o input e o botão */
+    padding: 8px; /* Ajuste do espaçamento interno */
+
+}
+
+
+.area-cards, .time-cards {
+    width: 90%;
+    margin: 20px auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.area-card, .time-card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #fff;
+    text-align: center;
+}
+
+.area-card h3, .time-card h3 {
+    margin: 10px 0;
+}
+
+.create-form {
+    width: 00px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    text-align: center;
+}
+
+.labelForm {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.input-styled {
+    width: 90%;
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 19px;
+    box-sizing: border-box;
+}
+
+.input-styled:last-of-type {
+    margin-bottom: 20px;
+}
+
+.buttonForm {
+    background-color: #5e8beb;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 30px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.buttonForm:hover {
+    background-color: #4a74c4;
+}
+
+.form-box {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 200px;
+    margin: 10px auto;
+    box-sizing: border-box;
+}
+
+.form-box input[type="text"],
+.form-box input[type="number"],
+.form-box input[type="time"],
+.form-box input[type="date"],
+.form-box textarea {
+    width: 100%;
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+.form-box button {
+    background-color: #5e8beb;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+}
+
+.form-box button:hover {
+    background-color: #4a74c4;
+}
+
+.add-form-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: #5e8beb;
+    font-size: 24px;
+}
+
+.add-form-button:hover {
+    color: #4a74c4;
+}
+

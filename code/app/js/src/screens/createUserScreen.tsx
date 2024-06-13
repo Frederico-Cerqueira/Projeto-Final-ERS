@@ -6,7 +6,7 @@ export function CreateUser() {
         <div>
             <UserManagement
                 uri={"/api/user"}
-                msg={"Player already exists"}
+                msg={"Player already exists or invalid input. Please try again."}
                 buttonName={"Create User"}
                 link={"/login"}
                 linkMessage={"Login"}

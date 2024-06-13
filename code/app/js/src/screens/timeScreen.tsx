@@ -1,61 +1,31 @@
 import React, {useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
-import {TimeUpdateInputModel} from "../types/TimeInputModel";
+import {TimeUpdateInputModel} from "../types/timeInputModel";
 import {fetchWrapper} from "../fetch/fetchPost";
-import {UpdateTimeForm} from "../forms/timeForms";
-import {DeleteButton} from "../elements/deteleButton";
 import {useFetchGet} from "../fetch/fetchGet";
 import {NavBar} from "../elements/navBar";
+import '../../css/timeScreen.css';
 
 export function Time() {
-    const {taskID, id} = useParams()
-    const [time, setTime] = useState(null)
-    useFetchGet(`/api/time/` + id, id, setTime);
+    const {taskID, id} = useParams();
+    const [time, setTime] = useState(null);
+
     const navigate = useNavigate();
+
+    useFetchGet(`/api/time/` + id, setTime);
 
     async function fetchDeleteTime() {
         const uri = '/api/time/' + id;
         try {
-            const jsonData = await fetchWrapper(uri, 'DELETE', {});
-            console.log('Success!', jsonData);
-            navigate('/task/' + taskID)
+            await fetchWrapper(uri, 'DELETE', {});
+            navigate('/task/' + taskID);
         } catch (error) {
             console.error('There was an error in the request:', error);
         }
     }
 
-    function UpdateTime(id) {
-        const [startTime, setStartTime] = useState('');
-        const [endTime, setEndTime] = useState('');
-        const [weekDay, setWeekDay] = useState('');
-
-
-        async function clickHandler() {
-            const body: TimeUpdateInputModel = {startTime, endTime, weekDay};
-            const uri = '/api/time/update/' + id.time;
-            try {
-                const jsonData = await fetchWrapper(uri, 'POST', body);
-                console.log('Success!', jsonData);
-                setTime(jsonData)
-                //Navigate to Task
-            } catch (error) {
-                console.error('There was an error in the request:', error);
-            }
-        }
-
-        return (
-            <div>
-                <UpdateTimeForm
-                    startTime={startTime}
-                    endTime={endTime}
-                    weekDay={weekDay}
-                    changeHandlerStartTime={event => setStartTime(event.target.value)}
-                    changeHandlerEndTime={event => setEndTime(event.target.value)}
-                    changeHandlerWeekDay={event => setWeekDay(event.target.value)}
-                    clickHandler={clickHandler}
-                />
-            </div>
-        );
+    if (time) {
+        console.log(time);
     }
 
     return (
@@ -63,19 +33,76 @@ export function Time() {
             <NavBar/>
             <br/>
             {time && (
-                <div>
-                    <h1>Description: {time.description}</h1>
-                    <p>Start Time: {time.startTime}</p>
-                    <p>End Time: {time.endTime}</p>
-                    <p>Week Day: {time.weekDay}</p>
+                <div className="time-details">
+                    <h1 className="time-description">{time.description}</h1>
+                    <div className="time-info-item">
+                        <p>Start Time: {time.startTime}</p>
+                        <p>End Time: {time.endTime}</p>
+                        <p>Week Day: {time.weekDay}</p>
+                    </div>
+                    <div className="time-action-buttons">
+                        <UpdateTime id={id} setTime={setTime}/>
+                    </div>
+                    <button className="delete-button" onClick={fetchDeleteTime}>Delete</button>
+                    <br/>
                 </div>
             )}
-            <UpdateTime time={id}></UpdateTime>
-            <DeleteButton onClick={fetchDeleteTime} name={"Time"}></DeleteButton>
         </div>
-    )
+    );
 }
 
+function UpdateTime({id, setTime}) {
+    const [startTime, setStartTime] = useState('');
+    const [endTime, setEndTime] = useState('');
+    const [weekDay, setWeekDay] = useState('');
+    const [error, setError] = useState(false);
 
+    const body: TimeUpdateInputModel = {startTime, endTime, weekDay};
+    const uri = '/api/time/update/' + id;
 
+    async function clickHandler() {
+        try {
+            const jsonData = await fetchWrapper(uri, 'POST', body);
+            if (jsonData.taskId) {
+                setTime(jsonData);
+            } else {
+                setError(true);
+            }
+        } catch (error) {
+            console.error('There was an error in the request:', error);
+        }
+    }
 
+    return (
+        <div className="time-update-form">
+            <div className="time-update-inputs">
+                <input
+                    type="text"
+                    value={startTime}
+                    onChange={event => setStartTime(event.target.value)}
+                    placeholder="Start Time (HH:MM:SS)"
+                />
+                <input
+                    type="text"
+                    value={endTime}
+                    onChange={event => setEndTime(event.target.value)}
+                    placeholder="End Time (HH:MM:SS)"
+                />
+                <input
+                    type="text"
+                    value={weekDay}
+                    onChange={event => setWeekDay(event.target.value)}
+                    placeholder="Week Day"
+                />
+            </div>
+            <button className="time-submit-button" onClick={clickHandler}>
+                Update
+            </button>
+            {error && (
+                <div className="error-message">
+                    {"All inputs need to be completed"}
+                </div>
+            )}
+        </div>
+    );
+}

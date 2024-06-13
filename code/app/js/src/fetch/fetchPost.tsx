@@ -14,7 +14,7 @@ export async function fetchWrapper(uri, method, body) {
         }
         return await response.json();
     } catch (error) {
-        console.error('Houve um erro na requisição:', error);
+        console.error('There was an error in the request:', error);
         throw error;
     }
 }

@@ -1,4 +1,4 @@
-.area-details {
+.time-details {
     width: 500px;
     margin: auto;
     border: 1px solid #ccc;
@@ -9,56 +9,46 @@
     box-sizing: border-box;
 }
 
-.area-name {
+.time-description {
     text-align: center;
 }
 
-.area-info-item {
+.time-info-item {
     margin-top: 20px;
 }
 
-.area-action-buttons {
+.time-action-buttons {
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
 }
 
-.area-submit-button {
+.time-submit-button {
     border: none;
     color: #fff;
     font-size: 16px;
     cursor: pointer;
     border-radius: 10px;
     padding: 7px 5px;
-    margin-right: 10px;
+    margin-top: 10px;
     width: 120px;
-    height: 68px;
+    height: 40px;
     background-color: #5e8beb;
 }
 
-.area-delete-button {
-    background-color: #ff6666;
-    border: none;
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 10px;
-    padding: 8px 16px;
-    margin-right: 10px;
-    width: 420px;
-    height: 36px;
-}
 
-.area-update-form {
+
+.time-update-form {
     display: flex;
+    flex-direction: column;
     align-items: center;
     margin-top: 20px;
 }
 
-.area-update-inputs input {
-    flex-grow: 1;
+.time-update-inputs input {
+    width: 50%;
     padding: 8px;
     border-radius: 10px;
     border: 1px solid #ccc;
-    margin-right: 10px;
+    margin-bottom: 10px;
 }

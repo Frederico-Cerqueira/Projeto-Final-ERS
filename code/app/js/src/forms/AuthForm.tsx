@@ -1,7 +1,7 @@
 import React from "react";
-import "../../css/authForm.css"
 import {Link} from "react-router-dom";
 import {InitialNavBar} from "../elements/initialNavBar";
+import "../../css/authForm.css";
 
 export function AuthForm({
                              name,
@@ -30,30 +30,13 @@ export function AuthForm({
                     <br/>
                     <input id="password" type="password" className="form-input" autoComplete="off" value={password}
                            onChange={changeHandlerPassword} placeholder="Password"/>
-
                     <button className="button-submit" onClick={clickHandler}>{buttonName}</button>
-
+                    {error && <div className="error-message">{msg}</div>}
                     <Link to={link} className="auth-link">{linkMessage}</Link>
                 </div>
             </div>
         </div>
     );
-
 }
 
-/*
- <div className="error-message">
-                    <Error error={error} msg={msg} />
-                </div>*/
 
-function Error({error, msg}: { error: boolean; msg: string }) {
-    if (error) {
-        return (
-            <div className="error">
-                {msg}
-            </div>
-        );
-    } else {
-        return <div/>;
-    }
-}

@@ -3,11 +3,10 @@ import {createRoot} from "react-dom/client";
 import {RouterProvider} from "react-router";
 import {router} from "./router";
 import {useCookies} from "react-cookie";
-import {useRoutes} from "react-router-dom";
 
 export type ContextType = {
-    userID : number,
-    setUserID? : (id:number) => void,
+    userID: number,
+    setUserID?: (id: number) => void,
 }
 
 export const AuthContext = createContext<ContextType>({userID: 1})
@@ -35,11 +34,11 @@ function App() {
 
         fetchUserID();
     }, [cookies.token]);
-    
+
     return (
         <div>
             <AuthContext.Provider value={{userID, setUserID}}>
-            <RouterProvider router={router}/>
+                <RouterProvider router={router}/>
             </AuthContext.Provider>
         </div>
     )

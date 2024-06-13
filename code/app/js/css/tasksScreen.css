@@ -2,17 +2,17 @@
     margin-top: 20px;
     margin-bottom: 10px;
     font-size: 28px;
-    text-align: center; /* Para centralizar o texto */
+    text-align: center;
 }
 .task-header {
-    text-align: center; /* Alinha o texto no centro */
-    margin-top: 20px; /* Espaço superior */
+    text-align: center;
+    margin-top: 20px;
 }
 
 .task-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Cada cartão com largura mínima de 200px e expansível */
-    grid-gap: 20px; /* Espaçamento entre os cartões */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-gap: 20px;
     justify-items: center;
 }
 
@@ -20,27 +20,27 @@
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    background-color: #f9f9f9; /* Cor de fundo dos cartões */
+    background-color: #f9f9f9;
 }
 
 .task-name {
     margin-bottom: 10px;
     font-size: 24px;
-    text-decoration: none; /* Removendo o sublinhado do link */
-    color: #333; /* Cor do texto */
+    text-decoration: none;
+    color: #333;
 }
 
 .task-name:hover {
-    color: #5e8beb; /* Mudança de cor ao passar o mouse */
+    color: #5e8beb;
 }
 
 .task-link {
-    text-decoration: none; /* Remover sublinhado */
-    color: #5e8beb; /* Alterar cor do texto */
+    text-decoration: none;
+    color: #5e8beb;
 }
 
 .task-link:hover {
-    color: #0056b3; /* Mudança de cor ao passar o mouse */
+    color: #0056b3;
 }
 
 .task-status {
@@ -55,7 +55,7 @@
     height: 200px;
     border: 1px dashed #5e8beb;
     border-radius: 5px;
-    background-color: #f9f9f9; /* Cor de fundo do cartão de adicionar */
+    background-color: #f9f9f9;
 }
 
 .add-task-icon {
@@ -65,14 +65,14 @@
 }
 
 .add-task-icon:hover {
-    color: #0056b3; /* Mudança de cor ao passar o mouse */
+    color: #0056b3;
 }
 .create-task-form {
     max-width: 400px;
     margin: 0 auto;
     padding: 20px;
     border-radius: 10px;
-    background-color: #f9f9f9; /* Alterado para a cor de fundo dos cartões das tarefas */
+    background-color: #f9f9f9;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -90,7 +90,7 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
-    background-color: #fff; /* Cor de fundo dos inputs */
+    background-color: #fff;
 }
 
 .create-task-form button {

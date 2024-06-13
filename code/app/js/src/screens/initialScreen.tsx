@@ -2,7 +2,6 @@ import React from 'react'
 import '../../css/initialScreen.css';
 import {InitialNavBar} from "../elements/initialNavBar";
 
-
 export function InitialScreen() {
     return (
         <div className="container">

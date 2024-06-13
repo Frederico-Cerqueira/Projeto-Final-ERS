@@ -6,6 +6,7 @@ export function CreateRobotForm({
                                     changeHandlerName,
                                     changeHandlerCharacteristics,
                                     clickHandler,
+                                    error
 
                                 }: {
     name: string,
@@ -13,6 +14,7 @@ export function CreateRobotForm({
     changeHandlerName: (event: ChangeEvent<HTMLInputElement>) => void,
     changeHandlerCharacteristics: (event: ChangeEvent<HTMLInputElement>) => void,
     clickHandler: () => void,
+    error: boolean
 
 }) {
 
@@ -28,25 +30,7 @@ export function CreateRobotForm({
                    placeholder="Enter characteristics..."/>
             <br/>
             <button onClick={clickHandler}>Create Robot</button>
+            {error && <div className="error-message">{"Name or Characteristics cannot be empty"}</div>}
         </div>
     )
-}
-
-export function UpdateRobotForm({
-                                    status,
-                                    changeHandlerStatus,
-                                    clickHandler,
-                                }: {
-    status: string,
-    changeHandlerStatus: (event: ChangeEvent<HTMLInputElement>) => void,
-    clickHandler: () => void,
-}) {
-    return (
-        <div>
-            <label>Status:</label>
-            <input type="text" value={status} onChange={changeHandlerStatus}/>
-            <br/>
-            <button onClick={clickHandler}>{"Update Robot"}</button>
-        </div>
-    );
 }

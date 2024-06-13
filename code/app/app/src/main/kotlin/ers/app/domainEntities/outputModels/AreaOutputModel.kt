@@ -6,7 +6,7 @@ data class AreaOutputModel(
     val id: Int,
     val height: Int,
     val width: Int,
-    val taskID: Int,
+    val taskId: Int,
     val name: String,
     val description: String
 )

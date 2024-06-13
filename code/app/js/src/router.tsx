@@ -5,13 +5,12 @@ import {CreateUser} from "./screens/createUserScreen";
 import {Login} from "./screens/loginScreen";
 import {User} from "./screens/userScreen";
 import {Robots} from "./screens/robotsScreen";
-import {Tasks, TasksPage} from "./screens/tasksScreen";
+import {Tasks} from "./screens/tasksScreen";
 import {Area} from "./screens/areaScreen";
 import {Robot} from "./screens/robotScreen";
 import {Task} from "./screens/taskScreen";
 import {Time} from "./screens/timeScreen";
-import {CreateTask} from "./screens/createTaskScreen";
-
+import {Error} from "./screens/errorScreen";
 
 export const router = createBrowserRouter(
     [
@@ -31,10 +30,6 @@ export const router = createBrowserRouter(
                     element: <CreateUser/>,
                 },
                 {
-                    path: "/robot/:id/createTask",
-                    element: <CreateTask/>,
-                },
-                {
                     path: "/login",
                     element: <Login/>
                 },
@@ -52,7 +47,7 @@ export const router = createBrowserRouter(
                 },
                 {
                     path: "/tasks",
-                    element: <TasksPage/>
+                    element: <Tasks/>
                 },
                 {
                     path: "/task/:taskID/time/:id",
@@ -62,6 +57,10 @@ export const router = createBrowserRouter(
                     path: "/user/:id",
                     element: <User/>
                 },
+                {
+                    path: "/error",
+                    element: <Error/>
+                }
 
             ]
         }

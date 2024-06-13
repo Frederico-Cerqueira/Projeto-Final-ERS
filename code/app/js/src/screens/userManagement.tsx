@@ -1,14 +1,13 @@
 import React, {useContext, useState} from 'react'
 import {useNavigate} from "react-router-dom";
-
 import {fetchWrapper} from "../fetch/fetchPost";
 import {UserInputModel} from "../types/userInputModel";
 import {AuthContext} from "../App";
 import {useCookies} from 'react-cookie';
+
 import "../../css/authForm.css"
 import '../../css/initialScreen.css';
-import {AuthForm} from "../forms/AuthForm";
-
+import {AuthForm} from "../forms/authForm";
 
 export function UserManagement({uri, msg, buttonName, link, linkMessage}: {
     uri: string,
@@ -29,14 +28,15 @@ export function UserManagement({uri, msg, buttonName, link, linkMessage}: {
         const body: UserInputModel = {name, email, password}
         try {
             const jsonData = await fetchWrapper(uri, 'POST', body);
-            setCookie('token', jsonData.token, {path: '/'});
-            if (auth.setUserID) {
+            if (jsonData.id) {
+                setCookie('token', jsonData.token, {path: '/'});
                 auth.setUserID(jsonData.id);
+                navigate('/user/' + jsonData.id)
+            } else {
+                setError(true);
             }
-            navigate('/user/' + jsonData.id)
-            console.log('Success!', jsonData);
         } catch (error) {
-            console.error('There was an error in the request:', error);
+            setError(true);
         }
     }
 
@@ -56,7 +56,6 @@ export function UserManagement({uri, msg, buttonName, link, linkMessage}: {
                 link={link}
                 linkMessage={linkMessage}/>
         </div>
-
     );
 }
 

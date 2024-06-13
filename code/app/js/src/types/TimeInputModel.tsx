@@ -10,11 +10,3 @@ export type TimeUpdateInputModel = {
     weekDay: string
 };
 
-export type TimeOutputModel = {
-        id: number;
-        taskId: number;
-        weekDay: string;
-        startTime: string;
-        endTime: string;
-        description: string;
-}

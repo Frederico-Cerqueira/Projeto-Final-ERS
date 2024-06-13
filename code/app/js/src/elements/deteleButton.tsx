@@ -1,7 +1,7 @@
 import React from "react";
 import '../../css/robotScreen.css';
 
-export function DeleteButton({onClick, name}: { onClick: () => void, name: string }) {
+export function DeleteButton({onClick}: { onClick: () => void }) {
 
     function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
         event.preventDefault();
@@ -10,7 +10,7 @@ export function DeleteButton({onClick, name}: { onClick: () => void, name: strin
 
     return (
         <button className={"delete-button"} onClick={handleClick}>
-            {"Delete " + name}
+            {"Delete"}
         </button>
     );
 }

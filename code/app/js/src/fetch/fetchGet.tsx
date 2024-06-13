@@ -1,11 +1,6 @@
 import {useEffect, useState} from "react";
 
-export async function fetchGet(uri: string) {
-    let response = await fetch(uri);
-    return await response.text();
-}
-
-export function useFetchGet1({uri}: { uri: string }): string | undefined {
+export function useFetchGetToLists(uri, propertyName = undefined) {
     const [content, setContent] = useState<string>(undefined)
 
     useEffect(() => {
@@ -25,37 +20,21 @@ export function useFetchGet1({uri}: { uri: string }): string | undefined {
         return () => {
             canceled = true
         }
-
     }, [])
-    return content
-}
 
-
-export function convertToObject(uri, propertyName = undefined) {
-    const content = useFetchGet1({uri});
-    let object;
-    if (propertyName == undefined) {
-        if (content !== undefined) {
-            object = JSON.parse(content);
-        }
-    } else {
-        if (content !== undefined) {
-            object = JSON.parse(content)[propertyName];
-        }
+    if (content !== undefined) {
+        return JSON.parse(content)[propertyName];
     }
-
-    return object;
 }
 
-export function useFetchGet(uri, id, setFunction) {
+export function useFetchGet(uri, setFunction) {
     useEffect(() => {
         fetch(uri)
             .then(response => response.json())
             .then(data => {
-                console.log(data)
                 setFunction(data)
             })
             .catch(error => console.error('Error:', error));
-    }, [id]);
+    }, []);
 }
 
