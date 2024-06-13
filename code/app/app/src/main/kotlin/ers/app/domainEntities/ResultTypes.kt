@@ -4,6 +4,7 @@ import ers.app.domainEntities.outputModels.*
 import ers.app.utils.Errors
 
 typealias UserResult = Either<Errors, UserOutputModel>
+typealias LogoutResult = Either<Errors, LogoutOutputModel>
 
 typealias TaskResult = Either<Errors, TaskOutputModel>
 typealias TasksResult = Either<Errors, TasksOutputModel>

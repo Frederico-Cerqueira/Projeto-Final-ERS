@@ -22,7 +22,7 @@ class UserDtoMapper : RowMapper<UserDto> {
             name = rs.getString("name"),
             email = rs.getString("email"),
             password = rs.getInt("hashPass").toString(),
-            token = rs.getString("token")
+            token = rs.getObject("token", String::class.java) ?: ""
         )
     }
 }

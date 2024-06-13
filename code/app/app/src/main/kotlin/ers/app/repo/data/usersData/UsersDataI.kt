@@ -9,6 +9,7 @@ interface UsersDataI {
     fun createUser(name: String, email: String, hashPass: Int,token: String) : UserDto
     fun getUserByID(id: Int) : UserDto?
     fun getUserByToken(token : String) : UserDto?
-    fun loginUser(email: String, password: String) : UserDto?
+    fun loginUser(email: String, password: String,token:String) : UserDto?
+    fun logoutUser(id: Int, token: String) : UserDto?
     fun getUserByEmail(email: String) : UserDto?
 }

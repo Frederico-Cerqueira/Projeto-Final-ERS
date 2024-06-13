@@ -9,8 +9,6 @@ import org.jdbi.v3.core.Handle
  */
 class TaskData(private val handle: Handle) : TaskDataI {
 
-    //PROVAVELMENTE NÃO IRÁ RETORNAR UM DTO MAS UMA TASK NO FUTURO
-
     /**
      * Function that creates a task in the database.
      * @param name the name of the task.
@@ -19,15 +17,13 @@ class TaskData(private val handle: Handle) : TaskDataI {
      * @return the task created.
      */
     override fun createTask(name: String, userID: Int, robotId: Int): TaskDto {
-        val newTask =
-            handle.createUpdate("INSERT INTO task (name, status, userId, robotId) VALUES (:name, 'pending', :userId, :robotId)")
-                .bind("name", name)
-                .bind("userId", userID)
-                .bind("robotId", robotId)
-                .executeAndReturnGeneratedKeys()
-                .map(TaskDtoMapper())
-                .first()
-        return newTask
+        return handle.createUpdate("INSERT INTO task (name, status, userId, robotId) VALUES (:name, 'pending', :userId, :robotId)")
+            .bind("name", name)
+            .bind("userId", userID)
+            .bind("robotId", robotId)
+            .executeAndReturnGeneratedKeys()
+            .map(TaskDtoMapper())
+            .first()
     }
 
     /**
@@ -36,11 +32,10 @@ class TaskData(private val handle: Handle) : TaskDataI {
      * @return the task with the id passed as parameter.
      */
     override fun getTaskByID(id: Int): TaskDto? {
-        val task = handle.createQuery("SELECT * FROM task WHERE id = :id")
+        return handle.createQuery("SELECT * FROM task WHERE id = :id")
             .bind("id", id)
             .map(TaskDtoMapper())
             .singleOrNull()
-        return task
     }
 
     /**
@@ -50,13 +45,12 @@ class TaskData(private val handle: Handle) : TaskDataI {
      * @return the task with the updated status.
      */
     override fun updateTask(id: Int, status: String): TaskDto {
-        val task = handle.createUpdate("UPDATE task SET status = :status WHERE id = :id")
+        return handle.createUpdate("UPDATE task SET status = :status WHERE id = :id")
             .bind("status", status)
             .bind("id", id)
             .executeAndReturnGeneratedKeys()
             .map(TaskDtoMapper())
             .first()
-        return task
     }
 
     /**
@@ -77,13 +71,12 @@ class TaskData(private val handle: Handle) : TaskDataI {
      * @return the list of tasks of the user with the id passed as parameter.
      */
     override fun getTasksByUserID(offset: Int, limit: Int, userID: Int): List<TaskDto> {
-        val tasks = handle.createQuery("SELECT * FROM task WHERE userId = :userId ORDER BY id LIMIT :limit OFFSET :offset")
+        return handle.createQuery("SELECT * FROM task WHERE userId = :userId ORDER BY id LIMIT :limit OFFSET :offset")
             .bind("userId", userID)
             .bind("limit", limit)
             .bind("offset", offset)
             .map(TaskDtoMapper())
             .list()
-        return tasks
     }
 
     /**
@@ -94,13 +87,12 @@ class TaskData(private val handle: Handle) : TaskDataI {
      * @return the list of tasks of the robot with the id passed as parameter.
      */
     override fun getTasksByRobotID(offset: Int, limit: Int, robotID: Int): List<TaskDto> {
-        val tasks = handle.createQuery("SELECT * FROM task WHERE robotId = :robotId ORDER BY id LIMIT :limit OFFSET :offset")
+        return handle.createQuery("SELECT * FROM task WHERE robotId = :robotId ORDER BY id LIMIT :limit OFFSET :offset")
             .bind("robotId", robotID)
             .bind("limit", limit)
             .bind("offset", offset)
             .map(TaskDtoMapper())
             .list()
-        return tasks
     }
 
 }

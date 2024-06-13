@@ -3,3 +3,8 @@ export type UserInputModel = {
     email: string,
     password: string
 }
+
+export type LoginInputModel = {
+    id: number,
+    token: string
+}

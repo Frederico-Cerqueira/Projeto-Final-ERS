@@ -10,8 +10,6 @@ import org.jdbi.v3.core.Handle
  */
 class AreaData (private val handle: Handle) : AreaDataI {
 
-    //PROVAVELMENTE NÃO IRÁ RETORNAR UM DTO MAS UMA AREA NO FUTURO
-
     /**
      * Function that gets an area by its id.
      * @param id the id of the area.

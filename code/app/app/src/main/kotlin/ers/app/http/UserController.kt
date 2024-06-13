@@ -2,6 +2,7 @@ package ers.app.http
 
 import ers.app.domainEntities.Either
 import ers.app.domainEntities.inputModels.LoginInputModel
+import ers.app.domainEntities.inputModels.LogoutInputModel
 import ers.app.domainEntities.inputModels.TokenInputModel
 import ers.app.domainEntities.inputModels.UserInputModel
 import ers.app.service.UserService
@@ -26,6 +27,8 @@ class UserController(private val userService: UserService) {
             }
         }
     }
+
+
 
     @GetMapping(PathTemplate.ID)
     fun getUserByID(@PathVariable id: Int): ResponseEntity<*> {
@@ -56,6 +59,17 @@ class UserController(private val userService: UserService) {
             is Either.Left -> when (res.value) {
                 Errors.UserNotFound -> ResponseEntity.badRequest().body(res.value)
                 Errors.InputTooLong -> ResponseEntity.status(413).body(res.value)
+                else -> ResponseEntity.internalServerError().body(res.value)
+            }
+        }
+    }
+
+    @PostMapping(PathTemplate.LOGOUT)
+    fun logoutUser(@RequestBody logout: LogoutInputModel): ResponseEntity<*> {
+        return when (val res = userService.logoutUser(logout.id,logout.token)) {
+            is Either.Right -> ResponseEntity.ok(res.value)
+            is Either.Left -> when (res.value) {
+                Errors.UserNotFound -> ResponseEntity.badRequest().body(res.value)
                 else -> ResponseEntity.internalServerError().body(res.value)
             }
         }

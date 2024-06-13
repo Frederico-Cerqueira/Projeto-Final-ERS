@@ -1,6 +1,7 @@
 package ers.app.service
 
 import ers.app.domainEntities.*
+import ers.app.domainEntities.outputModels.LogoutOutputModel
 import ers.app.domainEntities.outputModels.UserOutputModel
 import ers.app.repo.transaction.TransactionManager
 import ers.app.utils.Errors
@@ -19,7 +20,7 @@ class UserService(private val transactionManager: TransactionManager) {
         if (!regex.matches(email))
             return failure(Errors.InvalidEmail)
         return transactionManager.run {
-            return@run try{
+            return@run try {
                 if (it.usersData.getUserByEmail(email) != null)
                     return@run failure(Errors.UserAlreadyExists)
                 val hashPassword = password.hashCode()
@@ -63,12 +64,34 @@ class UserService(private val transactionManager: TransactionManager) {
         if (email.length > 50 || password.length > 50 || email.isEmpty() || password.isEmpty())
             return failure(Errors.InputTooLong)
         return transactionManager.run {
-            return@run try{
-                val user = it.usersData.loginUser(email, password)
+            return@run try {
+                val token = UUID.randomUUID().toString()
+                val user = it.usersData.loginUser(email, password,token)
                 if (user == null)
                     failure(Errors.UserNotFound)
                 else
                     success(UserOutputModel(user.id, user.name, user.email, user.token))
+            } catch (e: Exception) {
+                failure(Errors.InternalServerError)
+            }
+        }
+    }
+
+    fun logoutUser(id: Int, token: String): LogoutResult {
+        if (token.length > 50 || token.isEmpty())
+            return failure(Errors.InputTooLong)
+        return transactionManager.run {
+            return@run try {
+                val user = it.usersData.getUserByID(id)
+                if (user == null){
+                    failure(Errors.UserNotFound)}
+                else if (user.token != token)
+                {
+                    failure(Errors.InvalidToken)}
+                else {
+                    it.usersData.logoutUser(id, token)
+                    success(LogoutOutputModel(user.id, user.email))
+                }
             } catch (e: Exception) {
                 failure(Errors.InternalServerError)
             }

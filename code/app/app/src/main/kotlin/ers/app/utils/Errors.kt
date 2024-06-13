@@ -9,6 +9,7 @@ sealed class Errors {
     data object InvalidInput : Errors()
     data object InputTooLong : Errors()
     data object InvalidEmail : Errors()
+    data object InvalidToken : Errors()
     data object UserNotFound : Errors()
     data object TaskNotFound : Errors()
     data object RobotNotFound : Errors()
