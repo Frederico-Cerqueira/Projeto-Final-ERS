@@ -1,5 +1,5 @@
-from ers import ERS
-from state_machine import StateMachine
+from navigation.ers import ERS
+from navigation.state_machine import StateMachine
 
 if __name__ == '__main__':
     pioneer2 = ERS('COM10', 9600)
