@@ -66,6 +66,8 @@ class ERS:
     # TODO
     def take_photo(self):
         # Tem de ver se já passou x tempo para tirar proxima foto
+        # chamar função que tira a foto
+        # chamar a função que processa a imagem e vê se existe lixo, afetando a variável trash_detected
         pass
 
     # E2

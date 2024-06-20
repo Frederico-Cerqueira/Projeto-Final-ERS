@@ -1,6 +1,7 @@
 from sip_information.coordinates import update_coordinate_info
 from sip_information.motors import update_motors_info
-from sip_information.sonars import update_sonar_info, print_sonar_info
+from sip_information.sonars import update_sonar_info
+from ..computer_vision.area import detect_trash_in_area
 
 
 def process_command(ers):
@@ -15,8 +16,7 @@ def process_command(ers):
 
 # TODO
 def detect_trash():
-    # Chamar função da visão que deteta o lixo e retorna true or false
-    return False
+    return detect_trash_in_area()
 
 
 def process_sip(ers, sip):
@@ -37,7 +37,6 @@ def detect_limit(x_pos, x_lim, y_pos, y_lim, state_machine):
     if x_pos <= 0 and state_machine.sentido == 'back':
         state_machine.sentido = 'front'
         return True
-
     return False
 
 
