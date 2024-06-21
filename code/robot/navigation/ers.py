@@ -10,10 +10,11 @@ from sip_information.motors import MotorsInfo
 from sip_information.sip_info import SipInfo
 from serial_communication.serial_communication import SerialCommunication
 from sip_information.sonars import create_sonar
+from ..computer_vision.pi_camera import trash_lookup
 
 DISTANCE_ERROR_RANGE = range(-30, 30)
 ANGLE_ERROR_RANGE = range(-3, 3)
-
+IMAGE_PROCESSING_TIME = 15
 
 class ERS:
     def __init__(self, port, baudrate):
@@ -21,6 +22,7 @@ class ERS:
         self.command = None
         self.init_time_sip = datetime.now().timestamp()
         self.init_time_pulse = datetime.now().timestamp()
+        self.init_time_image = None
 
         # Start serial communication
         self.serial_communication = SerialCommunication(port, baudrate)
@@ -63,12 +65,12 @@ class ERS:
             self.init_time_pulse = datetime.now().timestamp()
             self.send_command('PULSE')
 
-    # TODO
     def take_photo(self):
-        # Tem de ver se já passou x tempo para tirar proxima foto
-        # chamar função que tira a foto
-        # chamar a função que processa a imagem e vê se existe lixo, afetando a variável trash_detected
-        pass
+        final = datetime.now().timestamp()
+        init = self.init_time_image
+        if init is None or final - init > IMAGE_PROCESSING_TIME:
+            trash_lookup()
+
 
     # E2
     def get_sip(self):

@@ -4,9 +4,7 @@ import os
 import matplotlib.pyplot as plt
 from utils import in_file
 
-trash_detected = False
-
-
+# Outside Algorithm
 def image_processing(img):
     # image = cv2.imread(img)
 
@@ -105,7 +103,7 @@ def main():
 if __name__ == '__main__':
     main()
 
-"""
+""" APAGAR
 if __name__ == '__main__':
     image_directory = os.path.join('data', 'pi-images', 'outside')
     image_filename = 'milk2.jpg'
@@ -113,3 +111,6 @@ if __name__ == '__main__':
     #convert_rgb_to_hsv(image_path)
     most_present_h_value(in_file('milk_pack.jpg'))
 """
+
+
+# Inside Algorithm (Hall)

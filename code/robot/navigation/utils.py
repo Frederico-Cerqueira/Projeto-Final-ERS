@@ -1,7 +1,7 @@
 from sip_information.coordinates import update_coordinate_info
 from sip_information.motors import update_motors_info
 from sip_information.sonars import update_sonar_info
-from ..computer_vision.area import detect_trash_in_area
+from ..computer_vision.pi_camera import get_trash_detected
 
 
 def process_command(ers):
@@ -14,9 +14,8 @@ def process_command(ers):
         ers.send_command(ers.command.name, ers.command.args)
 
 
-# TODO
 def detect_trash():
-    return detect_trash_in_area()
+    return get_trash_detected()
 
 
 def process_sip(ers, sip):

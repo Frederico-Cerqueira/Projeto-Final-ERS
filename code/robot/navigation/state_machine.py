@@ -5,6 +5,7 @@ from utils import process_command, detect_trash, detect_limit, last_command_term
 from datetime import datetime
 from enum import Enum
 from limit import Limit
+from ..computer_vision.pi_camera import trash_collected
 
 
 # E1 - pulse e tempo
@@ -220,6 +221,7 @@ def get_trash(state_machine, ers):
     process_command(ers)
     ers.command = Command('DHEAD', 360)
     process_command(ers)
+    trash_collected()
     state_machine.state = States.E2
 
 
