@@ -15,6 +15,8 @@ def process_command(ers):
 
 
 def detect_trash():
+    if get_trash_detected() is None:
+        return False
     return get_trash_detected()
 
 
@@ -30,7 +32,6 @@ def process_sip(ers, sip):
 def detect_limit(x_pos, x_lim, y_pos, y_lim, state_machine):
     # print("x_pos: ", x_pos)
     if x_pos >= x_lim and state_machine.sentido == 'front':
-        print("ENTREI NO FRONT")
         state_machine.sentido = 'back'
         return True
     if x_pos <= 0 and state_machine.sentido == 'back':
