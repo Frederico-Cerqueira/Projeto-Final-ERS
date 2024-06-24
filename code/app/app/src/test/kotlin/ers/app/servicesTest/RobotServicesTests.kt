@@ -1,14 +1,14 @@
 package ers.app.servicesTest
 
 import ers.app.delete
-import ers.app.domainEntities.Failure
-import ers.app.domainEntities.Success
+import ers.app.utils.errors.Failure
+import ers.app.utils.errors.Success
 import ers.app.insert
 import ers.app.jdbiSetup
 import ers.app.repo.dtos.RobotDto
 import ers.app.repo.transaction.JdbiTransactionManager
 import ers.app.service.RobotService
-import ers.app.utils.Errors
+import ers.app.utils.errors.*
 import kotlin.test.*
 
 class RobotServicesTests {
@@ -42,7 +42,7 @@ class RobotServicesTests {
     fun `create robot test with invalid input`() {
         val result = robotServices.createRobot("", "")
         if (result is Failure) {
-            assertEquals(Errors.InvalidInput, result.value)
+            assertEquals(InvalidInput, result.value)
         }
     }
 
@@ -61,7 +61,7 @@ class RobotServicesTests {
     fun `get robot by ID with invalid ID`(){
         val result = robotServices.getRobotByID(300)
         if (result is Failure) {
-            assertEquals(Errors.RobotNotFound, result.value)
+            assertEquals(RobotNotFound, result.value)
         }
     }
 
@@ -80,7 +80,7 @@ class RobotServicesTests {
     fun `update robot status with invalid status`(){
         val result = robotServices.updateRobotStatus(1, "invalid")
         if (result is Failure) {
-            assertEquals(Errors.InvalidInput, result.value)
+            assertEquals(InvalidInput, result.value)
         }
     }
 
@@ -88,7 +88,7 @@ class RobotServicesTests {
     fun `update robot status with invalid ID`(){
         val result = robotServices.updateRobotStatus(300, "busy")
         if (result is Failure) {
-            assertEquals(Errors.RobotNotFound, result.value)
+            assertEquals(RobotNotFound, result.value)
         }
     }
 
@@ -104,7 +104,7 @@ class RobotServicesTests {
     fun `delete robot with invalid ID`(){
         val result = robotServices.deleteRobot(300)
         if (result is Failure) {
-            assertEquals(Errors.RobotNotFound, result.value)
+            assertEquals(RobotNotFound, result.value)
         }
     }
 
@@ -122,7 +122,7 @@ class RobotServicesTests {
     fun `get robot by user ID with invalid ID`(){
         val result = robotServices.getRobotByUserID(0, 10, 300)
         if (result is Failure) {
-            assertEquals(Errors.UserNotFound, result.value)
+            assertEquals(UserNotFound, result.value)
         }
     }
 

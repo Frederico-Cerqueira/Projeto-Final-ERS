@@ -2,13 +2,12 @@ package ers.app.servicesTest
 
 
 import ers.app.delete
-import ers.app.domainEntities.Failure
-import ers.app.domainEntities.Success
+import ers.app.utils.errors.*
+
 import ers.app.insert
 import ers.app.jdbiSetup
 import ers.app.repo.transaction.JdbiTransactionManager
 import ers.app.service.UserService
-import ers.app.utils.Errors
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -43,7 +42,7 @@ class UserServicesTests {
     fun `create user test with invalid email`() {
         val result = userServices.createUser("Mafalda", "mafalda", "123456")
         if (result is Failure) {
-            assertEquals(Errors.InvalidEmail, result.value)
+            assertEquals(InvalidEmail, result.value)
         }
     }
 
@@ -51,7 +50,7 @@ class UserServicesTests {
     fun `create user test with invalid input`() {
         val result = userServices.createUser("", "", "")
         if (result is Failure) {
-            assertEquals(Errors.InvalidInput, result.value)
+            assertEquals(InvalidInput, result.value)
         }
     }
 
@@ -63,7 +62,7 @@ class UserServicesTests {
             ""
         )
         if (result is Failure) {
-            assertEquals(Errors.InputTooLong, result.value)
+            assertEquals(InputTooLong, result.value)
         }
     }
 
@@ -71,7 +70,7 @@ class UserServicesTests {
     fun `create user test with user already exists`() {
         val result = userServices.createUser("Maria", "maria@gmail.com", "123456")
         if (result is Failure) {
-            assertEquals(Errors.UserAlreadyExists, result.value)
+            assertEquals(UserAlreadyExists, result.value)
         }
     }
 
@@ -88,7 +87,7 @@ class UserServicesTests {
     fun `get user by id test with invalid id`() {
         val result = userServices.getUserByID(300)
         if (result is Failure) {
-            assertEquals(Errors.UserNotFound, result.value)
+            assertEquals(UserNotFound, result.value)
         }
     }
 
@@ -105,7 +104,7 @@ class UserServicesTests {
     fun `get user by token test with invalid token`() {
         val result = userServices.getUserByToken("token300")
         if (result is Failure) {
-            assertEquals(Errors.UserNotFound, result.value)
+            assertEquals(UserNotFound, result.value)
         }
     }
 
@@ -122,7 +121,7 @@ class UserServicesTests {
     fun `login user test with invalid email`() {
         val result = userServices.loginUser("ana@gmail.com", "123456")
         if (result is Failure) {
-            assertEquals(Errors.UserNotFound, result.value)
+            assertEquals(UserNotFound, result.value)
         }
     }
 

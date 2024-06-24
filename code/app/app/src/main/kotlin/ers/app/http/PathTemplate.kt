@@ -11,4 +11,5 @@ object PathTemplate {
     const val CREATE_WITH_TASK = "/{taskID}"
     const val UPDATE_DESCRIPTION = "/update/description/{id}"
     const val TASK_ID = "/task/{id}"
+    const val SESSION = "/session"
 }

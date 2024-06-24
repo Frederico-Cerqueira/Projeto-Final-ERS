@@ -1,95 +1,80 @@
 package ers.app.service
 
-import ers.app.domainEntities.*
 import ers.app.domainEntities.outputModels.TaskIDOutputModel
 import ers.app.domainEntities.outputModels.TaskOutputModel
 import ers.app.domainEntities.outputModels.TasksOutputModel
 import ers.app.repo.transaction.TransactionManager
-import ers.app.utils.Errors
+import ers.app.utils.*
+import ers.app.utils.errors.*
 import org.springframework.stereotype.Component
 
 @Component
 class TaskService(private val transactionManager: TransactionManager) {
 
-    fun createTask(name: String, userID: Int, robotID: Int): TaskResult {
+    fun createTask(name: String, userID: Int, robotID: Int): Result<TaskOutputModel> {
         if (name.isEmpty())
-            return failure(Errors.InvalidInput)
+            return failure(InvalidInput)
         if (name.length > 255)
-            return failure(Errors.InputTooLong)
-        return transactionManager.run {
-            try {
+            return failure(InputTooLong)
+        return Handler().servicesHandler {
+            transactionManager.run {
                 val task = it.taskData.createTask(name, userID, robotID)
-                success(TaskOutputModel(task.name, task.userId, task.robotId, task.status))
-            } catch (e: Exception) {
-                failure(Errors.InternalServerError)
+                return@run success(TaskOutputModel(task.name, task.userId, task.robotId, task.status))
             }
         }
     }
 
-    fun getTaskByID(id: Int): TaskResult =
-        transactionManager.run {
-            try {
-                val task = it.taskData.getTaskByID(id)
-                if (task != null)
-                    success(TaskOutputModel(task.name, task.userId, task.robotId, task.status))
-                else
-                    failure(Errors.TaskNotFound)
-            } catch (e: Exception) {
-                failure(Errors.InternalServerError)
+    fun getTaskByID(id: Int): Result<TaskOutputModel> =
+        Handler().servicesHandler {
+            transactionManager.run {
+                val task = it.taskData.getTaskByID(id) ?: return@run failure(TaskNotFound)
+                return@run success(TaskOutputModel(task.name, task.userId, task.robotId, task.status))
             }
         }
 
 
-    fun updateTask(id: Int, status: String): TaskResult {
+    fun updateTask(id: Int, status: String): Result<TaskOutputModel> {
         if (status !in setOf("pending", "in progress", "completed"))
-            return failure(Errors.InvalidInput)
-        return transactionManager.run {
-            try {
-                it.taskData.getTaskByID(id) ?: failure(Errors.TaskNotFound)
+            return failure(InvalidInput)
+        return Handler().servicesHandler {
+            transactionManager.run {
+                it.taskData.getTaskByID(id) ?: return@run failure(TaskNotFound)
                 val task = it.taskData.updateTask(id, status)
-                success(TaskOutputModel(task.name, task.userId, task.robotId, task.status))
-            } catch (e: Exception) {
-                failure(Errors.InternalServerError)
+                return@run success(TaskOutputModel(task.name, task.userId, task.robotId, task.status))
             }
         }
     }
 
-    fun deleteTask(id: Int): TaskIDResult =
-        transactionManager.run {
-            try {
-                it.taskData.getTaskByID(id) ?: failure(Errors.TaskNotFound)
+    fun deleteTask(id: Int): Result<TaskIDOutputModel> =
+        Handler().servicesHandler {
+            transactionManager.run {
+                it.taskData.getTaskByID(id) ?: return@run failure(TaskNotFound)
                 it.taskData.deleteTask(id)
-                success(TaskIDOutputModel(id))
-            } catch (e: Exception) {
-                failure(Errors.InternalServerError)
+                return@run success(TaskIDOutputModel(id))
             }
         }
 
-    fun getTasksByUserID(offset: Int = 0, limit: Int = 0, id: Int): TasksResult {
+    fun getTasksByUserID(offset: Int = 0, limit: Int = 0, id: Int): Result<TasksOutputModel> {
         if (offset < 0 || limit < 0)
-            return failure(Errors.InvalidInput)
-        return transactionManager.run {
-            try {
-                it.usersData.getUserByID(id) ?: failure(Errors.UserNotFound)
+            return failure(InvalidInput)
+        return Handler().servicesHandler {
+            transactionManager.run {
+                it.usersData.getUserByID(id) ?: return@run failure(UserNotFound)
                 val tasks = it.taskData.getTasksByUserID(offset, limit, id)
-                success(TasksOutputModel(tasks))
-            } catch (e: Exception) {
-                failure(Errors.InternalServerError)
+                return@run success(TasksOutputModel(tasks))
             }
         }
     }
 
 
-    fun getTasksByRobotID(offset: Int = 0, limit: Int = 0, id: Int): TasksResult {
+    fun getTasksByRobotID(offset: Int = 0, limit: Int = 0, id: Int): Result<TasksOutputModel> {
         if (offset < 0 || limit < 0)
-            return failure(Errors.InvalidInput)
-        return transactionManager.run {
-            try {
-                it.robotData.getRobotByID(id) ?: failure(Errors.RobotNotFound)
+            return failure(InvalidInput)
+        return Handler().servicesHandler {
+            transactionManager.run {
+                it.robotData.getRobotByID(id) ?: return@run failure(RobotNotFound)
                 val tasks = it.taskData.getTasksByRobotID(offset, limit, id)
-                success(TasksOutputModel(tasks))
-            } catch (e: Exception) {
-                failure(Errors.InternalServerError)
+                return@run success(TasksOutputModel(tasks))
             }
         }
     }

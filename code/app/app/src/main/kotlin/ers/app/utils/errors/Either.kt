@@ -1,4 +1,4 @@
-package ers.app.domainEntities
+package ers.app.utils.errors
 
 sealed class Either<out L, out R> {
     data class Left<out L>(val value: L) : Either<L, Nothing>()

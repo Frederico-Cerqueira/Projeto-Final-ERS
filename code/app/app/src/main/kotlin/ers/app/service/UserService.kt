@@ -1,99 +1,75 @@
 package ers.app.service
 
-import ers.app.domainEntities.*
 import ers.app.domainEntities.outputModels.LogoutOutputModel
 import ers.app.domainEntities.outputModels.UserOutputModel
 import ers.app.repo.transaction.TransactionManager
-import ers.app.utils.Errors
+import ers.app.utils.*
+import ers.app.utils.errors.failure
+import ers.app.utils.errors.success
 import org.springframework.stereotype.Component
 import java.util.*
+import ers.app.utils.errors.*
 
 @Component
 class UserService(private val transactionManager: TransactionManager) {
 
-    fun createUser(name: String, email: String, password: String): UserResult {
+    fun createUser(name: String, email: String, password: String): Result<UserOutputModel> {
         if (name.length > 50 || email.length > 50 || password.length > 50)
-            return failure(Errors.InputTooLong)
+            return failure(InputTooLong)
         if (name.isEmpty() || email.isEmpty() || password.isEmpty())
-            return failure(Errors.InvalidInput)
+            return failure(InvalidInput)
         val regex = Regex("[a-zA-Z0-9.\\-_]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}")
         if (!regex.matches(email))
-            return failure(Errors.InvalidEmail)
-        return transactionManager.run {
-            return@run try {
-                if (it.usersData.getUserByEmail(email) != null)
-                    return@run failure(Errors.UserAlreadyExists)
-                val hashPassword = password.hashCode()
-                val token = UUID.randomUUID().toString()
+            return failure(InvalidEmail)
+        val hashPassword = password.hashCode()
+        val token = UUID.randomUUID().toString()
+        return Handler().servicesHandler {
+            transactionManager.run {
+                it.usersData.getUserByEmail(email) ?: return@run failure(UserAlreadyExists)
                 val user = it.usersData.createUser(name, email, hashPassword, token)
-                success(UserOutputModel(user.id, user.name, user.email, token))
-            } catch (e: Exception) {
-                failure(Errors.InternalServerError)
+                return@run success(UserOutputModel(user.id, user.name, user.email, token))
             }
         }
     }
 
 
-    fun getUserByID(id: Int): UserResult =
-        transactionManager.run {
-            try {
-                val user = it.usersData.getUserByID(id)
-                if (user == null)
-                    failure(Errors.UserNotFound)
-                else
-                    success(UserOutputModel(user.id, user.name, user.email, user.token))
-            } catch (e: Exception) {
-                failure(Errors.InternalServerError)
+    fun getUserByID(id: Int): Result<UserOutputModel> =
+        Handler().servicesHandler {
+            transactionManager.run {
+                val user = it.usersData.getUserByID(id) ?: return@run failure(UserNotFound)
+                return@run success(UserOutputModel(user.id, user.name, user.email, user.token))
             }
         }
 
-    fun getUserByToken(token: String): UserResult =
-        transactionManager.run {
-            try {
-                val user = it.usersData.getUserByToken(token)
-                if (user == null)
-                    failure(Errors.UserNotFound)
-                else
-                    success(UserOutputModel(user.id, user.name, user.email, user.token))
-            } catch (e: Exception) {
-                failure(Errors.InternalServerError)
+    fun getUserByToken(token: String): Result<UserOutputModel> =
+        Handler().servicesHandler {
+            transactionManager.run {
+                val user = it.usersData.getUserByToken(token) ?: return@run failure(UserNotFound)
+                return@run success(UserOutputModel(user.id, user.name, user.email, user.token))
             }
         }
 
-    fun loginUser(email: String, password: String): UserResult {
+    fun loginUser(email: String, password: String): Result<UserOutputModel> {
         if (email.length > 50 || password.length > 50 || email.isEmpty() || password.isEmpty())
-            return failure(Errors.InputTooLong)
-        return transactionManager.run {
-            return@run try {
-                val token = UUID.randomUUID().toString()
-                val user = it.usersData.loginUser(email, password,token)
-                if (user == null)
-                    failure(Errors.UserNotFound)
-                else
-                    success(UserOutputModel(user.id, user.name, user.email, user.token))
-            } catch (e: Exception) {
-                failure(Errors.InternalServerError)
+            return failure(InputTooLong)
+        val token = UUID.randomUUID().toString()
+        return Handler().servicesHandler {
+            transactionManager.run {
+                val user = it.usersData.loginUser(email, password, token) ?: return@run failure(UserNotFound)
+                return@run success(UserOutputModel(user.id, user.name, user.email, user.token))
             }
         }
     }
 
-    fun logoutUser(id: Int, token: String): LogoutResult {
+    fun logoutUser(id: Int, token: String): Result<LogoutOutputModel> {
         if (token.length > 50 || token.isEmpty())
-            return failure(Errors.InputTooLong)
-        return transactionManager.run {
-            return@run try {
-                val user = it.usersData.getUserByID(id)
-                if (user == null){
-                    failure(Errors.UserNotFound)}
-                else if (user.token != token)
-                {
-                    failure(Errors.InvalidToken)}
-                else {
-                    it.usersData.logoutUser(id, token)
-                    success(LogoutOutputModel(user.id, user.email))
-                }
-            } catch (e: Exception) {
-                failure(Errors.InternalServerError)
+            return failure(InputTooLong)
+        return Handler().servicesHandler {
+            transactionManager.run {
+                val user = it.usersData.getUserByID(id) ?: return@run failure(UserNotFound)
+                if (user.token != token) return@run failure(InvalidToken)
+                it.usersData.logoutUser(id, token)
+                return@run success(LogoutOutputModel(user.id, user.email))
             }
         }
     }

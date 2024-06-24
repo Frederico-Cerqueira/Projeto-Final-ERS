@@ -1,98 +1,116 @@
 package ers.app.service
 
-import ers.app.domainEntities.*
 import ers.app.domainEntities.outputModels.AreaIDOutputModel
 import ers.app.domainEntities.outputModels.AreaOutputModel
 import ers.app.domainEntities.outputModels.AreasOutputModel
+import ers.app.utils.Handler
 import ers.app.repo.transaction.TransactionManager
-import ers.app.utils.Errors
+import ers.app.utils.errors.*
 import org.springframework.stereotype.Component
 
 
 @Component
 class AreaService(private val transactionManager: TransactionManager) {
 
-    fun createArea(height: Int, width: Int, taskID: Int, name: String, description: String): AreaResult {
+    fun createArea(height: Int, width: Int, taskID: Int, name: String, description: String): Result<AreaOutputModel> {
         if (height <= 0 || width <= 0 || name.isEmpty() || description.isEmpty())
-            return failure(Errors.InvalidInput)
+            return failure(InvalidInput)
         if (name.length > 255 || description.length > 255)
-            return failure(Errors.InputTooLong)
-        return transactionManager.run {
-            try {
+            return failure(InputTooLong)
+        return Handler().servicesHandler {
+            transactionManager.run {
                 val area = it.areaData.createArea(height, width, taskID, name, description)
-                success(AreaOutputModel(area.id, area.height, area.width, area.taskId, area.name, area.description))
-            } catch (e: Exception) {
-                failure(Errors.InternalServerError)
+                return@run success(
+                    AreaOutputModel(
+                        area.id,
+                        area.height,
+                        area.width,
+                        area.taskId,
+                        area.name,
+                        area.description
+                    )
+                )
             }
         }
     }
 
-    fun getAreaByID(id: Int): AreaResult =
-        transactionManager.run {
-            try {
+    fun getAreaByID(id: Int): Result<AreaOutputModel> =
+        Handler().servicesHandler {
+            transactionManager.run {
                 val area = it.areaData.getAreaByID(id)
                 if (area != null)
-                    success(AreaOutputModel(area.id, area.height, area.width, area.taskId, area.name, area.description))
+                    return@run success(
+                        AreaOutputModel(
+                            area.id,
+                            area.height,
+                            area.width,
+                            area.taskId,
+                            area.name,
+                            area.description
+                        )
+                    )
                 else
-                    failure(Errors.AreaNotFound)
-            } catch (e: Exception) {
-                failure(Errors.InternalServerError)
+                    return@run failure(AreaNotFound)
             }
         }
 
-    fun updateArea(id: Int, height: Int, width: Int): AreaResult {
+    fun updateArea(id: Int, height: Int, width: Int): Result<AreaOutputModel> {
         if (height <= 0 || width <= 0)
-            return failure(Errors.InvalidInput)
-        return transactionManager.run {
-            try {
-                it.areaData.getAreaByID(id) ?: failure(Errors.AreaNotFound)
+            return failure(InvalidInput)
+        return Handler().servicesHandler {
+            transactionManager.run {
+                it.areaData.getAreaByID(id) ?: return@run failure(AreaNotFound)
                 val area = it.areaData.updateArea(id, height, width)
-                success(AreaOutputModel(area.id, area.height, area.width, area.taskId, area.name, area.description))
-            } catch (e: Exception) {
-                failure(Errors.InternalServerError)
+                return@run success(
+                    AreaOutputModel(
+                        area.id,
+                        area.height,
+                        area.width,
+                        area.taskId,
+                        area.name,
+                        area.description
+                    )
+                )
             }
         }
     }
 
 
-    fun updateAreaDescription(id: Int, description: String): AreaResult {
+    fun updateAreaDescription(id: Int, description: String): Result<AreaOutputModel> {
         if (description.isEmpty())
-            return failure(Errors.InvalidInput)
+            return failure(InvalidInput)
         if (description.length > 255)
-            return failure(Errors.InputTooLong)
-        return transactionManager.run {
-            try {
-                it.areaData.getAreaByID(id) ?: failure(Errors.AreaNotFound)
+            return failure(InputTooLong)
+        return Handler().servicesHandler {
+            transactionManager.run {
+                it.areaData.getAreaByID(id) ?: return@run failure(AreaNotFound)
                 val area = it.areaData.updateAreaDescription(id, description)
-                success(AreaOutputModel(area.id, area.height, area.width, area.taskId, area.name, area.description))
-            } catch (e: Exception) {
-                failure(Errors.InternalServerError)
+                return@run success(
+                    AreaOutputModel(area.id, area.height, area.width, area.taskId, area.name, area.description)
+                )
             }
         }
     }
 
 
-    fun deleteArea(id: Int): AreaIDResult =
-        transactionManager.run {
-            try {
-                it.areaData.getAreaByID(id) ?: failure(Errors.AreaNotFound)
+    fun deleteArea(id: Int): Result<AreaIDOutputModel> =
+        Handler().servicesHandler {
+            transactionManager.run {
+                it.areaData.getAreaByID(id) ?: return@run failure(AreaNotFound)
                 it.areaData.deleteArea(id)
-                success(AreaIDOutputModel(id))
-            } catch (e: Exception) {
-                failure(Errors.InternalServerError)
+                return@run success(AreaIDOutputModel(id))
             }
         }
 
-    fun getAreasByTaskID(offset: Int = 0, limit: Int = 0, taskId: Int): AreasResult {
+    fun getAreasByTaskID(offset: Int = 0, limit: Int = 0, taskId: Int): Result<AreasOutputModel> {
         if (offset < 0 || limit < 0)
-            return failure(Errors.InvalidInput)
-        return transactionManager.run {
-            try {
-                it.taskData.getTaskByID(taskId) ?: failure(Errors.TaskNotFound)
+            return failure(InvalidInput)
+
+        return Handler().servicesHandler {
+            transactionManager.run {
+                it.taskData.getTaskByID(taskId) ?: return@run failure(TaskNotFound)
                 val areas = it.areaData.getAreasByTaskID(offset, limit, taskId)
-                success(AreasOutputModel(areas))
-            } catch (e: Exception) {
-                failure(Errors.InternalServerError)
+                return@run success(AreasOutputModel(areas))
             }
         }
     }
