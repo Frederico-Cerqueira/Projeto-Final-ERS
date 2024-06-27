@@ -1,7 +1,11 @@
 package ers.app.repo.data.taskData
 
+import ers.app.repo.dtos.AreaDto
 import ers.app.repo.dtos.TaskDto
+import ers.app.repo.dtos.TimeDto
+import ers.app.repo.mappers.AreaDtoMapper
 import ers.app.repo.mappers.TaskDtoMapper
+import ers.app.repo.mappers.TimeDtoMapper
 import org.jdbi.v3.core.Handle
 
 /**
@@ -93,6 +97,19 @@ class TaskData(private val handle: Handle) : TaskDataI {
             .bind("offset", offset)
             .map(TaskDtoMapper())
             .list()
+    }
+
+    override fun startTask(id: Int): Pair<AreaDto?, TimeDto?>{
+        val area = handle.createQuery("SELECT * FROM area WHERE taskID = :taskID ORDER BY id LIMIT 1")
+            .bind("taskID", id)
+            .map(AreaDtoMapper())
+            .firstOrNull()
+
+        val time = handle.createQuery("SELECT * FROM time WHERE taskID = :taskID ORDER BY id LIMIT 1")
+            .bind("taskID", id)
+            .map(TimeDtoMapper())
+            .firstOrNull()
+        return Pair(area, time)
     }
 
 }

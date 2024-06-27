@@ -5,8 +5,6 @@ import {fetchWrapper} from "../fetch/fetchPost";
 import {CreateAreaForm} from "../forms/areaForms";
 import {TimeInputModel} from "../types/timeInputModel";
 import {CreateTimeForm} from "../forms/timeForms";
-import {TaskUpdateInputModel} from "../types/taskInputModel";
-import {UpdateTaskForm} from "../forms/taskForms";
 import {useFetchGet} from "../fetch/fetchGet";
 import {NavBar} from "../elements/navBar";
 import '../../css/taskScreen.css';
@@ -41,7 +39,7 @@ export function Task() {
                     <h1 className="task-name">{task.name}</h1>
                     <p className="task-info-item">Status: {task.status}</p>
                     <div>
-                        <UpdateTask taskID={taskID} setTask={setTask}/>
+                        <UpdateTask taskID={taskID} setTask={setTask} initialStatus={task.status}/>
                         <button className="delete-button" onClick={fetchDeleteTask}>Delete</button>
                     </div>
                 </div>
@@ -56,34 +54,37 @@ export function Task() {
     );
 }
 
-function UpdateTask({taskID, setTask}) {
-    const [status, setStatus] = useState('');
+function UpdateTask({taskID, setTask, initialStatus}) {
+    const [status, setStatus] = useState(initialStatus);
     const [error, setError] = useState(false);
 
-    const body: TaskUpdateInputModel = {status};
-    const uri = '/api/task/update/' + taskID;
-
-    async function clickHandler() {
+    const fetchData = async (uri) => {
         try {
-            const jsonData = await fetchWrapper(uri, 'POST', body);
-            console.log('Success!', jsonData)
-            if (jsonData.robotId) setTask(jsonData);
-            else {
-                setError(true);
-            }
-        } catch (error) {
-            console.error('There was an error in the request:', error);
+            const response = await fetch(uri);
+            const data = await response.json();
+            setTask(data);
+            setStatus(data.status);
+            setError(false);
+        } catch (err) {
+            setError(true);
         }
-    }
+    };
+
+    const clickHandler = () => {
+        let uri;
+        if (status === 'in progress') {
+            uri = `/api/task/${taskID}/stop`;
+        } else {
+            uri = `/api/task/${taskID}/start`;
+        }
+        fetchData(uri);
+    };
 
     return (
         <div>
-            <UpdateTaskForm
-                status={status}
-                changeHandlerStatus={event => setStatus(event.target.value)}
-                clickHandler={clickHandler}
-                error={error}
-            />
+            <button className="buttonForm" onClick={clickHandler}>{status === 'pending' ? 'Start' : 'Stop'}</button>
+            {error && <div
+                className="error-message">{"An error occurred"}</div>}
         </div>
     );
 }

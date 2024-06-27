@@ -15,22 +15,26 @@ class TaskController(private val taskService: TaskService) {
     //Não deviamos passar o status da task?
     @PostMapping
     fun createTask(@RequestBody task: TaskInputModel, user: AuthenticatedUser): ResponseEntity<*> {
-        return Handler().responseHandler(taskService.createTask(task.name, task.userID, task.robotID),201)
+        return Handler().responseHandler(taskService.createTask(task.name, task.userID, task.robotID), 201)
     }
 
     @GetMapping(PathTemplate.ID)
     fun getTaskByID(@PathVariable id: Int, user: AuthenticatedUser): ResponseEntity<*> {
-        return Handler().responseHandler(taskService.getTaskByID(id),200)
+        return Handler().responseHandler(taskService.getTaskByID(id), 200)
     }
 
     @PostMapping(PathTemplate.UPDATE)
-    fun updateTask(@PathVariable id: Int, @RequestBody status: TaskUpdateInputModel, user: AuthenticatedUser): ResponseEntity<*> {
-        return Handler().responseHandler(taskService.updateTask(id, status.status),200)
+    fun updateTask(
+        @PathVariable id: Int,
+        @RequestBody status: TaskUpdateInputModel,
+        user: AuthenticatedUser
+    ): ResponseEntity<*> {
+        return Handler().responseHandler(taskService.updateTask(id, status.status), 200)
     }
 
     @DeleteMapping(PathTemplate.ID)
     fun deleteTask(@PathVariable id: Int, user: AuthenticatedUser): ResponseEntity<*> {
-        return Handler().responseHandler(taskService.deleteTask(id),200)
+        return Handler().responseHandler(taskService.deleteTask(id), 200)
     }
 
     @GetMapping(PathTemplate.USER_ID)
@@ -40,7 +44,7 @@ class TaskController(private val taskService: TaskService) {
         @RequestParam limit: Int,
         user: AuthenticatedUser
     ): ResponseEntity<*> {
-        return Handler().responseHandler(taskService.getTasksByUserID(offset, limit, id),200)
+        return Handler().responseHandler(taskService.getTasksByUserID(offset, limit, id), 200)
     }
 
     @GetMapping(PathTemplate.ROBOT_TASKS)
@@ -50,6 +54,16 @@ class TaskController(private val taskService: TaskService) {
         @RequestParam limit: Int,
         user: AuthenticatedUser
     ): ResponseEntity<*> {
-        return Handler().responseHandler(taskService.getTasksByRobotID(offset, limit, id),200)
+        return Handler().responseHandler(taskService.getTasksByRobotID(offset, limit, id), 200)
+    }
+
+    @GetMapping(PathTemplate.START)
+    fun startTask(@PathVariable id: Int, user: AuthenticatedUser): ResponseEntity<*> {
+        return Handler().responseHandler(taskService.startTask(id), 200)
+    }
+
+    @GetMapping(PathTemplate.STOP)
+    fun stopTask(@PathVariable id: Int, user: AuthenticatedUser): ResponseEntity<*> {
+        return Handler().responseHandler(taskService.stopTask(id), 200)
     }
 }
