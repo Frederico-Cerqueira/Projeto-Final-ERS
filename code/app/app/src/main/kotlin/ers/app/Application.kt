@@ -20,7 +20,7 @@ class Application {
 	@Bean
 	fun jdbi(): Jdbi {
 		val jdbcDatabaseURL =
-			System.getenv("JDBC_DATABASE_URL")
+			System.getenv("ERS_DATABASE_URL")
 				?: "jdbc:postgresql://localhost/ProjetoFinal?user=postgres&password=Asus"
 		val dataSource = PGSimpleDataSource()
 		dataSource.setURL(jdbcDatabaseURL)

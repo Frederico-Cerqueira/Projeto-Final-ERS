@@ -3,7 +3,7 @@ import {Link, useNavigate} from "react-router-dom";
 import {useFetchGetToLists} from "../fetch/fetchGet";
 import {NavBar} from "../elements/navBar";
 import {CreateRobotForm} from "../forms/robotForms";
-import {RobotInputModel} from "../types/robotInputModel";
+import {RobotInputModel} from "../types/RobotInputModel";
 import {fetchWrapper} from "../fetch/fetchPost";
 import '../../css/robotsScreen.css';
 

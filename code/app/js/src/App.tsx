@@ -14,27 +14,26 @@ export const AuthContext = createContext<ContextType>({userID: 1})
 function App() {
     const [userID, setUserID] = useState(null)
     const [cookies, setCookie, removeCookie] = useCookies(['token']);
-    console.log(cookies)
-    useEffect(() => {
-        const fetchUserID = async () => {
-            if (cookies.token) {
-                try {
-                    console.log(cookies.token)
-                    const response = await fetch('/api/user/token?token=' + cookies.token);
-                    if (response.ok) {
-                        const data = await response.json();
-                        setUserID(data.id);
-                    } else {
-                        console.error('Failed to fetch user ID:', response.statusText);
-                    }
-                } catch (error) {
-                    console.error('Failed to fetch user ID:', error);
-                }
-            }
-        };
 
-        fetchUserID();
-    }, [cookies.token]);
+   useEffect(() => {
+       const fetchUserID = async () => {
+           if (cookies.token) {
+               try {
+                   const response = await fetch('/api/user/token?token=' + cookies.token);
+                   if (response.ok) {
+                       const data = await response.json();
+                       setUserID(data.id);
+                   } else {
+                       console.error('Failed to fetch user ID:', response.statusText);
+                   }
+               } catch (error) {
+                   console.error('Failed to fetch user ID:', error);
+               }
+           }
+       };
+
+       fetchUserID();
+   }, [cookies.token]);
 
     return (
         <div>

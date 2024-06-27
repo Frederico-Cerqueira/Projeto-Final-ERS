@@ -7,7 +7,7 @@ import {useCookies} from 'react-cookie';
 
 import "../../css/authForm.css"
 import '../../css/initialScreen.css';
-import {AuthForm} from "../forms/authForm";
+import {AuthForm} from "../forms/AuthForm";
 
 export function UserManagement({uri, msg, buttonName, link, linkMessage}: {
     uri: string,
@@ -20,7 +20,6 @@ export function UserManagement({uri, msg, buttonName, link, linkMessage}: {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(false);
-    const [, setCookie] = useCookies(['token']);
     const navigate = useNavigate();
     const auth = useContext(AuthContext)
 
@@ -29,7 +28,6 @@ export function UserManagement({uri, msg, buttonName, link, linkMessage}: {
         try {
             const jsonData = await fetchWrapper(uri, 'POST', body);
             if (jsonData.id) {
-                setCookie('token', jsonData.token, {path: '/'});
                 auth.setUserID(jsonData.id);
                 navigate('/user/' + jsonData.id)
             } else {

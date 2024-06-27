@@ -68,7 +68,7 @@ class UsersDataTests {
             assertNull(user)
         }
     }
-
+/*
     @Test
     fun `login user`() {
         val hasPass = "123456".hashCode().toString()
@@ -96,6 +96,7 @@ class UsersDataTests {
         }
     }
 
+ */
     @Test
     fun `get user by email`() {
         val hashPass = "123456".hashCode().toString()

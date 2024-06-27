@@ -17,3 +17,4 @@ fun <R> success(value: R) = Either.Right(value)
 
 typealias Success<S> = Either.Right<S>
 typealias Failure<F> = Either.Left<F>
+

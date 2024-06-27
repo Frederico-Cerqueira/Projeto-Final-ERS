@@ -38,7 +38,7 @@
 }
 
 .task-action-buttons .update-button {
-    background-color: #5e8beb;
+    background-color: darkgreen;
 }
 
 .task-action-buttons input {
@@ -99,7 +99,7 @@
 }
 
 .buttonForm {
-    background-color: #5e8beb;
+    background-color: darkgreen;
     color: #fff;
     border: none;
     border-radius: 10px;
@@ -109,7 +109,7 @@
 }
 
 .buttonForm:hover {
-    background-color: #4a74c4;
+    background-color:  #b2e78d;
 }
 
 .form-box {
@@ -137,7 +137,7 @@
 }
 
 .form-box button {
-    background-color: #5e8beb;
+    background-color: darkgreen;
     color: #fff;
     border: none;
     border-radius: 10px;
@@ -148,18 +148,18 @@
 }
 
 .form-box button:hover {
-    background-color: #4a74c4;
+    background-color:  #b2e78d;
 }
 
 .add-form-button {
     background-color: transparent;
     border: none;
     cursor: pointer;
-    color: #5e8beb;
+    color: darkgreen;
     font-size: 24px;
 }
 
 .add-form-button:hover {
-    color: #4a74c4;
+    color:  #b2e78d;
 }
 

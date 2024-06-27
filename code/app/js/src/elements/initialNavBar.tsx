@@ -7,7 +7,6 @@ export function InitialNavBar() {
             <a className="home" href="/">HOME</a>
             <span className="spacer"></span>
             <Link className="auth-button" to="/login">Log in</Link>
-            <Link className="auth-button" to="/createUser">Sign Up</Link>
         </div>
     );
 }

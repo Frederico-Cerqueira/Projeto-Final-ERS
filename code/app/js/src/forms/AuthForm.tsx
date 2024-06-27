@@ -20,8 +20,10 @@ export function AuthForm({
     return (
         <div>
             <InitialNavBar/>
+
             <div className="form-body">
                 <div className="login-signup-form">
+                    <h1 className="form-title">{buttonName}</h1>
                     <input id="name" type="text" className="form-input" value={name}
                            onChange={changeHandlerName} placeholder="Name"/>
                     <br/>

@@ -1,13 +1,13 @@
 import React, {useContext, useState} from 'react';
 import {Link, useNavigate, useParams} from "react-router-dom";
 import {fetchWrapper} from "../fetch/fetchPost";
-import {RobotUpdateInputModel} from "../types/robotInputModel";
+import {RobotUpdateInputModel} from "../types/RobotInputModel";
 import {DeleteButton} from "../elements/deteleButton";
 import {useFetchGetToLists, useFetchGet} from "../fetch/fetchGet";
 import {NavBar} from "../elements/navBar";
 import '../../css/robotScreen.css';
 import {AuthContext} from "../App";
-import {TaskInputModel} from "../types/taskInputModel";
+import {TaskInputModel} from "../types/TaskInputModel";
 import {CreateTaskForm} from "../forms/taskForms";
 
 export function Robot() {
@@ -48,6 +48,7 @@ export function Robot() {
                 </div>
             )}
             <br/>
+            <p className="task-header">Tasks:</p>
             <Tasks robotID={robotID}/>
         </div>
     )

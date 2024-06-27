@@ -25,7 +25,7 @@ class UserService(private val transactionManager: TransactionManager) {
         val token = UUID.randomUUID().toString()
         return Handler().servicesHandler {
             transactionManager.run {
-                it.usersData.getUserByEmail(email) ?: return@run failure(UserAlreadyExists)
+                if (it.usersData.getUserByEmail(email) != null) return@run failure(UserAlreadyExists)
                 val user = it.usersData.createUser(name, email, hashPassword, token)
                 return@run success(UserOutputModel(user.id, user.name, user.email, token))
             }
@@ -61,14 +61,11 @@ class UserService(private val transactionManager: TransactionManager) {
         }
     }
 
-    fun logoutUser(id: Int, token: String): Result<LogoutOutputModel> {
-        if (token.length > 50 || token.isEmpty())
-            return failure(InputTooLong)
+    fun logoutUser(id: Int): Result<LogoutOutputModel> {
         return Handler().servicesHandler {
             transactionManager.run {
                 val user = it.usersData.getUserByID(id) ?: return@run failure(UserNotFound)
-                if (user.token != token) return@run failure(InvalidToken)
-                it.usersData.logoutUser(id, token)
+                it.usersData.logoutUser(id)
                 return@run success(LogoutOutputModel(user.id, user.email))
             }
         }

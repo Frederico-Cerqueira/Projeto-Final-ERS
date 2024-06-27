@@ -60,7 +60,6 @@ class UserController(private val userService: UserService) {
 
     @PostMapping(PathTemplate.LOGOUT)
     fun logoutUser(@RequestBody logout: LogoutInputModel, response: HttpServletResponse): ResponseEntity<*> {
-
         //removes the token of the cookie to logout
         val cookieToken = Cookie("token", null)
         cookieToken.maxAge = 0
@@ -69,6 +68,6 @@ class UserController(private val userService: UserService) {
         cookieToken.isHttpOnly = true
 
         response.addCookie(cookieToken)
-        return Handler().responseHandler(userService.logoutUser(logout.id, logout.token), 200)
+        return Handler().responseHandler(userService.logoutUser(logout.id), 200)
     }
 }

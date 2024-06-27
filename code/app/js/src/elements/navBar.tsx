@@ -23,23 +23,15 @@ export function NavBar() {
 function Logout() {
     const auth = useContext(AuthContext);
     const navigate = useNavigate();
-    const [cookies,setCookie, removeCookie] = useCookies(['token']); //setCookie is not used but is needed to get removeCookie correctly
 
     const id = auth.userID;
     const uri = '/api/user/logout';
-    const token = cookies.token;
 
     async function clickHandler() {
-        const body:LoginInputModel = { id,token };
+        console.log(id)
+        const body:LoginInputModel = { id };
         try {
-            const jsonData = await fetchWrapper(uri, 'POST', body);
-            if (jsonData.id) {
-                removeCookie('token', { path: '/' });
-                auth.setUserID(null);
-                navigate('/');
-            } else {
-                navigate('/error');
-            }
+            await fetchWrapper(uri, 'POST', body);
         } catch (error) {
             navigate('/error');
         }

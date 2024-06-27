@@ -29,7 +29,7 @@
 }
 
 .robot-name:hover {
-    color: #007bff;
+    color: limegreen;
 }
 
 .add-robot-card {
@@ -38,14 +38,14 @@
     align-items: center;
     width: 200px;
     height: 200px;
-    border: 1px dashed #007bff;
+    border: 1px dashed limegreen;
     border-radius: 5px;
     background-color: #f9f9f9;
 }
 
 .add-robot-icon {
     font-size: 48px;
-    color: #007bff;
+    color: limegreen;
     cursor: pointer;
 }
 
@@ -80,7 +80,7 @@
     padding: 10px;
     border: none;
     border-radius: 5px;
-    background-color: #007bff;
+    background-color: darkgreen;
     color: #fff;
     font-size: 16px;
     cursor: pointer;
@@ -88,5 +88,5 @@
 }
 
 .create-robot-form button:hover {
-    background-color: #0056b3;
+    background-color: #b2e78d;
 }

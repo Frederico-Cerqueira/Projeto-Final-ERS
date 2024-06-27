@@ -6,5 +6,4 @@ export type UserInputModel = {
 
 export type LoginInputModel = {
     id: number,
-    token: string
 }

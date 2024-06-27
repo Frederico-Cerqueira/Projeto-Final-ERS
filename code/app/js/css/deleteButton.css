@@ -1,5 +1,5 @@
 .delete-button {
-    background-color: #ff4c4c;
+    background-color: #3f2000;
     color: #fff;
     border: none;
     font-size: 16px;
@@ -13,16 +13,16 @@
 }
 
 .delete-button:hover {
-    background-color: #ff1a1a;
+    background-color: #643c10;
     transform: scale(1.05);
 }
 
 .delete-button:focus {
     outline: none;
-    box-shadow: 0 0 0 4px rgba(255, 76, 76, 0.5);
+    box-shadow: 0 0 0 4px rgba(68, 6, 6, 0.5);
 }
 
 .delete-button:active {
-    background-color: #e60000;
+    background-color:  #442506;
     transform: scale(0.95);
 }

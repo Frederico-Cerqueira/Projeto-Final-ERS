@@ -3,7 +3,7 @@ const path = require('path');
 module.exports = {
     mode: 'development',
     resolve: {
-        extensions: ['.tsx', '.ts', '.js', 'png', 'css'],
+        extensions: ['.tsx', '.ts', '.js', 'css'],
     },
     module: {
         rules: [
@@ -13,16 +13,16 @@ module.exports = {
                 exclude: /node_modules/,
             },
             {
-                test: /\.png$/,
+                test: /\.(png|jpeg|gif|jpg)$/i,
                 use: [
                     {
-                      loader: 'file-loader',
-                      options: {
-                        name: '[name].[ext]',
-                        outputPath: 'images/',
-                      },
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name].[ext]',
+                            outputPath: 'images', // Output path for images
+                        },
                     },
-                  ],
+                ],
               },
               {
                 test: /\.css$/,

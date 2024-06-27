@@ -33,11 +33,11 @@
     margin-right: 10px;
     width: 120px;
     height: 68px;
-    background-color: #5e8beb;
+    background-color: darkgreen;
 }
 
 .area-delete-button {
-    background-color: #ff6666;
+    background-color: #3f2000;
     border: none;
     color: #fff;
     font-size: 16px;

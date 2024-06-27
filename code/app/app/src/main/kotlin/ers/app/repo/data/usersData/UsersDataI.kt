@@ -10,6 +10,6 @@ interface UsersDataI {
     fun getUserByID(id: Int) : UserDto?
     fun getUserByToken(token : String) : UserDto?
     fun loginUser(email: String, password: String,token:String) : UserDto?
-    fun logoutUser(id: Int, token: String) : UserDto?
+    fun logoutUser(id: Int) : UserDto?
     fun getUserByEmail(email: String) : UserDto?
 }

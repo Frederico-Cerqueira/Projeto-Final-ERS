@@ -31,16 +31,16 @@
 }
 
 .task-name:hover {
-    color: #5e8beb;
+    color:  #b2e78d;
 }
 
 .task-link {
     text-decoration: none;
-    color: #5e8beb;
+    color: green;
 }
 
 .task-link:hover {
-    color: #0056b3;
+    color:  #b2e78d;
 }
 
 .task-status {
@@ -53,19 +53,19 @@
     align-items: center;
     width: 200px;
     height: 200px;
-    border: 1px dashed #5e8beb;
+    border: 1px dashed limegreen;
     border-radius: 5px;
     background-color: #f9f9f9;
 }
 
 .add-task-icon {
     font-size: 48px;
-    color: #5e8beb;
+    color: limegreen;
     cursor: pointer;
 }
 
 .add-task-icon:hover {
-    color: #0056b3;
+    color:  #b2e78d;
 }
 .create-task-form {
     max-width: 400px;
@@ -98,7 +98,7 @@
     padding: 10px;
     border: none;
     border-radius: 5px;
-    background-color: #5e8beb;
+    background-color: darkgreen;
     color: #fff;
     font-size: 16px;
     cursor: pointer;
@@ -106,7 +106,7 @@
 }
 
 .create-task-form button:hover {
-    background-color: #0056b3;
+    background-color:  #b2e78d;
 }
 
 

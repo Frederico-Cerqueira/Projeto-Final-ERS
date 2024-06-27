@@ -1,9 +1,9 @@
 import React, {useState} from "react";
 import {Link, useNavigate, useParams} from "react-router-dom";
-import {AreaInputModel} from "../types/areaInputModel";
+import {AreaInputModel} from "../types/AreaInputModel";
 import {fetchWrapper} from "../fetch/fetchPost";
 import {CreateAreaForm} from "../forms/areaForms";
-import {TimeInputModel} from "../types/timeInputModel";
+import {TimeInputModel} from "../types/TimeInputModel";
 import {CreateTimeForm} from "../forms/timeForms";
 import {useFetchGet} from "../fetch/fetchGet";
 import {NavBar} from "../elements/navBar";

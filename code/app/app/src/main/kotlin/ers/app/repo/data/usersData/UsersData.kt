@@ -74,13 +74,11 @@ class UsersData(private val handle: Handle) : UsersDataI {
     /**
      * Method to log out a user
      * @param id ID of the user
-     * @param token Token of the user
      * @return UserDto? Returns the user found
      */
-    override fun logoutUser(id: Int, token: String): UserDto? {
-        return handle.createUpdate("UPDATE users SET token = null WHERE id = :id AND token = :token")
+    override fun logoutUser(id: Int): UserDto? {
+        return handle.createUpdate("UPDATE users SET token = null WHERE id = :id")
             .bind("id", id)
-            .bind("token", token)
             .executeAndReturnGeneratedKeys()
             .map(UserDtoMapper())
             .first()
