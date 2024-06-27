@@ -304,7 +304,7 @@ class States(Enum):
 
 
 class StateMachine:
-    def __init__(self):
+    def __init__(self,height, width):
         self.state = States.E1
         self.side = None
         # MUDAR O NOME
@@ -313,7 +313,7 @@ class StateMachine:
         self.dodge_direction = None
         self.count = 0
         self.novo_y = 0
-        self.limit = Limit(3000, 3000)
+        self.limit = Limit(height, width)
         self.sentido = 'front'
 
     def state_machine(self, ers, sip):

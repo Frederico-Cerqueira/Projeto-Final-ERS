@@ -16,6 +16,7 @@ DISTANCE_ERROR_RANGE = range(-30, 30)
 ANGLE_ERROR_RANGE = range(-3, 3)
 IMAGE_PROCESSING_TIME = 15
 
+
 class ERS:
     def __init__(self, port, baudrate):
         self.sip_info = []
@@ -23,6 +24,7 @@ class ERS:
         self.init_time_sip = datetime.now().timestamp()
         self.init_time_pulse = datetime.now().timestamp()
         self.init_time_image = None
+        self.running = False
 
         # Start serial communication
         self.serial_communication = SerialCommunication(port, baudrate)
@@ -71,7 +73,6 @@ class ERS:
         if init is None or final - init > IMAGE_PROCESSING_TIME:
             trash_lookup()
 
-
     # E2
     def get_sip(self):
         initial = self.init_time_sip
@@ -97,9 +98,12 @@ class ERS:
         coordinates = CoordinatesInfo(0, 0, 0, datetime.now())
         motors = MotorsInfo(False, datetime.now())
         sip = SipInfo(sonars, coordinates, motors)
-
-        while True:
+        self.running = True
+        while self.running:
             self.get_sip()
             self.check_pulse()
             self.take_photo()
             machine.state_machine(ers=self, sip=sip)
+
+    def stop(self):
+        self.running = False
