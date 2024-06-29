@@ -19,8 +19,19 @@ import org.springframework.web.bind.annotation.*
 class UserController(private val userService: UserService) {
 
     @PostMapping
-    fun createUser(@RequestBody user: UserInputModel): ResponseEntity<*> {
-        return Handler().responseHandler(userService.createUser(user.name, user.email, user.password), 201)
+    fun createUser(@RequestBody user: UserInputModel, response: HttpServletResponse): ResponseEntity<*> {
+        val user = userService.createUser(user.name, user.email, user.password)
+        val token = user.fold({ " " }, { it.token })
+        val cookieToken = ResponseCookie
+            .from("token", token)
+            .maxAge(3600)
+            .path("/")
+            .httpOnly(true)
+            .secure(false)
+            .build()
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookieToken.toString())
+        return Handler().responseHandler(user, 201)
     }
 
     @GetMapping(PathTemplate.ID)
