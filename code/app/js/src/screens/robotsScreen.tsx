@@ -1,42 +1,54 @@
 import React, {useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
-import {useFetchGetToLists} from "../fetch/fetchGet";
+import {usePaginatedFetch} from "../fetch/fetchGet";
 import {NavBar} from "../elements/navBar";
 import {CreateRobotForm} from "../forms/robotForms";
-import {RobotInputModel} from "../types/RobotInputModel";
+import {RobotInputModel} from "../types/robotInputModel";
 import {fetchWrapper} from "../fetch/fetchPost";
 import '../../css/robotsScreen.css';
 
 export function Robots() {
+
     const [name, setName] = useState('');
     const [characteristics, setCharacteristics] = useState('');
+    const limit = 10;
 
-    const uri = '/api/robot?offset=0&limit=100';
-    const robots = useFetchGetToLists(uri, 'robots')
-
+    const renderRobot = (robot) => (
+        <div key={robot.id} className="robot-card">
+            <h2 className="robot-name">
+                <Link to={`/robot/${robot.id}`} className="robot-link">{robot.name}</Link>
+            </h2>
+            <p className="robot-status">Status: {robot.status}</p>
+            <p className="robot-characteristics">Characteristics: {robot.characteristics}</p>
+        </div>
+    );
+    const {data, hasMore, loadMore} = usePaginatedFetch("/api/robot", limit, "robots");
     return (
         <div>
             <NavBar/>
             <h1 className="robots-title">Robots</h1>
             <div className="robot-grid">
-                {robots !== undefined &&
-                    robots.map((robot) => (
-                        <div key={robot.id} className="robot-card">
-                            <h2 className="robot-name">
-                                <Link to={`/robot/` + robot.id} className="robot-link"> {robot.name} </Link>
-                            </h2>
-                            <p className="robot-status">Status: {robot.status}</p>
-                            <p className="robot-characteristics">Characteristics: {robot.characteristics} </p>
-                        </div>
-                    ))}
+                {data.map((item) => renderRobot(item))}
                 <CreateRobot name={name}
                              characteristics={characteristics}
                              setName={setName}
                              setCharacteristics={setCharacteristics}/>
+                <PaginatedRobots data={data} hasMore={hasMore} loadMore={loadMore} limit={limit}/>
             </div>
         </div>
 
-    )
+    );
+}
+
+function PaginatedRobots({data, hasMore, loadMore, limit}) {
+    return (
+        <div>
+            {hasMore && data.length >= limit && (
+                <div className="add-robot-card" onClick={loadMore}>
+                    <span className="add-robot-icon">&gt;</span>
+                </div>
+            )}
+        </div>)
 }
 
 function CreateRobot({

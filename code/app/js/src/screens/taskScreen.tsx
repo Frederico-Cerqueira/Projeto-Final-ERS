@@ -1,11 +1,11 @@
 import React, {useState} from "react";
 import {Link, useNavigate, useParams} from "react-router-dom";
-import {AreaInputModel} from "../types/AreaInputModel";
+import {AreaInputModel} from "../types/areaInputModel";
 import {fetchWrapper} from "../fetch/fetchPost";
 import {CreateAreaForm} from "../forms/areaForms";
-import {TimeInputModel} from "../types/TimeInputModel";
+import {TimeInputModel} from "../types/timeInputModel";
 import {CreateTimeForm} from "../forms/timeForms";
-import {useFetchGet} from "../fetch/fetchGet";
+import {useFetchGet, usePaginatedFetch} from "../fetch/fetchGet";
 import {NavBar} from "../elements/navBar";
 import '../../css/taskScreen.css';
 import '../../css/robotsScreen.css';
@@ -91,27 +91,27 @@ function UpdateTask({taskID, setTask, initialStatus}) {
 
 
 function GetAreas({taskID}) {
-    const [areas, setAreas] = useState(null)
     const [showForm, setShowForm] = useState(false);
+    const limit = 10;
 
-    const uri = '/api/area/task/' + taskID + '?offset=0&limit=100';
     const toggleForm = () => setShowForm(!showForm);
 
-    useFetchGet(uri, setAreas);
+    const renderArea = (area => (
+        <div key={area.id} className="robot-card">
+            <h2 className="robot-name">
+                <Link to={'/task/' + taskID + '/area/' + area.id} className="area-link">
+                    {area.name}
+                </Link>
+            </h2>
+            <p className="robot-status">{area.description}</p>
+            <p className="robot-status">Height: {area.height}</p>
+            <p className="robot-status">Width: {area.width}</p>
+        </div>
+    ));
+    const {data, hasMore, loadMore} = usePaginatedFetch('/api/area/task/' + taskID, limit, "areas");
 
     return <div className="robot-grid">
-        {areas && areas.areas.map(area => (
-            <div key={area.id} className="robot-card">
-                <h2 className="robot-name">
-                    <Link to={'/task/' + taskID + '/area/' + area.id} className="area-link">
-                        {area.name}
-                    </Link>
-                </h2>
-                <p className="robot-status">{area.description}</p>
-                <p className="robot-status">Height: {area.height}</p>
-                <p className="robot-status">Width: {area.width}</p>
-            </div>
-        ))}
+        {data.map((item) => renderArea(item))}
         {!showForm && (
             <div className="add-robot-card" onClick={toggleForm}>
                 <span className="add-robot-icon">+</span>
@@ -121,31 +121,44 @@ function GetAreas({taskID}) {
         {showForm && (
             <CreateArea taskID={taskID}></CreateArea>
         )}
+        <PaginatedAreas data={data} hasMore={hasMore} loadMore={loadMore} limit={limit}/>
     </div>
+}
+
+function PaginatedAreas({data, hasMore, loadMore, limit}) {
+    return (
+        <div>
+            {hasMore && data.length >= limit && (
+                <div className="add-robot-card" onClick={loadMore}>
+                    <span className="add-robot-icon">&gt;</span>
+                </div>
+            )}
+        </div>)
 }
 
 function GetTimes({taskID}) {
     const [showForm, setShowForm] = useState(false);
-    const [times, setTimes] = useState(null)
+    const limit = 10;
 
-    const uri = '/api/time/task/' + taskID + '?offset=0&limit=100';
+
     const toggleForm = () => setShowForm(!showForm);
 
-    useFetchGet(uri, setTimes);
+    const renderTime = (time => (
+        <div key={time.id} className="robot-card">
+            <h2 className="robot-name">
+                <Link to={'/task/' + taskID + '/time/' + time.id} className="area-link">
+                    {time.description}
+                </Link>
+            </h2>
+            <p className="robot-status">Week Day: {time.weekDay}</p>
+            <p className="robot-status">Start Time: {time.startTime}</p>
+            <p className="robot-status">End Time: {time.endTime}</p>
+        </div>
+    ));
+    const {data, hasMore, loadMore} = usePaginatedFetch('/api/time/task/' + taskID, limit, "times");
 
     return <div className="robot-grid">
-        {times && times.times.map(time => (
-            <div key={time.id} className="robot-card">
-                <h2 className="robot-name">
-                    <Link to={'/task/' + taskID + '/time/' + time.id} className="area-link">
-                        {time.description}
-                    </Link>
-                </h2>
-                <p className="robot-status">Week Day: {time.weekDay}</p>
-                <p className="robot-status">Start Time: {time.startTime}</p>
-                <p className="robot-status">End Time: {time.endTime}</p>
-            </div>
-        ))}
+        {data.map((item) => renderTime(item))}
         {!showForm && (
             <div className="add-robot-card" onClick={toggleForm}>
                 <span className="add-robot-icon">+</span>
@@ -154,8 +167,19 @@ function GetTimes({taskID}) {
         {showForm && (
             <CreateTime taskID={taskID}></CreateTime>
         )}
+        <PaginatedTimes data={data} hasMore={hasMore} loadMore={loadMore} limit={limit}/>
     </div>
+}
 
+function PaginatedTimes({data, hasMore, loadMore, limit}) {
+    return (
+        <div>
+            {hasMore && data.length >= limit && (
+                <div className="add-robot-card" onClick={loadMore}>
+                    <span className="add-robot-icon">&gt;</span>
+                </div>
+            )}
+        </div>)
 }
 
 function CreateArea({taskID}) {

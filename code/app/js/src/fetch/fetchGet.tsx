@@ -1,31 +1,33 @@
 import {useEffect, useState} from "react";
 
-export function useFetchGetToLists(uri, propertyName = undefined) {
-    const [content, setContent] = useState<string>(undefined)
+export function usePaginatedFetch(uriBase, limit, propertyName) {
+    const [data, setData] = useState([]);
+    const [offset, setOffset] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
+
+    const fetchData = (offset) => {
+        const uri = `${uriBase}?offset=${offset}&limit=${limit}`;
+        fetch(uri)
+            .then(response => response.json())
+            .then(result => {
+                if (result[propertyName].length < limit) {
+                    setHasMore(false);
+                }
+                setData(prevData => [...prevData, ...result[propertyName]]);
+            });
+    };
 
     useEffect(() => {
-        let canceled = false
+        fetchData(offset);
+    }, [offset]);
 
-        async function doFetch() {
-            const response = await fetch(uri)
-            if (canceled) return
-            const body = await response.text()
-            if (canceled) return
-            setContent(body)
-        }
+    const loadMore = () => {
+        setOffset(prevOffset => prevOffset + limit);
+    };
 
-        setContent(undefined)
-        doFetch().then(() => {
-        })
-        return () => {
-            canceled = true
-        }
-    }, [])
-
-    if (content !== undefined) {
-        return JSON.parse(content)[propertyName];
-    }
+    return { data, hasMore, loadMore };
 }
+
 
 export function useFetchGet(uri, setFunction) {
     useEffect(() => {

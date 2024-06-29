@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {fetchWrapper} from "../fetch/fetchPost";
-import {AreaUpdateInputModel} from "../types/AreaInputModel";
+import {AreaUpdateInputModel} from "../types/areaInputModel";
 import {useFetchGet} from "../fetch/fetchGet";
 import {NavBar} from "../elements/navBar";
 import '../../css/areaScreen.css';

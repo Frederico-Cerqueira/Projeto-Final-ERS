@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
-import {TimeUpdateInputModel} from "../types/TimeInputModel";
+import {TimeUpdateInputModel} from "../types/timeInputModel";
 import {fetchWrapper} from "../fetch/fetchPost";
 import {useFetchGet} from "../fetch/fetchGet";
 import {NavBar} from "../elements/navBar";
