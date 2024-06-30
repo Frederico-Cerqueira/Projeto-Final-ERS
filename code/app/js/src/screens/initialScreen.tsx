@@ -7,7 +7,7 @@ export function InitialScreen() {
         <div className="container">
             <InitialNavBar/>
             <div className="content">
-                <p className="big-text">BEM-VINDO AO ERS </p>
+                <p className="big-text">WELCOME TO ERS MANAGEMENT APPLICATION </p>
             </div>
         </div>
     );

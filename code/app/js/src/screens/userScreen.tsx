@@ -25,7 +25,7 @@ export function User() {
         <div>
             <NavBar/>
             <div className="user-container">
-                <h2 className="welcome-title">Olá, {user && user.name}!</h2>
+                <h2 className="welcome-title">Hello, {user && user.name}!</h2>
                 <p className="welcome-text">{phrase}</p>
             </div>
         </div>
@@ -35,11 +35,11 @@ export function User() {
 
 function phraseRandom() {
     const funnyPhrases = [
-        "Não se preocupe em pisar garrafas, os nossos robôs estão prontos para limpar!",
-        "Diga adeus ao lixo da cidade!",
-        "Porque a limpeza urbana é divertida? Porque existem os ERS!",
-        "A nossa aplicação torna a cidade mais limpa do que a casa da sua avó!",
-        "Limpar a cidade nunca foi tão fácil - até chegarem os ERS!",
+        "Don't worry about stepping on bottles, our robots are ready to clean!",
+        "Say goodbye to city trash!",
+        "Why is urban cleaning fun? Because ERS exist!",
+        "Our app makes the city cleaner than your grandmother's house!",
+        "Cleaning up the city has never been easier - until the ERS arrive!"
     ];
     const index = Math.floor(Math.random() * funnyPhrases.length);
     return funnyPhrases[index];
