@@ -42,7 +42,6 @@ export function Robot() {
                         <p className="robot-info-item">Characteristics: {robot.characteristics}</p>
                     </div>
                     <div className="robot-action-buttons">
-                        <UpdateRobot robotID={robotID} setRobot={setRobot}/>
                         <DeleteButton onClick={fetchDeleteRobot}/>
                     </div>
                 </div>

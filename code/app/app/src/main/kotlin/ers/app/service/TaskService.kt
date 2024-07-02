@@ -91,6 +91,7 @@ class TaskService(private val transactionManager: TransactionManager) {
                 val area = startTask.first ?: return@run failure(InvalidInput)
                 val time = startTask.second ?: return@run failure(InvalidInput)
                 val taskUpdated = it.taskData.updateTask(id, "in progress")
+                it.robotData.updateRobotStatus(task.robotId, "busy")
                 val startTaskOutput = TaskStartOutputModel(
                     id = id,
                     status = "in progress",
@@ -117,6 +118,7 @@ class TaskService(private val transactionManager: TransactionManager) {
                     return@run failure(InvalidInput)
 
                 val taskUpdated= it.taskData.updateTask(id, "pending")
+                it.robotData.updateRobotStatus(task.robotId, "available")
                 request.stopTask(id)
                 return@run success(TaskOutputModel(taskUpdated.name, taskUpdated.userId, taskUpdated.robotId, taskUpdated.status))
             }
