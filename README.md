@@ -3,7 +3,7 @@
 Este repositório está dividido em duas partes principais:
 
 ## 1. Docs
-Nesta secção, encontrara-se os documentos de referência para o projeto, incluindo:
+Nesta secção encontram-se os documentos de referência para o projeto, incluindo:
 - Ficheiros de edição das estruturas da máquina de estados e da base de dados.
 - Ficheiros das estruturas da máquina de estados e da base de dados.
 - Vídeos de demonstração.

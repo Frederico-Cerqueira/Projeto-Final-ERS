@@ -55,7 +55,6 @@ def __get_sip_data(data):
         "compass": data[18],
         "sonar_count": data[19]
     }
-
     # Obter dados dos sonares
     byte_position = 20
     sonars_readings = []
