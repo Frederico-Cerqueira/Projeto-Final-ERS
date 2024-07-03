@@ -1,4 +1,5 @@
-from picamera2 import Picamera2
+
+#from picamera2 import Picamera2
 from io import BytesIO
 from PIL import Image
 import numpy as np
@@ -9,6 +10,8 @@ def take_photo():
         Captures a photo using the PiCamera2, processes it, and returns it as a NumPy array.
 
         @return: A NumPy array representing the captured image.
+    """
+    pass
     """
     picam2 = Picamera2()
     config = picam2.create_still_configuration()
@@ -25,3 +28,4 @@ def take_photo():
     picam2.stop()
 
     return image_np
+    """

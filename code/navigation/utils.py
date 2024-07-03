@@ -1,7 +1,7 @@
 from code.navigation.sip_information.coordinates import update_coordinate_info
 from code.navigation.sip_information.motors import update_motors_info
 from code.navigation.sip_information.sonars import update_sonar_info
-from code.computer_vision.pi_camera import get_trash_detected
+from ..computer_vision.pi_camera import get_trash_detected
 
 
 def process_command(ers):

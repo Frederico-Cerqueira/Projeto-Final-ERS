@@ -7,7 +7,6 @@ from enum import Enum
 from code.navigation.limit import Limit
 from code.computer_vision.pi_camera import trash_collected
 
-
 # E1 - pulse e tempo
 def initial_state(state_machine, ers, sip):
     ers.command = Command('MOVE', 5000)
