@@ -1,6 +1,6 @@
-from take_photo import take_photo
-from image_processing import image_processing
-from detect_trash_in_area import detect_trash_in_area
+from code.computer_vision.take_photo import take_photo
+from code.computer_vision.image_processing import image_processing
+from code.computer_vision.detect_trash_in_area import detect_trash_in_area
 
 # Global variable to keep track of whether trash is detected or not.
 # Initially set to None, indicating no detection has been performed yet.

@@ -7,8 +7,8 @@ import sys
 sys.path.append("./serial_communication")
 sys.path.append("./serial_communication/communication_protocol")
 
-from communication_protocol.client_command_protocol import get_client_command_packet
-from communication_protocol.server_information_protocol import get_server_information_packet
+from code.navigation.serial_communication.communication_protocol.client_command_protocol import get_client_command_packet
+from code.navigation.serial_communication.communication_protocol.server_information_protocol import get_server_information_packet
 
 """
 

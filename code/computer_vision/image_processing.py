@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import os
 import matplotlib.pyplot as plt
-from utils import in_file
+from code.computer_vision.utils import in_file
 
 # Outside Algorithm
 def image_processing(img):

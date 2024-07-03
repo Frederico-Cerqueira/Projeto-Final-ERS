@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from protocol_functions import calculate_packet_checksum, calculate_int_data_bytes
+from code.navigation.serial_communication.communication_protocol.protocol_functions import calculate_packet_checksum, calculate_int_data_bytes
 
 """
 

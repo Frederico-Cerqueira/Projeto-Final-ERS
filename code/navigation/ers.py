@@ -2,15 +2,14 @@ import sys
 
 from datetime import datetime
 
-sys.path.append("./serial_communication")
-sys.path.append("./serial_communication/communication_protocol")
-
-from sip_information.coordinates import CoordinatesInfo
-from sip_information.motors import MotorsInfo
-from sip_information.sip_info import SipInfo
-from serial_communication.serial_communication import SerialCommunication
-from sip_information.sonars import create_sonar
-from ..computer_vision.pi_camera import trash_lookup
+sys.path.append("serial_communication")
+sys.path.append("serial_communication/communication_protocol")
+from code.navigation.sip_information.coordinates import CoordinatesInfo
+from code.navigation.sip_information.motors import MotorsInfo
+from code.navigation.sip_information.sip_info import SipInfo
+from code.navigation.serial_communication.serial_communication import SerialCommunication
+from code.navigation.sip_information.sonars import create_sonar
+from code.computer_vision.pi_camera import trash_lookup
 
 DISTANCE_ERROR_RANGE = range(-30, 30)
 ANGLE_ERROR_RANGE = range(-3, 3)

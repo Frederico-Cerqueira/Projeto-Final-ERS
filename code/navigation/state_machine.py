@@ -1,11 +1,11 @@
-from sip_information.sonars import detect_obj, \
-    detects_an_object_ahead, Direction, detects_an_object_left, detects_an_object_right, print_sonar_info
-from command import Command
-from utils import process_command, detect_trash, detect_limit, last_command_terminated, process_sip
+from code.navigation.sip_information.sonars import detect_obj, \
+    detects_an_object_ahead, Direction, detects_an_object_left, detects_an_object_right
+from code.navigation.command import Command
+from code.navigation.utils import process_command, detect_trash, detect_limit, last_command_terminated, process_sip
 from datetime import datetime
 from enum import Enum
-from limit import Limit
-from ..computer_vision.pi_camera import trash_collected
+from code.navigation.limit import Limit
+from code.computer_vision.pi_camera import trash_collected
 
 
 # E1 - pulse e tempo
@@ -304,7 +304,7 @@ class States(Enum):
 
 
 class StateMachine:
-    def __init__(self,height, width):
+    def __init__(self,height = 1000, width = 1000):
         self.state = States.E1
         self.side = None
         # MUDAR O NOME
