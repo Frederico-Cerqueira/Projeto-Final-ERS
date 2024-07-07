@@ -9,7 +9,7 @@ export type ContextType = {
     setUserID?: (id: number) => void,
 }
 
-export const AuthContext = createContext<ContextType>({userID: 1})
+export const AuthContext = createContext<ContextType>({userID: -1})
 
 function App() {
     const [userID, setUserID] = useState(null)
