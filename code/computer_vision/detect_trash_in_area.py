@@ -17,6 +17,8 @@ def detect_trash_in_area(processed_image):
             valor_pixel = processed_image[row, col]
             # 255 represents the color white
             if valor_pixel == 255:
+                pass
+                print("TRASH")
                 return True
     return False
 

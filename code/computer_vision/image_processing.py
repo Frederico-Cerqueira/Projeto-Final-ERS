@@ -1,9 +1,9 @@
 import cv2
 import numpy as np
 import os
-import matplotlib.pyplot as plt
-from code.computer_vision.utils import in_file
-
+#import matplotlib.pyplot as plt
+from computer_vision.utils import in_file
+"""
 # Outside Algorithm
 def image_processing(img):
     # image = cv2.imread(img)
@@ -102,7 +102,7 @@ def main():
 
 if __name__ == '__main__':
     main()
-
+"""
 """ APAGAR
 if __name__ == '__main__':
     image_directory = os.path.join('data', 'pi-images', 'outside')

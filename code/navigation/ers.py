@@ -4,12 +4,15 @@ from datetime import datetime
 
 sys.path.append("serial_communication")
 sys.path.append("serial_communication/communication_protocol")
-from code.navigation.sip_information.coordinates import CoordinatesInfo
-from code.navigation.sip_information.motors import MotorsInfo
-from code.navigation.sip_information.sip_info import SipInfo
-from code.navigation.serial_communication.serial_communication import SerialCommunication
-from code.navigation.sip_information.sonars import create_sonar
-from code.computer_vision.pi_camera import trash_lookup
+from navigation.sip_information.coordinates import CoordinatesInfo
+from navigation.sip_information.motors import MotorsInfo
+from navigation.sip_information.sip_info import SipInfo
+from navigation.serial_communication.serial_communication import SerialCommunication
+from navigation.sip_information.sonars import create_sonar
+from computer_vision.pi_camera import trash_lookup
+from computer_vision.take_photo import init_cam
+from computer_vision.pi_camera import get_trash_detected
+
 
 DISTANCE_ERROR_RANGE = range(-30, 30)
 ANGLE_ERROR_RANGE = range(-3, 3)
@@ -24,6 +27,7 @@ class ERS:
         self.init_time_pulse = datetime.now().timestamp()
         self.init_time_image = None
         self.running = False
+        self.cam = init_cam()
 
         # Start serial communication
         self.serial_communication = SerialCommunication(port, baudrate)
@@ -48,6 +52,7 @@ class ERS:
         self.send_command('ENABLE', 1)
         # Resets server to 0,0,0 origin
         self.send_command('SETO')
+        self.send_command('SONAR', 1)
 
     def turn_off(self):
         if self.serial_communication.is_connected():
@@ -69,11 +74,14 @@ class ERS:
     def take_photo(self):
         final = datetime.now().timestamp()
         init = self.init_time_image
-        if init is None or final - init > IMAGE_PROCESSING_TIME:
-            trash_lookup()
+        if get_trash_detected() is not True:
+            if init is None or final - init > IMAGE_PROCESSING_TIME:
+                print("FOTO")
+                trash_lookup(self.cam)
 
     # E2
     def get_sip(self):
+        print("get sip")
         initial = self.init_time_sip
         current = datetime.now().timestamp()
         if self.serial_communication.check_sip_availability() and (current - initial > 0.100):
@@ -102,7 +110,7 @@ class ERS:
             self.get_sip()
             self.check_pulse()
             self.take_photo()
-            machine.state_machine(ers=self, sip=sip)
+            machine.state_machine(self, sip)
 
     def stop(self):
         self.running = False

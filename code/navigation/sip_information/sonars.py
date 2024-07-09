@@ -40,8 +40,8 @@ def print_sonar_info(sonars):
 
 def detect_obj(arr_sonar):
     for sonar in arr_sonar:
-        if 0 < sonar.distance < 70 and sonar.id in (3, 4):
-            #print("STOP GIGANTE DO 3 E 4")
+        if 0 < sonar.distance < 60 and sonar.id in (3, 4):
+            print("STOP GIGANTE DO 3 E 4")
             return True
     return False
 
@@ -56,11 +56,11 @@ def detects_an_object_left(sonars):
 
 def detects_an_object_ahead(sonars):
     for sonar in sonars:
-        if (sonar.id in (3, 4) and 0 < sonar.distance < 70) or (0 < sonar.id in (2, 5) and 0 < sonar.distance < 60):
+        if (sonar.id in (3, 4) and 0 < sonar.distance < 60) or (0 < sonar.id in (2, 5) and 0 < sonar.distance < 60):
             for s in sonars:
-                if (not 0 < s.distance < 70) and s.id == 0:
+                if (not 0 < s.distance < 60) and s.id == 0:
                     return Direction.LEFT, sonars[0].distance, sonars[7].distance
-                elif (not 0 < s.distance < 70) and s.id == 7:
+                elif (not 0 < s.distance < 60) and s.id == 7:
                     return Direction.RIGHT, sonars[0].distance, sonars[7].distance
     return Direction.STAY, -1, -1
 

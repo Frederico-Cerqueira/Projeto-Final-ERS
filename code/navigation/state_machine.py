@@ -1,15 +1,16 @@
-from code.navigation.sip_information.sonars import detect_obj, \
+from navigation.sip_information.sonars import detect_obj, \
     detects_an_object_ahead, Direction, detects_an_object_left, detects_an_object_right
-from code.navigation.command import Command
-from code.navigation.utils import process_command, detect_trash, detect_limit, last_command_terminated, process_sip
+from navigation.command import Command
+from navigation.utils import process_command, detect_trash, detect_limit, last_command_terminated, process_sip
 from datetime import datetime
 from enum import Enum
-from code.navigation.limit import Limit
-from code.computer_vision.pi_camera import trash_collected
+from navigation.limit import Limit
+from computer_vision.pi_camera import trash_collected
+
 
 # E1 - pulse e tempo
 def initial_state(state_machine, ers, sip):
-    ers.command = Command('MOVE', 5000)
+    ers.command = Command('MOVE', 500)
     process_command(ers)
     state_machine.state = States.E2
 
@@ -215,14 +216,30 @@ def return_to_path(state_machine, ers, sip):
 
 
 # E4
-def get_trash(state_machine, ers):
+def get_trash(state_machine, ers, sip):
+    print("E4 - antes do stop")
     ers.command = Command('STOP', None)
+    sip.sonars[3].display_info()
+    sip.sonars[4].display_info()
     process_command(ers)
+    if detect_obj(sip.sonars):
+        state_machine.state = States.E3
+        pass
+    print("NÃO É OBSTÁCULO")
+    state_machine.wait_for_turn = datetime.now().timestamp()
     ers.command = Command('DHEAD', 360)
     process_command(ers)
-    trash_collected()
-    state_machine.state = States.E2
+    state_machine.state = States.E4a
 
+
+# E4a
+def wait_for_turn(state_machine, ers, sip):
+    print("e4a")
+    current_time = datetime.now().timestamp()
+    if current_time - state_machine.wait_for_turn >= 3:
+        print("continuar a andar")
+        trash_collected()
+        state_machine.state = States.E6
 
 # E5
 def change_direction(state_machine, ers, sip):
@@ -274,6 +291,7 @@ def backwards(state_machine, ers, sip):
 
 # E6
 def send_next_command(state_machine, ers):
+    print("E6")
     ers.command = Command('MOVE', 5000)
     process_command(ers)
     state_machine.state = States.E2
@@ -296,19 +314,21 @@ class States(Enum):
     E3e = second_move_while_obj,
     E3f = return_to_path,
     E4 = get_trash,
+    E4a = wait_for_turn
     E5 = change_direction,
     E5a = rodar,
     E5b = backwards,
-    E6 = send_next_command
+    E6 = send_next_command,
 
 
 class StateMachine:
-    def __init__(self,height = 1000, width = 1000):
+    def __init__(self, height=3000, width=5000):
         self.state = States.E1
         self.side = None
         # MUDAR O NOME
         self.y = 0
         self.wait_for_obj = datetime.now().timestamp()
+        self.wait_for_turn = datetime.now().timestamp()
         self.dodge_direction = None
         self.count = 0
         self.novo_y = 0
@@ -316,6 +336,7 @@ class StateMachine:
         self.sentido = 'front'
 
     def state_machine(self, ers, sip):
+        print("state: ", self.state)
         if self.state == States.E1:
             initial_state(self, ers, sip)
         elif self.state == States.E2:
@@ -347,7 +368,9 @@ class StateMachine:
         elif self.state == States.E3f:
             return_to_path(self, ers, sip)
         elif self.state == States.E4:
-            get_trash(self, ers)
+            get_trash(self, ers, sip)
+        elif self.state == States.E4a:
+            wait_for_turn(self, ers, sip)
         elif self.state == States.E5:
             change_direction(self, ers, sip)
         elif self.state == States.E5a:

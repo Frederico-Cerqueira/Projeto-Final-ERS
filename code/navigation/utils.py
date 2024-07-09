@@ -1,7 +1,7 @@
-from code.navigation.sip_information.coordinates import update_coordinate_info
-from code.navigation.sip_information.motors import update_motors_info
-from code.navigation.sip_information.sonars import update_sonar_info
-from ..computer_vision.pi_camera import get_trash_detected
+from navigation.sip_information.coordinates import update_coordinate_info
+from navigation.sip_information.motors import update_motors_info
+from navigation.sip_information.sonars import update_sonar_info
+from computer_vision.pi_camera import get_trash_detected
 
 
 def process_command(ers):
@@ -41,9 +41,12 @@ def detect_limit(x_pos, x_lim, y_pos, y_lim, state_machine):
 
 
 def last_command_terminated(ers, sip):
+    print("motors: ", sip.motors.on)
+    print("command: ", ers.command)
     if sip.motors.on:
         ers.command = None
     if not sip.motors.on and ers.command is None:
         return True
     else:
+        print("????? false")
         return False

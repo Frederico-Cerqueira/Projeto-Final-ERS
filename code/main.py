@@ -2,7 +2,7 @@ from navigation.ers import ERS
 from navigation.state_machine import StateMachine
 
 if __name__ == '__main__':
-    pioneer2 = ERS('COM3', 9600)
+    pioneer2 = ERS('/dev/ttyUSB0', 9600)
     machine = StateMachine()
     try:
         pioneer2.run(machine)
