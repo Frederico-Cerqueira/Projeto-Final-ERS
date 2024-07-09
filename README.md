@@ -19,12 +19,15 @@ Esta pasta contém:
 #### 2.1.1. Serial Comunication
 Esta pasta contém o código da biblioteca que simplifica a comunicação com o robô, implementada pelos ex alunos do ISEL.
 
+#### 2.1.2. SIP Information
+Esta pasta contém contém as classes necessárias para criar a estrutura SIP_INFO
+
 ### 2.2. Computer Vision
 Esta pasta contém:
 - O código para a deteção de lixo num ambiente uniforme.
 - Uma pasta com as imagens para teste do algoritmo.
 
-#### 2.2.1. Docs
+#### 2.2.1. Data
 Esta subpasta contém as imagens de teste do algoritmo.
 
 ### 2.3. App
