@@ -25,7 +25,7 @@ def detect_trash_in_area(processed_image):
 
 """ APAGAR
 if __name__ == '__main__':
-    image_directory = os.path.join('data', 'pi-images', 'outside')
+    image_directory = os.path.join('data_img_processing', 'pi-images', 'outside')
     image_filename = 'box3.jpg'
     image_path = os.path.join(image_directory, image_filename)
     detect_trash_in_area(in_file('teste.jpg'))

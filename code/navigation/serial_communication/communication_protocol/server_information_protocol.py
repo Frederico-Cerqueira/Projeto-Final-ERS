@@ -83,126 +83,126 @@ def __get_config_sip_data(data):
     """"""
     # index = 0
 
-    # self.__robot_type_size_str = data[index]
+    # self.__robot_type_size_str = data_img_processing[index]
     # index += 1
 
-    # self.__robot_type_str = data[index:index + self.__robot_type_size_str]        
+    # self.__robot_type_str = data_img_processing[index:index + self.__robot_type_size_str]
     # index += self.__robot_type_size_str + 1
 
-    # self.__robot_subtype_size_str =  data[index]
+    # self.__robot_subtype_size_str =  data_img_processing[index]
     # index += 1
 
-    # self.__robot_subtype_str =  data[index:index + self.__robot_subtype_size_str]
+    # self.__robot_subtype_str =  data_img_processing[index:index + self.__robot_subtype_size_str]
     # index += self.__robot_subtype_size_str + 1
 
-    # self.__robot_serial_numb_size_str = data[index]
+    # self.__robot_serial_numb_size_str = data_img_processing[index]
     # index += 1
 
-    # self.__robot_serial_numb_str = data[index:index + self.__robot_serial_numb_size_str]
+    # self.__robot_serial_numb_str = data_img_processing[index:index + self.__robot_serial_numb_size_str]
     # index += self.__robot_serial_numb_size_str + 1
 
-    # self.__4mots = data[index]
+    # self.__4mots = data_img_processing[index]
     # index += 1
 
-    # self.__rot_vel_top = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__rot_vel_top = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__trans_vel_top = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__trans_vel_top = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__rot_acc_top = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__rot_acc_top = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__trans_acc_top = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__trans_acc_top = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__pwm_max = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__pwm_max = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__name_size_str = data[index]
+    # self.__name_size_str = data_img_processing[index]
     # index += 1
 
-    # self.__name_size_str = data[index:index + self.__name_size_str]
+    # self.__name_size_str = data_img_processing[index:index + self.__name_size_str]
     # index += self.__name_size_str + 1
 
-    # self.__SIP = data[index]
+    # self.__SIP = data_img_processing[index]
     # index += 1
 
-    # self.__host_baud = data[index]
+    # self.__host_baud = data_img_processing[index]
     # index += 1
 
-    # self.__aux_baud = data[index]
+    # self.__aux_baud = data_img_processing[index]
     # index += 1
 
-    # self.__gripper = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__gripper = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__front_sonar = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__front_sonar = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__rear_sonar = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__rear_sonar = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__rear_sonar = data[index]
+    # self.__rear_sonar = data_img_processing[index]
     # index += 1
 
-    # self.__low_battery = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__low_battery = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__rev_count = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__rev_count = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__watchdog = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__watchdog = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__p2mpacs = data[index]
+    # self.__p2mpacs = data_img_processing[index]
     # index += 1
 
-    # self.__stall_val = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__stall_val = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__stall_count = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__stall_count = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__joy_vel = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__joy_vel = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__joy_R_vel = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__joy_R_vel = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__rot_vel_max = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__rot_vel_max = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__trans_vel_max = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__trans_vel_max = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__rot_acc = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__rot_acc = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__rot_decel = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__rot_decel = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__rot_kp = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__rot_kp = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__rot_kv = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__rot_kv = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__rot_ki = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__rot_ki = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__trans_acc = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__trans_acc = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__trans_decel = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__trans_decel = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__trans_kp = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__trans_kp = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__trans_kv = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__trans_kv = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
 
-    # self.__trans_ki = int.from_bytes(data[index:index+2], byteorder='big')
+    # self.__trans_ki = int.from_bytes(data_img_processing[index:index+2], byteorder='big')
     # index += 3
     pass

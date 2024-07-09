@@ -1,11 +1,10 @@
-from utils import in_file
 import cv2
 import numpy as np
 
 
-def convert_rgb_to_hsv(img):
+def convert_rgb_to_hsv(img_path):
 
-    image = cv2.imread(img)
+    image = cv2.imread(img_path)
     image = cv2.resize(image, None, fx=0.15, fy=0.15)
     image_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
@@ -25,8 +24,6 @@ def convert_rgb_to_hsv(img):
 
 def highlight_object(hsv_image):
     threshold = 64
-    # Pixels with a value greater than the threshold become 1 (white), and those below become 0 (black) in the resulting
-    # binary matrix (matrix).
     matrix = (hsv_image > threshold).astype(np.uint8)
     kernel = np.ones((5, 5), np.uint8)
     opening_kernel = np.ones((12, 12), np.uint8)
@@ -37,7 +34,3 @@ def highlight_object(hsv_image):
     dilation = cv2.dilate(opening, kernel, iterations=2)
 
     return matrix, closing, opening, dilation
-
-
-if __name__ == '__main__':
-    bin_image = convert_rgb_to_hsv(in_file('milk_pack.jpg'))

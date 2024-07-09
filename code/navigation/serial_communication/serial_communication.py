@@ -51,14 +51,14 @@ class SerialCommunication:
 
     def get_sip(self):
         """ Receives and returns a SIP """
-        # Receive information from the header and data size.
+        # Receive information from the header and data_img_processing size.
         packet_header_and_size = self.__serial_connection.read(3)
         packet_size = packet_header_and_size[2]
 
-        # Receive data
+        # Receive data_img_processing
         packet_data = self.__serial_connection.read(packet_size)
 
-        # Concatenate the header with the data.
+        # Concatenate the header with the data_img_processing.
         packet = packet_header_and_size + packet_data
 
         # Retrieve and return information from the SIP
