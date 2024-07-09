@@ -9,9 +9,7 @@ from navigation.sip_information.motors import MotorsInfo
 from navigation.sip_information.sip_info import SipInfo
 from navigation.serial_communication.serial_communication import SerialCommunication
 from navigation.sip_information.sonars import create_sonar
-from computer_vision.pi_camera import trash_lookup
-from computer_vision.take_photo import init_cam
-from computer_vision.pi_camera import get_trash_detected
+from navigation.utils import lookup_for_trash, detected_trash, cam_init
 
 
 DISTANCE_ERROR_RANGE = range(-30, 30)
@@ -27,7 +25,7 @@ class ERS:
         self.init_time_pulse = datetime.now().timestamp()
         self.init_time_image = None
         self.running = False
-        self.cam = init_cam()
+        self.cam = cam_init()
 
         # Start serial communication
         self.serial_communication = SerialCommunication(port, baudrate)
@@ -74,14 +72,12 @@ class ERS:
     def take_photo(self):
         final = datetime.now().timestamp()
         init = self.init_time_image
-        if get_trash_detected() is not True:
+        if detected_trash() is not True:
             if init is None or final - init > IMAGE_PROCESSING_TIME:
-                print("FOTO")
-                trash_lookup(self.cam)
+                lookup_for_trash(self.cam)
 
     # E2
     def get_sip(self):
-        print("get sip")
         initial = self.init_time_sip
         current = datetime.now().timestamp()
         if self.serial_communication.check_sip_availability() and (current - initial > 0.100):
