@@ -25,9 +25,16 @@ def analyse_sip(state_machine, ers, sip):
     if detect_trash():
         state_machine.state = States.E4
         pass
-    if detect_limit(sip.coordinates.x, state_machine.limit.x, sip.coordinates.y, state_machine.limit.y, state_machine):
-        state_machine.state = States.E5
-        pass
+    limit, status = detect_limit(sip.coordinates.x, state_machine.limit.x, sip.coordinates.y, state_machine.limit.y, state_machine)
+    if limit:
+        if status == "continue":
+            state_machine.state = States.E5
+            pass
+        else:
+            print("FIM DE AREA")
+            ers.command = Command('STOP', None)
+            process_command(ers)
+            pass
     if last_command_terminated(ers, sip):
         state_machine.state = States.E6
         pass
@@ -210,7 +217,7 @@ def change_direction(state_machine, ers, sip):
     """State E5: Changes the robot's direction when it reaches a limit."""
     process_sip(ers, sip)
     state_machine.novo_y = sip.coordinates.y
-    if state_machine.lim_direction == 'back':  # 'front':
+    if state_machine.lim_direction == 'front':  # 'front':
         ers.command = Command('DHEAD', -90)
         process_command(ers)
     else:
@@ -226,7 +233,7 @@ def rotate(state_machine, ers, sip):
     process_command(ers)
     # -1001 <= 0 - 1000 = -1001 <= -1000
     if abs(sip.coordinates.y) >= (abs(state_machine.novo_y) + 300):
-        if state_machine.lim_direction == 'back':  # 'front':
+        if state_machine.lim_direction == 'front':  # 'front':
             ers.command = Command('DHEAD', -90)
             process_command(ers)
         else:
@@ -241,11 +248,15 @@ def backwards(state_machine, ers, sip):
     ers.command = Command('MOVE', 5000)
     process_command(ers)
     margin = 100
-    if state_machine.lim_direction == 'back':  # 'front':
+    if state_machine.lim_direction == 'front':  # 'front':
         if abs(sip.coordinates.x) <= abs(state_machine.limit.x - margin):
+            # passar a back
+            state_machine.lim_direction = 'back'
             state_machine.state = States.E6
     else:
         if abs(sip.coordinates.x) >= margin:
+            # passar a front
+            state_machine.lim_direction = 'front'
             state_machine.state = States.E6
 
 

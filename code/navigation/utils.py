@@ -36,12 +36,15 @@ def process_sip(ers, sip):
 
 def detect_limit(x_pos, x_lim, y_pos, y_lim, state_machine):
     """Detect if the robot has reached the limit of the map."""
-    if x_pos >= x_lim and state_machine.lim_direction == 'front':
-        state_machine.lim_direction = 'back'
-        return True
-    if x_pos <= 0 and state_machine.lim_direction == 'back':
-        state_machine.lim_direction = 'front'
-        return True
+    if (x_pos >= x_lim) or (x_pos <= 0):
+        # state_machine.lim_direction = 'back' # tirar isto daqui
+        return True, "continue"
+    # if x_pos <= 0 and state_machine.lim_direction == 'back':
+        # state_machine.lim_direction = 'front'
+        # return True, "continue"
+    if y_pos >= y_lim:
+        return True, "end"
+
     return False
 
 
