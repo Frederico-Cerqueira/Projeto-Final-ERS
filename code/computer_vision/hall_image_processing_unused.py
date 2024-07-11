@@ -4,22 +4,23 @@ import numpy as np
 
 def convert_rgb_to_hsv(img_path):
 
-    image = cv2.imread(img_path)
-    image = cv2.resize(image, None, fx=0.15, fy=0.15)
+    #image = cv2.imread(img_path)
+    image = cv2.resize(img_path, None, fx=0.25, fy=0.25)
     image_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
     matrix, closing, opening, dilation = highlight_object(image_hsv[:, :, 0])
     dilation = dilation * 255
 
-    cv2.imshow('img', image)
-    cv2.imshow('HSV', image_hsv)
-    cv2.imshow('matrix', matrix * 255)
-    cv2.imshow('closing', closing * 255)
-    cv2.imshow('opening', opening * 255)
-    cv2.imshow('dilation', dilation)
+    #cv2.imshow('img', image)
+    #cv2.imshow('HSV', image_hsv)
+    #cv2.imshow('matrix', matrix * 255)
+    #cv2.imshow('closing', closing * 255)
+    #cv2.imshow('opening', opening * 255)
+    #cv2.imshow('dilation', dilation)
 
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    #cv2.waitKey(0)
+    #cv2.destroyAllWindows()
+    return dilation
 
 
 def highlight_object(hsv_image):

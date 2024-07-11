@@ -36,15 +36,12 @@ def process_sip(ers, sip):
 
 def detect_limit(x_pos, x_lim, y_pos, y_lim, state_machine):
     """Detect if the robot has reached the limit of the map."""
-    if (x_pos >= x_lim) or (x_pos <= 0):
-        # state_machine.lim_direction = 'back' # tirar isto daqui
-        return True, "continue"
-    # if x_pos <= 0 and state_machine.lim_direction == 'back':
-        # state_machine.lim_direction = 'front'
-        # return True, "continue"
+    if (x_pos >= x_lim) and state_machine.lim_direction == 'front':
+        return True
+    if (x_pos <= 0) and state_machine.lim_direction == 'back':
+        return True
     if y_pos >= y_lim:
-        return True, "end"
-
+        return True
     return False
 
 
@@ -60,19 +57,19 @@ def last_command_terminated(ers, sip):
 
 def collect_trash():
     """calls the trash_collected function from pi_camera.py to set the trash_detected variable to False."""
-    trash_collected()
+    return trash_collected()
 
 
 def lookup_for_trash(cam):
     """calls the trash_lookup function from pi_camera.py to capture an image and process it."""
-    trash_lookup(cam)
+    return trash_lookup(cam)
 
 
 def detected_trash():
     """calls the get_trash_detected function from pi_camera.py to retrieve the current value of the trash_detected variable."""
-    get_trash_detected()
+    return get_trash_detected()
 
 
 def cam_init():
     """calls the init_cam function from pi_camera.py to initialize the camera."""
-    init_cam()
+    return init_cam()

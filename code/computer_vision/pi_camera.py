@@ -1,6 +1,7 @@
 from computer_vision.take_photo import take_photo
 from computer_vision.image_processing_outside import image_processing
 from computer_vision.detect_trash_in_area import detect_trash_in_area
+from computer_vision.hall_image_processing_unused import convert_rgb_to_hsv
 
 # Global variable to keep track of whether trash is detected or not.
 # Initially set to None, indicating no detection has been performed yet.
@@ -12,9 +13,11 @@ def trash_lookup(cam):
         Captures an image, processes it, and updates the global variable
         trash_detected based on whether trash is detected in the processed image.
     """
+    print("VOU TIRAR FOTO")
     global trash_detected
     img = take_photo(cam)
-    processed_image = image_processing(img)
+    processed_image = convert_rgb_to_hsv(img)
+    #processed_image = image_processing(img)
     trash_detected = detect_trash_in_area(processed_image)
 
 

@@ -49,6 +49,7 @@ def detect_obj(arr_sonar):
     """Detect an object in front of the robot."""
     for sonar in arr_sonar:
         if 0 < sonar.distance < 60 and sonar.id in (3, 4):
+            #print("STOP GIGANTE DO 3 E DO 4")
             return True
     return False
 

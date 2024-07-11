@@ -8,13 +8,13 @@ from navigation.sip_information.coordinates import CoordinatesInfo
 from navigation.sip_information.motors import MotorsInfo
 from navigation.sip_information.sip_info import SipInfo
 from navigation.serial_communication.serial_communication import SerialCommunication
-from navigation.sip_information.sonars import create_sonar
+from navigation.sip_information.sonars import create_sonar, print_sonar_info
 from navigation.utils import lookup_for_trash, detected_trash, cam_init
 
 
 DISTANCE_ERROR_RANGE = range(-30, 30)
 ANGLE_ERROR_RANGE = range(-3, 3)
-IMAGE_PROCESSING_TIME = 15
+IMAGE_PROCESSING_TIME = 0.00001
 
 
 class ERS:
@@ -74,6 +74,8 @@ class ERS:
         init = self.init_time_image
         if detected_trash() is not True:
             if init is None or final - init > IMAGE_PROCESSING_TIME:
+                #print("INIT ", init)
+                self.init_time_image = datetime.now().timestamp()
                 lookup_for_trash(self.cam)
 
     # E2
@@ -102,11 +104,17 @@ class ERS:
         motors = MotorsInfo(False, datetime.now())
         sip = SipInfo(sonars, coordinates, motors)
         self.running = True
+        flag = 0
         while self.running:
             self.get_sip()
             self.check_pulse()
             self.take_photo()
             machine.state_machine(self, sip)
+            #print_sonar_info(sip.sonars)
+            if sip.sonars[3].distance > 0 and flag == 0:
+                flag = 1
+                print("sip")
+
 
     def stop(self):
         self.running = False

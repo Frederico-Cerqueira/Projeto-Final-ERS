@@ -11,7 +11,7 @@ from navigation.limit import Limit
 # E1 - pulse e tempo
 def initial_state(state_machine, ers, sip):
     """State E1: Sends the first command."""
-    ers.command = Command('MOVE', 500)
+    ers.command = Command('MOVE', 5000)
     process_command(ers)
     state_machine.state = States.E2
 
@@ -25,16 +25,17 @@ def analyse_sip(state_machine, ers, sip):
     if detect_trash():
         state_machine.state = States.E4
         pass
-    limit, status = detect_limit(sip.coordinates.x, state_machine.limit.x, sip.coordinates.y, state_machine.limit.y, state_machine)
+    limit = detect_limit(sip.coordinates.x, state_machine.limit.x, sip.coordinates.y, state_machine.limit.y,
+                         state_machine)
     if limit:
-        if status == "continue":
-            state_machine.state = States.E5
-            pass
-        else:
+        # if status == "continue":
+        state_machine.state = States.E5
+        pass
+        """else:
             print("FIM DE AREA")
             ers.command = Command('STOP', None)
             process_command(ers)
-            pass
+            pass"""
     if last_command_terminated(ers, sip):
         state_machine.state = States.E6
         pass
@@ -179,22 +180,24 @@ def return_to_path(state_machine, ers, sip):
     """State E3f: Move until the robot is back on the path it was before the object appeared."""
     process_sip(ers, sip)
     if state_machine.dodge_direction is Direction.RIGHT:
-        if sip.coordinates.y <= state_machine.y:
+        if sip.coordinates.y >= state_machine.y:
+            print("Y CURRENT = ", sip.coordinates.y)
+            print("GUARDADO Y = ", state_machine.y)
             ers.command = Command('DHEAD', -90)  # DIREITA
             process_command(ers)
             state_machine.state = States.E2
     else:
-        if sip.coordinates.y >= state_machine.y:
+        if sip.coordinates.y <= state_machine.y:
+            print("Y CURRENT = ", sip.coordinates.y)
+            print("GUARDADO Y = ", state_machine.y)
             ers.command = Command('DHEAD', 90)  # ESQUERDA
             process_command(ers)
             state_machine.state = States.E2
 
 
 def get_trash(state_machine, ers, sip):
-    """State E4: Rotates when detects an obstacle."""
+    """State E4: Rotates when detects trash."""
     ers.command = Command('STOP', None)
-    sip.sonars[3].display_info()
-    sip.sonars[4].display_info()
     process_command(ers)
     if detect_obj(sip.sonars):
         state_machine.state = States.E3
@@ -293,7 +296,7 @@ class States(Enum):
 
 
 class StateMachine:
-    def __init__(self, height=3000, width=5000):
+    def __init__(self, height=6000, width=1500):
         """Initializes the state machine and its variables."""
         self.state = States.E1
         self.side = None

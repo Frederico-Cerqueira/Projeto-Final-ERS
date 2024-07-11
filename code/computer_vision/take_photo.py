@@ -22,7 +22,6 @@ def take_photo(picam2):
     stream = BytesIO()
     picam2.capture_file(stream, format='jpeg')
     stream.seek(0)
-
     image = Image.open(stream)
     image_np = np.array(image)
 
