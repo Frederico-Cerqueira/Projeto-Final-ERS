@@ -11,7 +11,7 @@ from navigation.limit import Limit
 # E1 - pulse e tempo
 def initial_state(state_machine, ers, sip):
     """State E1: Sends the first command."""
-    ers.command = Command('MOVE', 5000)
+    ers.command = Command('MOVE', 10000)
     process_command(ers)
     state_machine.state = States.E2
 
@@ -20,14 +20,16 @@ def analyse_sip(state_machine, ers, sip):
     """State E2: Process SIP and check if it is an object, trash, limit or next command."""
     process_sip(ers, sip)
     if detect_obj(sip.sonars):
+        print("OBJETO DETETADO")
         state_machine.state = States.E3
         pass
     if detect_trash():
+        print("TRASH DETECTADO")
         state_machine.state = States.E4
         pass
-    limit = detect_limit(sip.coordinates.x, state_machine.limit.x, sip.coordinates.y, state_machine.limit.y,
-                         state_machine)
+    limit = detect_limit(sip.coordinates.x, state_machine.limit.x, sip.coordinates.y, state_machine.limit.y, state_machine)
     if limit:
+        print("LIMIT DETECTADO")
         # if status == "continue":
         state_machine.state = States.E5
         pass
@@ -37,6 +39,7 @@ def analyse_sip(state_machine, ers, sip):
             process_command(ers)
             pass"""
     if last_command_terminated(ers, sip):
+        print("COMANDO TERMINADO")
         state_machine.state = States.E6
         pass
 
@@ -201,7 +204,10 @@ def get_trash(state_machine, ers, sip):
     process_command(ers)
     if detect_obj(sip.sonars):
         state_machine.state = States.E3
+        collect_trash()
+        print("pré pass")
         pass
+        print("pos pass")
     state_machine.wait_for_turn = datetime.now().timestamp()
     ers.command = Command('DHEAD', 360)
     process_command(ers)
@@ -288,7 +294,7 @@ class States(Enum):
     E3e = second_move_while_obj,
     E3f = return_to_path,
     E4 = get_trash,
-    E4a = wait_for_turn
+    E4a = wait_for_turn,
     E5 = change_direction,
     E5a = rotate,
     E5b = backwards,
@@ -296,7 +302,7 @@ class States(Enum):
 
 
 class StateMachine:
-    def __init__(self, height=6000, width=1500):
+    def __init__(self, height=4000, width=1000):
         """Initializes the state machine and its variables."""
         self.state = States.E1
         self.side = None

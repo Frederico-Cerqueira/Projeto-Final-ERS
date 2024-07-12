@@ -3,6 +3,8 @@ from navigation.sip_information.motors import update_motors_info
 from navigation.sip_information.sonars import update_sonar_info
 from computer_vision.pi_camera import get_trash_detected, trash_collected, trash_lookup
 from computer_vision.take_photo import init_cam
+import threading
+
 
 
 def process_command(ers):
@@ -12,7 +14,7 @@ def process_command(ers):
         ers.turn_off()
     # Otherwise, if the serial communication is active, attempt to send the command to the robot
     elif ers.serial_communication.is_connected():
-        print("Command to run: ", ers.command.name, ers.command.args)
+        #print("Command to run: ", ers.command.name, ers.command.args)
         ers.send_command(ers.command.name, ers.command.args)
 
 
@@ -34,7 +36,7 @@ def process_sip(ers, sip):
             ers.sip_info.remove(current_sip_info)
 
 
-def detect_limit(x_pos, x_lim, y_pos, y_lim, state_machine):
+def detect_limit(x_pos,x_lim,y_pos , y_lim, state_machine):
     """Detect if the robot has reached the limit of the map."""
     if (x_pos >= x_lim) and state_machine.lim_direction == 'front':
         return True
@@ -62,7 +64,9 @@ def collect_trash():
 
 def lookup_for_trash(cam):
     """calls the trash_lookup function from pi_camera.py to capture an image and process it."""
-    return trash_lookup(cam)
+    thread1 = threading.Thread(target=trash_lookup, args=(cam, 2))
+    thread1.start()
+
 
 
 def detected_trash():

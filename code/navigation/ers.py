@@ -14,7 +14,9 @@ from navigation.utils import lookup_for_trash, detected_trash, cam_init
 
 DISTANCE_ERROR_RANGE = range(-30, 30)
 ANGLE_ERROR_RANGE = range(-3, 3)
-IMAGE_PROCESSING_TIME = 0.00001
+IMAGE_PROCESSING_TIME = 0.8
+
+
 
 
 class ERS:
@@ -74,9 +76,9 @@ class ERS:
         init = self.init_time_image
         if detected_trash() is not True:
             if init is None or final - init > IMAGE_PROCESSING_TIME:
-                #print("INIT ", init)
-                self.init_time_image = datetime.now().timestamp()
+                #print("FOTO")
                 lookup_for_trash(self.cam)
+                self.init_time_image = datetime.now().timestamp()
 
     # E2
     def get_sip(self):
@@ -108,12 +110,15 @@ class ERS:
         while self.running:
             self.get_sip()
             self.check_pulse()
+
             self.take_photo()
             machine.state_machine(self, sip)
             #print_sonar_info(sip.sonars)
             if sip.sonars[3].distance > 0 and flag == 0:
                 flag = 1
-                print("sip")
+                print("################################################################################################sip")
+            #print(machine.state)
+
 
 
     def stop(self):
